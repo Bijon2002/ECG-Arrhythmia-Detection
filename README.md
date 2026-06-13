@@ -12,8 +12,13 @@ A complete deep learning pipeline for detecting and classifying ECG arrhythmias,
 - [x] **Step 5:** Tested complete setup
 
 ### PHASE 2: DATA ACQUISITION & PROCESSING
-- [x] **Step 6:** Download MIT-BIH ECG data
-- [ ] **Step 7:** Process ECG signals
+- [x] **Step 6:** Download 1 MIT-BIH record
+- [x] **Step 7:** Read the record
+- [x] **Step 8:** Filter the signal
+- [x] **Step 9:** Find R-peaks
+- [ ] **Step 10:** Extract 1 beat
+- [ ] **Step 11:** Process all records
+- [ ] **Step 12:** Save train/test data
 
 ### PHASE 3: MODELING
 - [ ] **Step 8:** Build CNN model
