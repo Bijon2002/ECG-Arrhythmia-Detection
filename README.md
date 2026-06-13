@@ -12,7 +12,7 @@ A complete deep learning pipeline for detecting and classifying ECG arrhythmias,
 - [x] **Step 5:** Tested complete setup
 
 ### PHASE 2: DATA ACQUISITION & PROCESSING
-- [ ] **Step 6:** Download MIT-BIH ECG data
+- [x] **Step 6:** Download MIT-BIH ECG data
 - [ ] **Step 7:** Process ECG signals
 
 ### PHASE 3: MODELING
@@ -37,3 +37,12 @@ conda create -n ecg_env python=3.10
 conda activate ecg_env
 pip install -r requirements.txt
 ```
+
+## Usage
+
+### 1. Data Acquisition
+To download the MIT-BIH Arrhythmia Database (~72 MB) into the `data/raw/` directory:
+```bash
+python src/download_data.py
+```
+
