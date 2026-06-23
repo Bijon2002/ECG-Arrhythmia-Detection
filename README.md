@@ -16,9 +16,9 @@ A complete deep learning pipeline for detecting and classifying ECG arrhythmias,
 - [x] **Step 7:** Read the record
 - [x] **Step 8:** Filter the signal
 - [x] **Step 9:** Find R-peaks
-- [ ] **Step 10:** Extract 1 beat
-- [ ] **Step 11:** Process all records
-- [ ] **Step 12:** Save train/test data
+- [x] **Step 10:** Extract 1 beat
+- [x] **Step 11:** Process all records
+- [x] **Step 12:** Save train/test data
 
 ### PHASE 3: MODELING
 - [ ] **Step 8:** Build CNN model
