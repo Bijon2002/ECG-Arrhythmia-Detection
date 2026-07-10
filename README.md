@@ -21,8 +21,8 @@ A complete deep learning pipeline for detecting and classifying ECG arrhythmias,
 - [x] **Step 12:** Save train/test data
 
 ### PHASE 3: MODELING
-- [ ] **Step 8:** Build CNN model
-- [ ] **Step 9:** Train ensemble
+- [x] **Step 8:** Build CNN model
+- [x] **Step 9:** Train ensemble
 - [ ] **Step 10-12:** Uncertainty methods
 
 ### PHASE 4: DEPLOYMENT
