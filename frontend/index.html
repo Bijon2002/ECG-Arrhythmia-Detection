@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG AI Diagnostic Engine</title>
+    <!-- Modern Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for the glowing graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Toastify for sleek non-blocking alerts -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Animated Gradients -->
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+    <div class="bg-shape shape3"></div>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="glass-panel" style="text-align: center; margin-bottom: 2rem;">
+            <h1><span class="icon">🫀</span> Uncertainty-Aware ECG Arrhythmia Detection</h1>
+            <p>Using Deep Ensembles — B.Sc. (Hons) Computer Science and Software Engineering</p>
+        </header>
+
+        <!-- Academic Methodology Panel (For Viva/Presentation) -->
+        <div class="glass-panel" style="margin-bottom: 2rem;">
+            <h2>Project Overview & Problem Statement</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 10px; line-height: 1.6; margin-bottom: 20px;">
+                <strong>Problem Statement:</strong> Traditional Deep Learning models for ECG analysis suffer from overconfidence, providing "confident" but incorrect predictions on complex or noisy arrhythmias, which can mislead medical professionals. <br>
+                <strong>Solution:</strong> This project introduces an Uncertainty-Aware clinical decision support system. It leverages True Deep Ensembles and novel uncertainty quantification (such as Cluster-Based Entropy) to accurately report both the diagnosis and the AI's confidence, ensuring physicians know exactly when to trust the AI and when manual review is required.
+            </p>
+
+            <h2>Architecture & Methodology</h2>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 15px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <h3 style="color: var(--color-primary); font-size: 1rem;">1. Deep Ensembles</h3>
+                    <p style="font-size: 0.85rem; color: #ccc; margin-top: 8px;">3 Independent 1D CNN models trained from scratch to capture diverse feature representations.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <h3 style="color: var(--color-primary); font-size: 1rem;">2. AAMI Standards</h3>
+                    <p style="font-size: 0.85rem; color: #ccc; margin-top: 8px;">Trained on 100,000+ beats from the MIT-BIH Database, categorized into 5 clinical classes.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <h3 style="color: var(--color-primary); font-size: 1rem;">3. Uncertainty Metrics</h3>
+                    <p style="font-size: 0.85rem; color: #ccc; margin-top: 8px;"><strong>MC Dropout:</strong> Epistemic<br><strong>Predictive Entropy:</strong> Total Doubt<br><strong>Cluster Entropy:</strong> Medical Context</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <h3 style="color: var(--color-primary); font-size: 1rem;">4. AI Calibration</h3>
+                    <p style="font-size: 0.85rem; color: #ccc; margin-top: 8px;">Temperature Scaling applied to logits to align probabilities with true correctness.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Column: Controls & AI Result -->
+            <div class="left-col">
+                <div class="glass-panel controls">
+                    <h2>Input Source</h2>
+                    <p>Load a 360-sample heartbeat to analyze.</p>
+                    <div class="button-group">
+                        <button id="btn-sample" class="btn primary">Load Random Patient Beat</button>
+                        <button id="btn-live-start" class="btn primary" style="background: rgba(251, 133, 0, 0.1); color: var(--color-danger); border-color: rgba(251, 133, 0, 0.3);">🔴 Start Fullscreen Live Monitor</button>
+                        <button id="btn-live-stop" class="btn secondary hidden">🛑 Stop Monitor</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel controls">
+                    <h2>Batch Processing Engine</h2>
+                    <p>Upload a massive CSV dataset of heartbeats. The AI will process them concurrently and output a detailed analytical report.</p>
+                    <div class="button-group">
+                        <label for="file-upload" class="btn secondary" style="background: rgba(33, 158, 188, 0.2); color: #8ecae6; border-color: rgba(33, 158, 188, 0.5);">
+                            📁 Upload Dataset (CSV)
+                            <input id="file-upload" type="file" accept=".csv" style="display: none;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="glass-panel result-card" id="result-card">
+                    <h2>AI Diagnosis</h2>
+                    
+                    <div class="diagnosis-status" id="diagnosis-text">
+                        Awaiting Signal...
+                    </div>
+                    
+                    <div style="text-align: center; color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                        <strong>Ground Truth:</strong> <span id="true-diagnosis-text">N/A</span>
+                    </div>
+                    
+                    <div class="confidence-container">
+                        <div class="conf-labels">
+                            <span>Confidence</span>
+                            <span id="conf-text">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="conf-fill"></div>
+                        </div>
+                    </div>
+
+                    <div id="uncertainty-warning" class="warning-banner hidden">
+                        ⚠️ HIGH UNCERTAINTY. Cardiologist Review Required!
+                    </div>
+                </div>
+
+                <!-- Advanced Metrics Panel -->
+                <div class="glass-panel" style="margin-top: 1rem;">
+                    <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Mathematical Uncertainty</h2>
+                    <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8;">
+                        <li><strong>Epistemic (MC Dropout):</strong> <span id="mc-dropout-val" style="float:right; color: #fff;">0.000</span></li>
+                        <li><strong>Predictive Entropy:</strong> <span id="pred-entropy-val" style="float:right; color: #fff;">0.000</span></li>
+                        <li><strong>Cluster-Based Entropy:</strong> <span id="cluster-entropy-val" style="float:right; color: #fff;">0.000</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Glowing Monitor -->
+            <div class="right-col">
+                <div class="glass-panel monitor">
+                    <div class="monitor-header">
+                        <h2>Live Signal Feed</h2>
+                        <span class="pulse-indicator"></span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="ecgChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Processing Results Modal -->
+    <div id="batch-modal" class="modal hidden">
+        <div class="modal-content glass-panel" style="width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto; margin: 5% auto; position: relative;">
+            <span id="close-modal" style="position: absolute; right: 20px; top: 20px; font-size: 1.5rem; cursor: pointer;">&times;</span>
+            <h2>Batch Processing Results</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Processed dataset from CSV.</p>
+            
+            <table id="batch-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <th style="padding: 10px;">Beat #</th>
+                        <th style="padding: 10px;">Diagnosis</th>
+                        <th style="padding: 10px;">Confidence</th>
+                        <th style="padding: 10px;">MC Dropout</th>
+                        <th style="padding: 10px;">Cluster Entropy</th>
+                        <th style="padding: 10px;">Review Required?</th>
+                    </tr>
+                </thead>
+                <tbody id="batch-table-body" style="font-size: 0.9rem;">
+                    <!-- Rows will be injected by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

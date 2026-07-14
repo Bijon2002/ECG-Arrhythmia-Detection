@@ -23,10 +23,10 @@ A complete deep learning pipeline for detecting and classifying ECG arrhythmias,
 ### PHASE 3: MODELING
 - [x] **Step 8:** Build CNN model
 - [x] **Step 9:** Train ensemble
-- [ ] **Step 10-12:** Uncertainty methods
+- [x] **Step 10-12:** Uncertainty methods
 
 ### PHASE 4: DEPLOYMENT
-- [ ] **Step 13-15:** Evaluation & web app
+- [x] **Step 13-15:** Evaluation & web app
 
 ## Environment Setup
 
@@ -50,4 +50,6 @@ To download the MIT-BIH Arrhythmia Database (~72 MB) into the `data/raw/` direct
 ```bash
 python src/download_data.py
 ```
+> **Dataset Source:** Official PhysioNet MIT-BIH Arrhythmia Database  
+> **URL:** https://physionet.org/content/mitdb/1.0.0/
 
