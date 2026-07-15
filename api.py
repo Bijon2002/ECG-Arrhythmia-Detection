@@ -1,4 +1,5 @@
 import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import sys
 import torch
 import numpy as np
@@ -24,8 +25,8 @@ MODELS_DIR = os.path.join(BASE_DIR, 'models')
 ensemble_models = []
 ensemble_temperatures = []
 
-print("Loading 3 independently trained AI brains + Calibration Temperatures...")
-for i in range(1, 4):
+print("Loading 5 independently trained AI brains + Calibration Temperatures...")
+for i in range(1, 6):
     # Load Model
     model = ECGModel(num_classes=5)
     model.load_state_dict(torch.load(os.path.join(MODELS_DIR, f'ecg_model_v{i}.pth'), map_location="cpu", weights_only=True))
@@ -56,14 +57,21 @@ def serve_frontend():
     """Serves the index.html from the frontend folder."""
     return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/random_beat', methods=['GET'])
-def get_random_beat():
-    """Pulls a random heartbeat from our massive 21,888 test set!"""
+@app.route('/random_beat/<beat_type>', methods=['GET'])
+def get_random_beat(beat_type):
+    """Pulls a random heartbeat from our test set! type is 'normal' or 'abnormal'"""
     test_data = np.load(os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz'))
     X_test = test_data['X']
     y_test = test_data['y']
     
-    random_idx = np.random.randint(0, len(X_test))
+    if beat_type == 'normal':
+        indices = np.where(y_test == 0)[0]
+    elif beat_type == 'abnormal':
+        indices = np.where(y_test > 0)[0]
+    else:
+        indices = np.arange(len(y_test))
+        
+    random_idx = np.random.choice(indices)
     signal = X_test[random_idx].tolist()
     true_label = int(y_test[random_idx])
     
@@ -216,6 +224,68 @@ def batch_predict():
             mc_dropout_predictions = np.vstack(mc_dropout_predictions)
             mc_dropout_uncertainty = float(np.mean(np.var(mc_dropout_predictions, axis=0)))
             
+            pred_entropy = calculate_predictive_entropy(mean_probs)
+            cluster_entropy = calculate_cluster_based_entropy(mean_probs)
+            
+            predicted_class = int(np.argmax(mean_probs))
+            confidence = float(mean_probs[predicted_class] * 100)
+            diagnosis_text, severity = CLASS_MAPPING.get(predicted_class, ("Unknown", "unknown"))
+            is_uncertain = cluster_entropy > 0.5 
+            
+            results.append({
+                "index": idx + 1,
+                "diagnosis": diagnosis_text,
+                "severity": severity,
+                "confidence": confidence,
+                "predictive_entropy": pred_entropy,
+                "cluster_entropy": cluster_entropy,
+                "mc_dropout_uncertainty": mc_dropout_uncertainty,
+                "is_uncertain": is_uncertain
+            })
+            
+        return jsonify({"results": results})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/batch_predict/auto', methods=['POST'])
+def batch_predict_auto():
+    try:
+        test_data = np.load(os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz'))
+        X_test = test_data['X']
+        y_test = test_data['y']
+        
+        normal_indices = np.where(y_test == 0)[0]
+        abnormal_indices = np.where(y_test > 0)[0]
+        
+        # Grab 25 of each
+        selected_normals = np.random.choice(normal_indices, 25, replace=False)
+        selected_abnormals = np.random.choice(abnormal_indices, 25, replace=False)
+        all_indices = np.concatenate([selected_normals, selected_abnormals])
+        np.random.shuffle(all_indices)
+        
+        results = []
+        for idx, i in enumerate(all_indices):
+            signal = X_test[i][:360]
+            tensor_signal = torch.tensor(signal, dtype=torch.float32).view(1, 1, 360)
+            
+            ensemble_predictions = []
+            mc_dropout_predictions = []
+            
+            with torch.no_grad():
+                for model, temp in zip(ensemble_models, ensemble_temperatures):
+                    model.eval()
+                    logits = model(tensor_signal)
+                    probs = torch.softmax(logits / temp, dim=1)
+                    ensemble_predictions.append(probs.numpy())
+                    
+                    enable_dropout(model)
+                    for _ in range(3):
+                        mc_logits = model(tensor_signal)
+                        mc_probs = torch.softmax(mc_logits / temp, dim=1)
+                        mc_dropout_predictions.append(mc_probs.numpy())
+            
+            mean_probs = np.mean(np.vstack(ensemble_predictions), axis=0)
+            mc_dropout_uncertainty = float(np.mean(np.var(np.vstack(mc_dropout_predictions), axis=0)))
             pred_entropy = calculate_predictive_entropy(mean_probs)
             cluster_entropy = calculate_cluster_based_entropy(mean_probs)
             

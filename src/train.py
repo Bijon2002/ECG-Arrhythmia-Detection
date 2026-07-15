@@ -27,11 +27,21 @@ def load_data():
     train_dataset = TensorDataset(X_train, y_train)
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
     
+    # Calculate Class Weights to handle imbalance
+    class_counts = torch.bincount(y_train)
+    total_samples = len(y_train)
+    num_classes = len(class_counts)
+    
+    # Standard formula: total / (num_classes * count_for_class)
+    class_weights = total_samples / (num_classes * class_counts.float() + 1e-5)
+    
     print(f"Loaded {len(train_dataset)} training beats.")
-    return train_loader
+    print(f"Computed Class Weights: {class_weights}")
+    
+    return train_loader, class_weights
 
 def train_ensemble(num_models=3, num_epochs=3):
-    train_loader = load_data()
+    train_loader, class_weights = load_data()
     log_file_path = os.path.join(LOGS_DIR, 'ensemble_training_log.txt')
     
     with open(log_file_path, 'w') as log_file:
@@ -44,7 +54,9 @@ def train_ensemble(num_models=3, num_epochs=3):
             
             # Each model gets unique random initialization automatically in PyTorch
             model = ECGModel(num_classes=5)
-            criterion = nn.CrossEntropyLoss()
+            
+            # Apply the class weights to the loss function!
+            criterion = nn.CrossEntropyLoss(weight=class_weights)
             optimizer = optim.Adam(model.parameters(), lr=0.001)
             
             for epoch in range(num_epochs):
@@ -71,5 +83,5 @@ def train_ensemble(num_models=3, num_epochs=3):
     print(f"\n🎉 True Deep Ensemble training complete. Logs saved to {log_file_path}")
 
 if __name__ == "__main__":
-    # Train 3 completely separate models to form a True Ensemble
-    train_ensemble(num_models=3, num_epochs=3)
+    # Train 5 completely separate models to form a True Ensemble (no shortcuts!)
+    train_ensemble(num_models=5, num_epochs=5)

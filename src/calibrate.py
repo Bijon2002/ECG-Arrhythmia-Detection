@@ -37,7 +37,7 @@ def calibrate_ensemble():
     
     nll_criterion = nn.CrossEntropyLoss()
     
-    for i in range(1, 4):
+    for i in range(1, 6):
         print(f"\nCalibrating Model {i}...")
         model = ECGModel(num_classes=5)
         model.load_state_dict(torch.load(os.path.join(MODELS_DIR, f'ecg_model_v{i}.pth'), weights_only=True))
