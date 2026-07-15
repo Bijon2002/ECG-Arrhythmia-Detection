@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uncertainty-Aware ECG Arrhythmia Detection | Deep Ensembles</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div class="bg-shape shape1"></div>
@@ -44,6 +48,13 @@
                     <div class="nav-text">
                         <span>Home Info</span>
                         <small>Overview &amp; Metrics</small>
+                    </div>
+                </li>
+                <li data-tab="tab-beginner">
+                    <i class="ph-fill ph-student"></i>
+                    <div class="nav-text">
+                        <span>Beginner Guide</span>
+                        <small>ECG &amp; 5 Classes</small>
                     </div>
                 </li>
             </ul>
@@ -102,42 +113,67 @@
 
         <!-- MAIN CONTENT -->
         <main class="content-area">
-            
+
             <!-- TAB 0: HOME INFO -->
             <div id="tab-home" class="tab-content active">
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Project Home &amp; Performance</h1>
-                        <p class="page-subtitle">Deep learning ensembles and uncertainty quantification for ECG arrhythmia detection</p>
+                        <p class="page-subtitle">Deep learning ensembles and uncertainty quantification for ECG
+                            arrhythmia detection</p>
                     </div>
                 </div>
 
                 <!-- Stats Dashboard Row -->
-                <div class="stats-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; width: 100%;">
-                    <div class="glass-panel stat-card" style="border-left: 4px solid var(--neon-green); padding: 1.25rem;">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Overall Accuracy</span>
-                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--neon-green); margin: 0.25rem 0;">98.0%</h2>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Tested on 21,888 unseen beats</p>
+                <div class="stats-row"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; width: 100%;">
+                    <div class="glass-panel stat-card"
+                        style="border-left: 4px solid var(--neon-green); padding: 1.25rem;">
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Overall
+                            Accuracy</span>
+                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--neon-green); margin: 0.25rem 0;">
+                            98.0%</h2>
+                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Tested on 21,888 unseen
+                            beats</p>
                     </div>
-                    <div class="glass-panel stat-card" style="border-left: 4px solid var(--color-accent); padding: 1.25rem;">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Macro F1-Score</span>
-                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--color-accent); margin: 0.25rem 0;">89.0%</h2>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Balanced across 5 AAMI classes</p>
+                    <div class="glass-panel stat-card"
+                        style="border-left: 4px solid var(--color-accent); padding: 1.25rem;">
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Macro
+                            F1-Score</span>
+                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--color-accent); margin: 0.25rem 0;">
+                            89.0%</h2>
+                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Balanced across 5 AAMI
+                            classes</p>
                     </div>
-                    <div class="glass-panel stat-card" style="border-left: 4px solid var(--color-warning); padding: 1.25rem;">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Ensemble Models</span>
-                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--color-warning); margin: 0.25rem 0;">5 Models</h2>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Independently trained Conv1D</p>
+                    <div class="glass-panel stat-card"
+                        style="border-left: 4px solid var(--color-warning); padding: 1.25rem;">
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Ensemble
+                            Models</span>
+                        <h2
+                            style="font-size: 2.2rem; font-weight: 900; color: var(--color-warning); margin: 0.25rem 0;">
+                            5 Models</h2>
+                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Independently trained Conv1D
+                        </p>
                     </div>
-                    <div class="glass-panel stat-card" style="border-left: 4px solid var(--color-purple); padding: 1.25rem;">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Uncertainty Engine</span>
-                        <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--color-purple); margin: 0.7rem 0 0.5rem;">MC Dropout</h2>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">9 stochastic passes / inference</p>
+                    <div class="glass-panel stat-card"
+                        style="border-left: 4px solid var(--color-purple); padding: 1.25rem;">
+                        <span
+                            style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Uncertainty
+                            Engine</span>
+                        <h2
+                            style="font-size: 1.5rem; font-weight: 900; color: var(--color-purple); margin: 0.7rem 0 0.5rem;">
+                            MC Dropout</h2>
+                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">9 stochastic passes /
+                            inference</p>
                     </div>
                 </div>
 
                 <!-- Graphs Grid -->
-                <div class="home-graphs-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                <div class="home-graphs-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
                     <!-- Model Loss Convergence Graph -->
                     <div class="glass-panel info-card" style="height: 340px; display: flex; flex-direction: column;">
                         <div class="panel-header" style="margin-bottom: 0.5rem;">
@@ -148,7 +184,7 @@
                             <canvas id="lossChart"></canvas>
                         </div>
                     </div>
-                    
+
                     <!-- F1 Score Comparison Graph -->
                     <div class="glass-panel info-card" style="height: 340px; display: flex; flex-direction: column;">
                         <div class="panel-header" style="margin-bottom: 0.5rem;">
@@ -182,7 +218,12 @@
                                 <i class="ph-fill ph-warning-octagon panel-icon" style="color: #ff6b6b;"></i>
                                 <h2 style="color: #ff6b6b;">Problem Statement</h2>
                             </div>
-                            <p class="info-text">Healthcare technology is changing the way that doctors are able to diagnose patients, but many medical professionals do not trust computers to make important decisions. The problem with the most popular computer programs that analyze ECG tests is that they are currently seriously flawed because they are always confident in their answer, even if they are incorrect. This leads to two major issues: false alerts that cause unnecessary stress, or missed life-threatening cardiac conditions.</p>
+                            <p class="info-text">Healthcare technology is changing the way that doctors are able to
+                                diagnose patients, but many medical professionals do not trust computers to make
+                                important decisions. The problem with the most popular computer programs that analyze
+                                ECG tests is that they are currently seriously flawed because they are always confident
+                                in their answer, even if they are incorrect. This leads to two major issues: false
+                                alerts that cause unnecessary stress, or missed life-threatening cardiac conditions.</p>
                         </div>
 
                         <!-- Proposed Solution -->
@@ -191,7 +232,11 @@
                                 <i class="ph-fill ph-lightbulb panel-icon" style="color: var(--neon-green);"></i>
                                 <h2 style="color: var(--neon-green);">Proposed Solution</h2>
                             </div>
-                            <p class="info-text">By combining **deep learning ensembles** and **uncertainty quantification**, this project aims to create a smarter system that alerts doctors when the AI is unsure. Employing Monte Carlo dropout, predictive entropy, and a novel **cluster-based entropy** method, we calculate a precise uncertainty score to support statistical clinical decision-making.</p>
+                            <p class="info-text">By combining **deep learning ensembles** and **uncertainty
+                                quantification**, this project aims to create a smarter system that alerts doctors when
+                                the AI is unsure. Employing Monte Carlo dropout, predictive entropy, and a novel
+                                **cluster-based entropy** method, we calculate a precise uncertainty score to support
+                                statistical clinical decision-making.</p>
                         </div>
 
                         <!-- Technical Architecture -->
@@ -200,8 +245,11 @@
                                 <i class="ph-fill ph-cpu panel-icon"></i>
                                 <h2>1D CNN Ensemble Architecture</h2>
                             </div>
-                            <p class="info-text">The framework trains **5 independent Conv1D neural networks** from scratch with different weight initializations. Each model processes 360-sample segments directly:</p>
-                            <div class="code-snippet" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #ccc; line-height: 1.5; margin-top: 0.75rem;">
+                            <p class="info-text">The framework trains **5 independent Conv1D neural networks** from
+                                scratch with different weight initializations. Each model processes 360-sample segments
+                                directly:</p>
+                            <div class="code-snippet"
+                                style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #ccc; line-height: 1.5; margin-top: 0.75rem;">
                                 Conv1D(1,32) → BN → ReLU → MaxPool<br>
                                 Conv1D(32,64) → BN → ReLU → MaxPool<br>
                                 Conv1D(64,128) → BN → ReLU → MaxPool<br>
@@ -218,8 +266,10 @@
                                 <i class="ph-fill ph-chart-scatter panel-icon" style="color: var(--color-accent);"></i>
                                 <h2>Confusion Matrix Graph</h2>
                             </div>
-                            <div class="confusion-matrix-container" style="text-align: center; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
-                                <img src="confusion_matrix.png" alt="Confusion Matrix Graph" style="max-width: 100%; height: auto; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="confusion-matrix-container"
+                                style="text-align: center; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
+                                <img src="confusion_matrix.png" alt="Confusion Matrix Graph"
+                                    style="max-width: 100%; height: auto; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
                             </div>
                         </div>
 
@@ -230,9 +280,11 @@
                                 <h2>Classification Metrics Table</h2>
                             </div>
                             <div style="overflow-x: auto;">
-                                <table class="metrics-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                                <table class="metrics-table"
+                                    style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
                                     <thead>
-                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">
+                                        <tr
+                                            style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">
                                             <th style="padding: 6px 8px;">Class</th>
                                             <th style="padding: 6px 8px;">Precision</th>
                                             <th style="padding: 6px 8px;">Recall</th>
@@ -242,43 +294,58 @@
                                     </thead>
                                     <tbody>
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--neon-green);">Normal (N)</td>
+                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--neon-green);">
+                                                Normal (N)</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">1.00</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.98</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99</td>
+                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99
+                                            </td>
                                             <td style="padding: 6px 8px; color: var(--text-muted);">18,117</td>
                                         </tr>
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">Supraventricular (S)</td>
+                                            <td
+                                                style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">
+                                                Supraventricular (S)</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.80</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.92</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.85</td>
+                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.85
+                                            </td>
                                             <td style="padding: 6px 8px; color: var(--text-muted);">556</td>
                                         </tr>
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--color-danger);">Ventricular (V)</td>
+                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--color-danger);">
+                                                Ventricular (V)</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.94</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.98</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.96</td>
+                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.96
+                                            </td>
                                             <td style="padding: 6px 8px; color: var(--text-muted);">1,447</td>
                                         </tr>
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">Fusion (F)</td>
+                                            <td
+                                                style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">
+                                                Fusion (F)</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.57</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.85</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.68</td>
+                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.68
+                                            </td>
                                             <td style="padding: 6px 8px; color: var(--text-muted);">160</td>
                                         </tr>
                                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--color-unknown);">Unknown (Q)</td>
+                                            <td
+                                                style="padding: 6px 8px; font-weight: 600; color: var(--color-unknown);">
+                                                Unknown (Q)</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">0.99</td>
                                             <td style="padding: 6px 8px; font-family: monospace;">1.00</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99</td>
+                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99
+                                            </td>
                                             <td style="padding: 6px 8px; color: var(--text-muted);">1,608</td>
                                         </tr>
                                         <tr style="border-top: 1px solid rgba(255,255,255,0.1); font-weight: 600;">
                                             <td style="padding: 6px 8px; color: #fff;">Overall Accuracy</td>
-                                            <td colspan="3" style="padding: 6px 8px; text-align: right; color: var(--neon-green); font-family: monospace;">98.0%</td>
+                                            <td colspan="3"
+                                                style="padding: 6px 8px; text-align: right; color: var(--neon-green); font-family: monospace;">
+                                                98.0%</td>
                                             <td style="padding: 6px 8px; color: var(--text-muted);">21,888</td>
                                         </tr>
                                     </tbody>
@@ -289,17 +356,20 @@
                         <!-- logs -->
                         <div class="glass-panel info-card">
                             <div class="panel-header">
-                                <i class="ph-fill ph-terminal-window panel-icon" style="color: var(--color-accent);"></i>
+                                <i class="ph-fill ph-terminal-window panel-icon"
+                                    style="color: var(--color-accent);"></i>
                                 <h2>Training Pipeline Output Logs</h2>
                             </div>
-                            <div class="log-terminal-container" style="background: #030712; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #34d399; height: 180px; overflow-y: auto;">
+                            <div class="log-terminal-container"
+                                style="background: #030712; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #34d399; height: 180px; overflow-y: auto;">
                                 <div style="color: #6b7280; margin-bottom: 4px;">// True Deep Ensemble Convergence</div>
                                 Epoch [1/5] - Model 1-5 Avg Loss: 0.1174<br>
                                 Epoch [2/5] - Model 1-5 Avg Loss: 0.0638<br>
                                 Epoch [3/5] - Model 1-5 Avg Loss: 0.0498<br>
                                 Epoch [4/5] - Model 1-5 Avg Loss: 0.0415<br>
                                 Epoch [5/5] - Model 1-5 Avg Loss: 0.0355<br>
-                                <div style="color: #6b7280; margin-top: 8px; margin-bottom: 4px;">// Post-Hoc Calibration Logs</div>
+                                <div style="color: #6b7280; margin-top: 8px; margin-bottom: 4px;">// Post-Hoc
+                                    Calibration Logs</div>
                                 Calibration Temperature Model 1: 1.124<br>
                                 Calibration Temperature Model 2: 1.087<br>
                                 Calibration Temperature Model 3: 1.151<br>
@@ -312,12 +382,118 @@
                 </div>
             </div>
 
+            <!-- TAB: BEGINNER GUIDE -->
+            <div id="tab-beginner" class="tab-content hidden">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Beginner's Guide to ECG</h1>
+                        <p class="page-subtitle">Understanding the heartbeat and the 5 AAMI classification categories</p>
+                    </div>
+                </div>
+
+                <!-- ECG Basics Section -->
+                <div class="glass-panel info-card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--neon-green);">
+                    <div class="panel-header">
+                        <i class="ph-fill ph-heartbeat panel-icon" style="color: var(--neon-green);"></i>
+                        <h2 style="color: var(--neon-green);">The Anatomy of a Normal Heartbeat</h2>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <p class="info-text">An Electrocardiogram (ECG) records the electrical signals in your heart. A single normal heartbeat consists of three main parts:</p>
+                        <ul style="color: var(--text-muted); font-size: 0.9rem; margin-left: 1.5rem; line-height: 1.6;">
+                            <li><strong style="color: #fff;">P-Wave:</strong> The first small bump. It represents the atria (upper chambers) contracting to pump blood into the ventricles.</li>
+                            <li><strong style="color: var(--neon-green);">QRS Complex:</strong> The large, sharp spike in the middle. It represents the ventricles (lower chambers) contracting to pump blood to the body. This is the main focus of our AI model!</li>
+                            <li><strong style="color: #fff;">T-Wave:</strong> The final small bump. It represents the ventricles relaxing and resetting for the next beat.</li>
+                        </ul>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <img src="ecg_anatomy.png" alt="ECG Anatomy" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The 5 Classes Section -->
+                <h2 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--text-main);">The 5 AAMI Arrhythmia Classes</h2>
+                <div class="guide-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    
+                    <!-- Class N -->
+                    <div class="glass-panel stat-card" style="border-top: 3px solid var(--neon-green);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                            <div style="background: rgba(0, 255, 136, 0.1); padding: 8px; border-radius: 8px;">
+                                <i class="ph-fill ph-check-circle" style="color: var(--neon-green); font-size: 1.5rem;"></i>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: #fff;">Normal (N)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">A healthy, regular heartbeat with a standard P-wave, QRS complex, and T-wave. It fires at a steady pace without interruptions.</p>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <img src="ecg_class_n.png" alt="Normal ECG" style="max-width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <!-- Class S -->
+                    <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-warning);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                            <div style="background: rgba(255, 183, 3, 0.1); padding: 8px; border-radius: 8px;">
+                                <i class="ph-fill ph-lightning" style="color: var(--color-warning); font-size: 1.5rem;"></i>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: #fff;">Supraventricular Ectopic (S)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">A premature or extra beat originating from the <i>upper</i> chambers of the heart (above the ventricles). Often harmless, but can cause palpitations.</p>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <img src="ecg_class_s.png" alt="SVE ECG" style="max-width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <!-- Class V -->
+                    <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-danger);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                            <div style="background: rgba(255, 107, 107, 0.1); padding: 8px; border-radius: 8px;">
+                                <i class="ph-fill ph-warning" style="color: var(--color-danger); font-size: 1.5rem;"></i>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: #fff;">Ventricular Ectopic (V)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">An abnormal beat originating in the <i>lower</i> chambers (ventricles). The QRS spike often looks wide and bizarre. Also known as a PVC.</p>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <img src="ecg_class_v.png" alt="VE ECG" style="max-width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <!-- Class F -->
+                    <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-purple);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                            <div style="background: rgba(168, 85, 247, 0.1); padding: 8px; border-radius: 8px;">
+                                <i class="ph-fill ph-git-merge" style="color: var(--color-purple); font-size: 1.5rem;"></i>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: #fff;">Fusion (F)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">A "hybrid" beat that occurs when a normal electrical impulse and a ventricular ectopic impulse fire at the exact same time, merging together.</p>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <img src="ecg_class_f.png" alt="Fusion ECG" style="max-width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <!-- Class Q -->
+                    <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-unknown);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                            <div style="background: rgba(156, 163, 175, 0.1); padding: 8px; border-radius: 8px;">
+                                <i class="ph-fill ph-question" style="color: var(--color-unknown); font-size: 1.5rem;"></i>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: #fff;">Unknown / Paced (Q)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Beats that do not fit into the other categories, or beats generated artificially by a pacemaker device.</p>
+                        <div style="margin-top: 1rem; text-align: center;">
+                            <img src="ecg_class_q.png" alt="Unknown ECG" style="max-width: 100%; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
             <!-- TAB 1: LIVE MONITOR -->
             <div id="tab-live" class="tab-content hidden">
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Uncertainty-Aware ECG Arrhythmia Detection</h1>
-                        <p class="page-subtitle">Using Deep Ensembles &mdash; B.Sc. (Hons) Computer Science &amp; Software Engineering &mdash; University of Bedfordshire</p>
+                        <p class="page-subtitle">Using Deep Ensembles &mdash; B.Sc. (Hons) Computer Science &amp;
+                            Software Engineering &mdash; University of Bedfordshire</p>
                     </div>
                     <div class="header-badges">
                         <span class="badge badge-green"><i class="ph-fill ph-lightning"></i> Real-Time</span>
@@ -395,23 +571,40 @@
                             <div class="hud-panel-metrics">
                                 <div class="metric-item">
                                     <div class="metric-item-label">Prediction</div>
-                                    <div class="diagnosis-status" id="diagnosis-text" style="font-size: 0.9rem; font-weight: 700; color: #fff; padding: 0; background: transparent; border: none; min-height: auto; text-shadow: none; margin: 0; white-space: nowrap;">Awaiting...</div>
+                                    <div class="diagnosis-status" id="diagnosis-text"
+                                        style="font-size: 0.9rem; font-weight: 700; color: #fff; padding: 0; background: transparent; border: none; min-height: auto; text-shadow: none; margin: 0; white-space: nowrap;">
+                                        Awaiting...</div>
                                 </div>
                                 <div class="metric-item">
                                     <div class="metric-item-label">Ground Truth</div>
-                                    <span id="true-diagnosis-text" class="gt-value" style="font-size: 0.9rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; display: block;">N/A</span>
+                                    <span id="true-diagnosis-text" class="gt-value"
+                                        style="font-size: 0.9rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; display: block;">N/A</span>
                                 </div>
                                 <div class="metric-item progress-metric" style="width: 130px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                                         <div class="metric-item-label">Confidence</div>
-                                        <span id="conf-text" class="conf-value" style="font-size: 0.75rem; font-weight: 700; color: #fff;">0%</span>
+                                        <span id="conf-text" class="conf-value"
+                                            style="font-size: 0.75rem; font-weight: 700; color: #fff;">0%</span>
                                     </div>
-                                    <div class="progress-bar-bg" style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; width: 100%;">
-                                        <div class="progress-bar-fill" id="conf-fill" style="height: 100%; width: 0%; background: var(--neon-green); transition: width 0.3s ease;"></div>
+                                    <div class="progress-bar-bg"
+                                        style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; width: 100%;">
+                                        <div class="progress-bar-fill" id="conf-fill"
+                                            style="height: 100%; width: 0%; background: var(--neon-green); transition: width 0.3s ease;">
+                                        </div>
+                                    </div>
+                                    <div
+                                        style="font-size: 0.6rem; color: #a1a1aa; margin-top: 6px; display: flex; gap: 8px; justify-content: space-between;">
+                                        <span style="display:flex; align-items:center; gap:3px;"><span
+                                                style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--neon-green);"></span>Normal</span>
+                                        <span style="display:flex; align-items:center; gap:3px;"><span
+                                                style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--color-warning);"></span>Warning</span>
+                                        <span style="display:flex; align-items:center; gap:3px;"><span
+                                                style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--color-danger);"></span>Danger</span>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Warning Banner (positioned relative to panel) -->
                             <div id="uncertainty-warning" class="warning-banner hidden">
                                 <i class="ph-fill ph-warning"></i> HIGH UNCERTAINTY &mdash; Cardiologist Review
@@ -431,7 +624,8 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Batch Processing Engine</h1>
-                        <p class="page-subtitle">Concurrent multi-beat inference across 5 Deep Ensemble models with full uncertainty quantification</p>
+                        <p class="page-subtitle">Concurrent multi-beat inference across 5 Deep Ensemble models with full
+                            uncertainty quantification</p>
                     </div>
                     <div class="header-badges">
                         <span class="badge badge-blue"><i class="ph-fill ph-stack"></i> 50 Beats / Batch</span>
@@ -443,7 +637,10 @@
                         <i class="ph-fill ph-rocket-launch panel-icon"></i>
                         <h2>Auto-Batch Analysis</h2>
                     </div>
-                    <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">Click below to instantly pull <strong>50 mixed heartbeats</strong> (25 normal + 25 abnormal) from the MIT-BIH test set. Each beat passes through all 5 ensemble models, undergoes MC Dropout inference (9 stochastic forward passes), temperature-scaled calibration, and full entropy computation.</p>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">Click below to
+                        instantly pull <strong>50 mixed heartbeats</strong> (25 normal + 25 abnormal) from the MIT-BIH
+                        test set. Each beat passes through all 5 ensemble models, undergoes MC Dropout inference (9
+                        stochastic forward passes), temperature-scaled calibration, and full entropy computation.</p>
                     <button id="btn-auto-batch" class="btn btn-success" style="width: 320px;">
                         <i class="ph-fill ph-rocket-launch"></i> Run Auto-Batch Demo
                     </button>
@@ -463,7 +660,11 @@
                             </tr>
                         </thead>
                         <tbody id="batch-table-body">
-                            <tr><td colspan="7" class="empty-state"><i class="ph ph-database" style="font-size: 2rem; display:block; margin-bottom: 10px;"></i>No dataset processed yet. Click "Run Auto-Batch Demo" above.</td></tr>
+                            <tr>
+                                <td colspan="7" class="empty-state"><i class="ph ph-database"
+                                        style="font-size: 2rem; display:block; margin-bottom: 10px;"></i>No dataset
+                                    processed yet. Click "Run Auto-Batch Demo" above.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -474,7 +675,8 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Project Information</h1>
-                        <p class="page-subtitle">Theoretical framework, dataset specifications, tech stack, and uncertainty methods</p>
+                        <p class="page-subtitle">Theoretical framework, dataset specifications, tech stack, and
+                            uncertainty methods</p>
                     </div>
                 </div>
 
@@ -485,24 +687,43 @@
                         <i class="ph-fill ph-warning-octagon panel-icon" style="color: #ff6b6b;"></i>
                         <h2 style="color: #ff6b6b;">Problem Statement</h2>
                     </div>
-                    <p class="info-text">Healthcare technology is changing the way that doctors are able to diagnose patients, but many medical professionals do not trust computers to make important decisions. The problem with the most popular computer programs that analyze ECG tests is that they are currently seriously flawed because they are always confident in their answer, even if they are incorrect. This has two major problems: the computer may be giving false warnings that are causing unnecessary stress, or the computer may be missing serious heart problems that can cause harm to the patient.</p>
+                    <p class="info-text">Healthcare technology is changing the way that doctors are able to diagnose
+                        patients, but many medical professionals do not trust computers to make important decisions. The
+                        problem with the most popular computer programs that analyze ECG tests is that they are
+                        currently seriously flawed because they are always confident in their answer, even if they are
+                        incorrect. This has two major problems: the computer may be giving false warnings that are
+                        causing unnecessary stress, or the computer may be missing serious heart problems that can cause
+                        harm to the patient.</p>
                 </div>
 
                 <!-- Solution -->
-                <div class="glass-panel info-card" style="margin-bottom: 2rem; border-left: 4px solid var(--neon-green);">
+                <div class="glass-panel info-card"
+                    style="margin-bottom: 2rem; border-left: 4px solid var(--neon-green);">
                     <div class="panel-header">
                         <i class="ph-fill ph-lightbulb panel-icon" style="color: var(--neon-green);"></i>
                         <h2 style="color: var(--neon-green);">Proposed Solution</h2>
                     </div>
-                    <p class="info-text">A new form of computer science, known as <strong>deep learning ensembles</strong> and <strong>uncertainty measurement</strong>, can be used to solve this problem. The goal of this project is to create a smarter computer that can analyze the results of the heart tests, as well as let the doctors know if the computer is unsure of the results. By utilizing tools like Monte Carlo dropout, predictive entropy, and our novel <strong>cluster-based entropy</strong>, we provide a level of uncertainty, so doctors can be sure whether they should or should not rely on the AI diagnosis result.</p>
+                    <p class="info-text">A new form of computer science, known as <strong>deep learning
+                            ensembles</strong> and <strong>uncertainty measurement</strong>, can be used to solve this
+                        problem. The goal of this project is to create a smarter computer that can analyze the results
+                        of the heart tests, as well as let the doctors know if the computer is unsure of the results. By
+                        utilizing tools like Monte Carlo dropout, predictive entropy, and our novel
+                        <strong>cluster-based entropy</strong>, we provide a level of uncertainty, so doctors can be
+                        sure whether they should or should not rely on the AI diagnosis result.</p>
                 </div>
 
                 <!-- Architecture Grid -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
                     <div class="glass-panel info-card">
-                        <div class="card-icon-circle" style="background: rgba(0,255,136,0.15); color: var(--neon-green);"><i class="ph-fill ph-cpu"></i></div>
+                        <img src="cnn_architecture.png" class="card-banner-img" alt="1D CNN Architecture">
+                        <div class="card-icon-circle"
+                            style="background: rgba(0,255,136,0.15); color: var(--neon-green);"><i
+                                class="ph-fill ph-cpu"></i></div>
                         <h3>1D CNN Architecture</h3>
-                        <p class="info-text">Each ensemble member is a 1D Convolutional Neural Network with <strong>3 convolutional layers</strong> (32, 64, 128 filters), batch normalization, max pooling, dropout (p=0.5), and 2 fully connected layers. The architecture processes raw 360-sample ECG segments directly without hand-crafted feature extraction.</p>
+                        <p class="info-text">Each ensemble member is a 1D Convolutional Neural Network with <strong>3
+                                convolutional layers</strong> (32, 64, 128 filters), batch normalization, max pooling,
+                            dropout (p=0.5), and 2 fully connected layers. The architecture processes raw 360-sample ECG
+                            segments directly without hand-crafted feature extraction.</p>
                         <div class="code-snippet">
                             Conv1D(1,32) → BN → ReLU → MaxPool<br>
                             Conv1D(32,64) → BN → ReLU → MaxPool<br>
@@ -511,9 +732,15 @@
                         </div>
                     </div>
                     <div class="glass-panel info-card">
-                        <div class="card-icon-circle" style="background: rgba(0,180,216,0.15); color: #00b4d8;"><i class="ph-fill ph-users-three"></i></div>
+                        <img src="deep_ensembles.png" class="card-banner-img" alt="Deep Ensembles Concept">
+                        <div class="card-icon-circle" style="background: rgba(0,180,216,0.15); color: #00b4d8;"><i
+                                class="ph-fill ph-users-three"></i></div>
                         <h3>True Deep Ensembles</h3>
-                        <p class="info-text">Unlike pseudo-ensembles (snapshot or dropout), we train <strong>5 completely independent models</strong> from scratch with different random weight initializations. Each model converges to a different loss landscape minimum, capturing genuinely diverse feature representations. The final prediction is the mean of all 5 probability distributions.</p>
+                        <p class="info-text">Unlike pseudo-ensembles (snapshot or dropout), we train <strong>5
+                                completely independent models</strong> from scratch with different random weight
+                            initializations. Each model converges to a different loss landscape minimum, capturing
+                            genuinely diverse feature representations. The final prediction is the mean of all 5
+                            probability distributions.</p>
                         <div class="code-snippet">
                             P(y|x) = (1/M) Σ P_m(y|x)<br>
                             where M = 5 independent models
@@ -525,21 +752,34 @@
 
                 <!-- === UNCERTAINTY METHODS === -->
                 <!-- Overview -->
-                <div class="glass-panel info-card" style="margin-bottom: 2rem; border-left: 4px solid #a855f7;">
+                <div class="glass-panel info-card"
+                    style="margin-bottom: 2rem; border-left: 4px solid #a855f7; position: relative; overflow: hidden;">
+                    <img src="uncertainty_concept.png" class="card-banner-img"
+                        style="height: 300px; border-left: none; border-radius: var(--radius) var(--radius) 0 0; margin-left: calc(-1.25rem - 4px);"
+                        alt="Uncertainty Concept in Medical AI">
                     <div class="panel-header">
                         <i class="ph-fill ph-info panel-icon" style="color: #a855f7;"></i>
                         <h2 style="color: #a855f7;">Why Uncertainty Matters in Clinical AI</h2>
                     </div>
-                    <p class="info-text">In safety-critical medical applications, <strong>knowing what the AI does NOT know</strong> is as important as the prediction itself. A model that says "I am 60% confident and uncertain" is far safer than one that says "I am 99% confident" but is actually wrong. This system computes <strong>three independent uncertainty dimensions</strong> plus calibration to provide a holistic confidence picture.</p>
+                    <p class="info-text">In safety-critical medical applications, <strong>knowing what the AI does NOT
+                            know</strong> is as important as the prediction itself. A model that says "I am 60%
+                        confident and uncertain" is far safer than one that says "I am 99% confident" but is actually
+                        wrong. This system computes <strong>three independent uncertainty dimensions</strong> plus
+                        calibration to provide a holistic confidence picture.</p>
                 </div>
 
                 <!-- Method Cards -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                    <div class="glass-panel info-card method-card" style="border-top: 3px solid #00b4d8;">
+                    <div class="glass-panel info-card method-card">
+                        <img src="mc_dropout.png" class="card-banner-img"
+                            style="border-top: 4px solid #00b4d8; margin-top: calc(-1.25rem - 4px);" alt="MC Dropout">
                         <div class="method-number" style="background: #00b4d8;">1</div>
                         <h3 style="color: #00b4d8;">Monte Carlo Dropout</h3>
                         <span class="method-type">Epistemic Uncertainty</span>
-                        <p class="info-text">During inference, we keep dropout layers <strong>active</strong> and run <strong>9 stochastic forward passes</strong> (3 per ensemble model) on the same input. If the model is uncertain, dropout noise causes prediction variance. We measure this variance as epistemic (model knowledge) uncertainty.</p>
+                        <p class="info-text">During inference, we keep dropout layers <strong>active</strong> and run
+                            <strong>9 stochastic forward passes</strong> (3 per ensemble model) on the same input. If
+                            the model is uncertain, dropout noise causes prediction variance. We measure this variance
+                            as epistemic (model knowledge) uncertainty.</p>
                         <div class="code-snippet">
                             U_epistemic = (1/T) Σ Var[f_θ(x, z_t)]<br>
                             T = 9 MC passes, z ~ Bernoulli(p)
@@ -550,11 +790,17 @@
                         </div>
                     </div>
 
-                    <div class="glass-panel info-card method-card" style="border-top: 3px solid #ffb703;">
+                    <div class="glass-panel info-card method-card">
+                        <img src="pred_entropy.png" class="card-banner-img"
+                            style="border-top: 4px solid #ffb703; margin-top: calc(-1.25rem - 4px);"
+                            alt="Predictive Entropy">
                         <div class="method-number" style="background: #ffb703;">2</div>
                         <h3 style="color: #ffb703;">Predictive Entropy</h3>
                         <span class="method-type">Total Uncertainty</span>
-                        <p class="info-text">Computed using <strong>Shannon's entropy</strong> on the averaged ensemble probability distribution. High entropy means the probability mass is spread across multiple classes — the AI cannot decide between diagnoses (e.g., it sees features of both Normal and Ventricular beats).</p>
+                        <p class="info-text">Computed using <strong>Shannon's entropy</strong> on the averaged ensemble
+                            probability distribution. High entropy means the probability mass is spread across multiple
+                            classes — the AI cannot decide between diagnoses (e.g., it sees features of both Normal and
+                            Ventricular beats).</p>
                         <div class="code-snippet">
                             H[y|x] = - Σ_c p(y=c|x) log p(y=c|x)<br>
                             Range: [0, log(5)] for 5 classes
@@ -567,11 +813,18 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                    <div class="glass-panel info-card method-card" style="border-top: 3px solid #fb8500;">
+                    <div class="glass-panel info-card method-card">
+                        <img src="cluster_entropy.png" class="card-banner-img"
+                            style="border-top: 4px solid #fb8500; margin-top: calc(-1.25rem - 4px);"
+                            alt="Cluster Entropy">
                         <div class="method-number" style="background: #fb8500;">3</div>
                         <h3 style="color: #fb8500;">Cluster-Based Entropy</h3>
                         <span class="method-type">Distribution-Aware Uncertainty</span>
-                        <p class="info-text">A <strong>novel approach</strong> introduced in this research. The ensemble's probability vector is analyzed for distributional patterns. If the prediction clusters tightly around one class, confidence is high. Spread across clusters in the probability simplex indicates the input is an outlier that the model has never encountered during training.</p>
+                        <p class="info-text">A <strong>novel approach</strong> introduced in this research. The
+                            ensemble's probability vector is analyzed for distributional patterns. If the prediction
+                            clusters tightly around one class, confidence is high. Spread across clusters in the
+                            probability simplex indicates the input is an outlier that the model has never encountered
+                            during training.</p>
                         <div class="code-snippet">
                             H_cluster = - Σ_k w_k log(w_k)<br>
                             w_k = cluster membership weights
@@ -582,11 +835,17 @@
                         </div>
                     </div>
 
-                    <div class="glass-panel info-card method-card" style="border-top: 3px solid #a855f7;">
+                    <div class="glass-panel info-card method-card">
+                        <img src="temperature_scaling.png" class="card-banner-img"
+                            style="border-top: 4px solid #a855f7; margin-top: calc(-1.25rem - 4px);"
+                            alt="Temperature Scaling">
                         <div class="method-number" style="background: #a855f7;">4</div>
                         <h3 style="color: #a855f7;">Temperature Scaling</h3>
                         <span class="method-type">Post-Hoc Calibration</span>
-                        <p class="info-text">Neural networks are <strong>inherently poorly calibrated</strong> — a 95% softmax output often maps to only ~70% actual accuracy. We learn a scalar temperature <strong>T</strong> per model on a validation set that softens logits before softmax. This ensures the reported confidence is statistically honest.</p>
+                        <p class="info-text">Neural networks are <strong>inherently poorly calibrated</strong> — a 95%
+                            softmax output often maps to only ~70% actual accuracy. We learn a scalar temperature
+                            <strong>T</strong> per model on a validation set that softens logits before softmax. This
+                            ensures the reported confidence is statistically honest.</p>
                         <div class="code-snippet">
                             p(y|x) = softmax(z / T)<br>
                             T learned via NLL minimization on val set
@@ -601,30 +860,51 @@
                 <!-- === CLINICAL APPLICATION & FUTURE TRENDS === -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
                     <!-- Real-World Applications -->
-                    <div class="glass-panel info-card" style="border-top: 3px solid var(--neon-green);">
+                    <div class="glass-panel info-card">
+                        <img src="real_world.png" class="card-banner-img"
+                            style="border-top: 4px solid var(--neon-green); margin-top: calc(-1.25rem - 4px);"
+                            alt="Real World Applications">
                         <div class="panel-header">
-                            <i class="ph-fill ph-globe-hemisphere-east panel-icon" style="color: var(--neon-green);"></i>
+                            <i class="ph-fill ph-globe-hemisphere-east panel-icon"
+                                style="color: var(--neon-green);"></i>
                             <h2 style="color: var(--neon-green);">Real-World Applications</h2>
                         </div>
-                        <ul style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin-top: 1rem; font-size: 0.85rem;">
-                            <li style="margin-bottom: 0.75rem;"><strong>Rural Hospitals:</strong> System handles clear cases automatically; uncertain cases flagged for telemedicine consultation.</li>
-                            <li style="margin-bottom: 0.75rem;"><strong>Emergency Triage:</strong> Prioritizes high-uncertainty patients for immediate expert review while automating confident normal cases.</li>
-                            <li style="margin-bottom: 0.75rem;"><strong>Ambulatory Monitoring:</strong> Reduces alarm fatigue by only triggering alerts for confident abnormal detections.</li>
-                            <li><strong>Developing Countries:</strong> Non-specialist healthcare workers can make referral decisions based on AI confidence.</li>
+                        <ul
+                            style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin-top: 1rem; font-size: 0.85rem;">
+                            <li style="margin-bottom: 0.75rem;"><strong>Rural Hospitals:</strong> System handles clear
+                                cases automatically; uncertain cases flagged for telemedicine consultation.</li>
+                            <li style="margin-bottom: 0.75rem;"><strong>Emergency Triage:</strong> Prioritizes
+                                high-uncertainty patients for immediate expert review while automating confident normal
+                                cases.</li>
+                            <li style="margin-bottom: 0.75rem;"><strong>Ambulatory Monitoring:</strong> Reduces alarm
+                                fatigue by only triggering alerts for confident abnormal detections.</li>
+                            <li><strong>Developing Countries:</strong> Non-specialist healthcare workers can make
+                                referral decisions based on AI confidence.</li>
                         </ul>
                     </div>
 
                     <!-- Future Trends -->
-                    <div class="glass-panel info-card" style="border-top: 3px solid #ffb703;">
+                    <div class="glass-panel info-card">
+                        <img src="future_trends.png" class="card-banner-img"
+                            style="border-top: 4px solid #ffb703; margin-top: calc(-1.25rem - 4px);"
+                            alt="Future Trends">
                         <div class="panel-header">
                             <i class="ph-fill ph-trend-up panel-icon" style="color: #ffb703;"></i>
                             <h2 style="color: #ffb703;">Future Trends</h2>
                         </div>
-                        <ul style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin-top: 1rem; font-size: 0.85rem;">
-                            <li style="margin-bottom: 0.75rem;"><strong>Personalized Calibration:</strong> Adapting confidence levels to individual patient characteristics (age, comorbidities, history).</li>
-                            <li style="margin-bottom: 0.75rem;"><strong>Holistic Integration:</strong> Combining ECG with clinical history, lab results, and imaging for comprehensive uncertainty assessment.</li>
-                            <li style="margin-bottom: 0.75rem;"><strong>Federated Learning:</strong> Learning from distributed clinical datasets while preserving patient privacy and improving calibration.</li>
-                            <li><strong>Adaptive Learning:</strong> Continuously refining uncertainty estimates based on clinical outcomes and expert feedback.</li>
+                        <ul
+                            style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin-top: 1rem; font-size: 0.85rem;">
+                            <li style="margin-bottom: 0.75rem;"><strong>Personalized Calibration:</strong> Adapting
+                                confidence levels to individual patient characteristics (age, comorbidities, history).
+                            </li>
+                            <li style="margin-bottom: 0.75rem;"><strong>Holistic Integration:</strong> Combining ECG
+                                with clinical history, lab results, and imaging for comprehensive uncertainty
+                                assessment.</li>
+                            <li style="margin-bottom: 0.75rem;"><strong>Federated Learning:</strong> Learning from
+                                distributed clinical datasets while preserving patient privacy and improving
+                                calibration.</li>
+                            <li><strong>Adaptive Learning:</strong> Continuously refining uncertainty estimates based on
+                                clinical outcomes and expert feedback.</li>
                         </ul>
                     </div>
                 </div>
@@ -635,34 +915,84 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Dataset Analysis & Tech Stack</h1>
-                        <p class="page-subtitle">Detailed breakdown of the MIT-BIH Arrhythmia Database and core technologies</p>
+                        <p class="page-subtitle">Detailed breakdown of the MIT-BIH Arrhythmia Database and core
+                            technologies</p>
                     </div>
                 </div>
 
                 <!-- Dataset Analysis -->
                 <div class="glass-panel info-card" style="margin-bottom: 2rem;">
+                    <img src="dataset_analysis.png" class="card-banner-img"
+                        style="border-top: 4px solid #ffb703; margin-top: calc(-1.25rem - 4px); height: 250px;"
+                        alt="Dataset Analysis">
                     <div class="panel-header">
                         <i class="ph-fill ph-database panel-icon" style="color: #ffb703;"></i>
                         <h2 style="color: #ffb703;">MIT-BIH Arrhythmia Database Details</h2>
                     </div>
-                    <p class="info-text">The dataset consists of precisely <strong>48 half-hour two-lead ambulatory ECG recordings</strong>. Our preprocessing pipeline extracted raw signals and cardiologist annotations from exactly <strong>144 files</strong> (.dat, .hea, .atr) to form the training and testing sets. All heartbeats are mapped to the <strong>5 AAMI superclasses</strong> as required by the Association for the Advancement of Medical Instrumentation (ANSI/AAMI EC57:2012).</p>
+                    <p class="info-text">The dataset consists of precisely <strong>48 half-hour two-lead ambulatory ECG
+                            recordings</strong>. Our preprocessing pipeline extracted raw signals and cardiologist
+                        annotations from exactly <strong>144 files</strong> (.dat, .hea, .atr) to form the training and
+                        testing sets. All heartbeats are mapped to the <strong>5 AAMI superclasses</strong> as required
+                        by the Association for the Advancement of Medical Instrumentation (ANSI/AAMI EC57:2012).
+                        <br><br>Source: <a href="https://physionet.org/content/mitdb/1.0.0/" target="_blank"
+                            style="color: #ffb703; text-decoration: none; font-weight: bold;">PhysioNet (MIT-BIH
+                            Arrhythmia Database) <i class="ph-bold ph-arrow-up-right"></i></a></p>
                     <div class="stat-grid" style="margin-top: 1.5rem;">
-                        <div class="stat-item" style="border-left: 3px solid #ffb703;"><strong>48</strong><small>Patient Records</small></div>
-                        <div class="stat-item" style="border-left: 3px solid #fb8500;"><strong>144</strong><small>Raw Data Files</small></div>
-                        <div class="stat-item" style="border-left: 3px solid var(--neon-green);"><strong>109,446</strong><small>Total Extracted Beats</small></div>
-                        <div class="stat-item" style="border-left: 3px solid #00b4d8;"><strong>360 Hz</strong><small>Sampling Frequency</small></div>
+                        <div class="stat-item" style="border-left: 3px solid #ffb703;"><strong>48</strong><small>Patient
+                                Records</small></div>
+                        <div class="stat-item" style="border-left: 3px solid #fb8500;"><strong>144</strong><small>Raw
+                                Data Files</small></div>
+                        <div class="stat-item" style="border-left: 3px solid var(--neon-green);">
+                            <strong>109,446</strong><small>Total Extracted Beats</small></div>
+                        <div class="stat-item" style="border-left: 3px solid #00b4d8;"><strong>360
+                                Hz</strong><small>Sampling Frequency</small></div>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="color: #ffb703; font-size: 1.1rem; margin-bottom: 1rem;"><i
+                                class="ph-fill ph-file-text"></i> Access, Licensing & Metadata</h3>
+                        <ul
+                            style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; font-size: 0.85rem;">
+                            <li style="margin-bottom: 0.5rem;"><strong>DOI:</strong> <a
+                                    href="https://doi.org/10.13026/C2F305" target="_blank"
+                                    style="color: #00b4d8; text-decoration: none;">https://doi.org/10.13026/C2F305</a>
+                                (Version 1.0.0, Feb 24, 2005)</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Access Policy:</strong> Open Access. Anyone can
+                                access the files, provided they conform to the license terms.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>License:</strong> Open Data Commons Attribution
+                                License v1.0</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Hardware Specs:</strong> Digitized at 360 samples
+                                per second per channel with 11-bit resolution over a 10 mV range.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Annotation Protocol:</strong> Two or more
+                                cardiologists independently annotated each record, resolving disagreements to produce
+                                ~110,000 reference annotations.</li>
+                        </ul>
+
+                        <div class="code-snippet"
+                            style="margin-top: 1rem; font-size: 0.75rem; color: #a1a1aa; background: rgba(0,0,0,0.3);">
+                            <strong>Primary Citation:</strong> Moody GB, Mark RG. The impact of the MIT-BIH Arrhythmia
+                            Database. IEEE Eng in Med and Biol 20(3):45-50 (May-June 2001). (PMID: 11446209)<br><br>
+                            <strong>PhysioNet Citation:</strong> Goldberger, A., Amaral, L., Glass, L., Hausdorff, J.,
+                            Ivanov, P. C., Mark, R., ... & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and
+                            PhysioNet: Components of a new research resource for complex physiologic signals.
+                            Circulation [Online]. 101 (23), pp. e215–e220.
+                        </div>
                     </div>
                 </div>
 
                 <!-- Tech Stack -->
                 <div class="glass-panel info-card" style="margin-bottom: 2rem;">
+                    <img src="tech_stack.png" class="card-banner-img"
+                        style="border-top: 4px solid var(--neon-green); margin-top: calc(-1.25rem - 4px); height: 250px;"
+                        alt="Tech Stack">
                     <div class="panel-header">
                         <i class="ph-fill ph-code panel-icon" style="color: var(--neon-green);"></i>
                         <h2 style="color: var(--neon-green);">Technology Stack</h2>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
                         <div class="stat-item" style="text-align: left; padding: 1.25rem;">
-                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #fff;"><i class="ph-fill ph-cpu"></i> Backend (Python)</h3>
+                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #fff;"><i
+                                    class="ph-fill ph-cpu"></i> Backend (Python)</h3>
                             <ul style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6;">
                                 <li><strong>PyTorch:</strong> Deep Ensemble Neural Networks</li>
                                 <li><strong>Flask:</strong> High-performance RESTful API</li>
@@ -670,7 +1000,8 @@
                             </ul>
                         </div>
                         <div class="stat-item" style="text-align: left; padding: 1.25rem;">
-                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #fff;"><i class="ph-fill ph-browsers"></i> Frontend (Web)</h3>
+                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #fff;"><i
+                                    class="ph-fill ph-browsers"></i> Frontend (Web)</h3>
                             <ul style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6;">
                                 <li><strong>Vanilla JavaScript:</strong> Zero-dependency DOM logic</li>
                                 <li><strong>Chart.js:</strong> Real-time 60FPS signal rendering</li>
@@ -688,4 +1019,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

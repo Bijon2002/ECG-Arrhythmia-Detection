@@ -11,15 +11,29 @@ document.querySelectorAll('.nav-links li').forEach(item => {
         const activeTab = document.getElementById(tabId);
         activeTab.classList.remove('hidden');
         activeTab.classList.add('active');
+        localStorage.setItem('activeTab', tabId);
     });
 });
+
+// Restore active tab on load
+const savedTab = localStorage.getItem('activeTab');
+if (savedTab) {
+    const tabElement = document.querySelector(`.nav-links li[data-tab="${savedTab}"]`);
+    if (tabElement) {
+        tabElement.click();
+    }
+}
 
 // --- Custom Toast Notification System ---
 function showToast(message, type = 'info', duration = 4000) {
     const container = document.getElementById('toast-container');
+
+    // Clear existing toasts so they don't stack up and cause confusion
+    container.innerHTML = '';
+
     const toast = document.createElement('div');
     toast.className = `custom-toast toast-${type}`;
-    
+
     const icons = {
         info: 'ph-fill ph-info',
         success: 'ph-fill ph-check-circle',
@@ -27,7 +41,7 @@ function showToast(message, type = 'info', duration = 4000) {
         danger: 'ph-fill ph-siren',
         processing: 'ph-fill ph-spinner'
     };
-    
+
     toast.innerHTML = `
         <div class="toast-icon"><i class="${icons[type] || icons.info}"></i></div>
         <div class="toast-body">${message}</div>
@@ -35,12 +49,12 @@ function showToast(message, type = 'info', duration = 4000) {
             <i class="ph ph-x"></i>
         </button>
     `;
-    
+
     container.appendChild(toast);
-    
+
     // Trigger entrance animation
     requestAnimationFrame(() => toast.classList.add('toast-enter'));
-    
+
     // Auto-remove
     setTimeout(() => {
         toast.classList.add('toast-exit');
@@ -52,14 +66,14 @@ function showToast(message, type = 'info', duration = 4000) {
 function showAlert(title, subtitle, details, type = 'danger') {
     const existing = document.getElementById('custom-alert-overlay');
     if (existing) existing.remove();
-    
+
     const colors = {
-        danger: { bg: 'rgba(251, 133, 0, 0.15)', border: '#fb8500', icon: 'ph-fill ph-siren', glow: 'rgba(251, 133, 0, 0.4)' },
+        danger: { bg: 'rgba(239, 35, 60, 0.15)', border: '#ef233c', icon: 'ph-fill ph-siren', glow: 'rgba(239, 35, 60, 0.4)' },
         warning: { bg: 'rgba(255, 183, 3, 0.15)', border: '#ffb703', icon: 'ph-fill ph-warning', glow: 'rgba(255, 183, 3, 0.4)' },
         success: { bg: 'rgba(0, 255, 136, 0.15)', border: '#00ff88', icon: 'ph-fill ph-check-circle', glow: 'rgba(0, 255, 136, 0.4)' }
     };
     const c = colors[type] || colors.danger;
-    
+
     const overlay = document.createElement('div');
     overlay.id = 'custom-alert-overlay';
     overlay.className = 'alert-overlay';
@@ -247,7 +261,7 @@ document.getElementById('btn-auto-batch').addEventListener('click', async () => 
         tbody.innerHTML = '';
         let dangerCount = 0;
         let uncertainCount = 0;
-        
+
         data.results.forEach(res => {
             const tr = document.createElement('tr');
             if (res.severity === 'danger') {
@@ -323,13 +337,13 @@ document.getElementById('btn-live-start').addEventListener('click', async () => 
             ecgChart.data.datasets[0].data.push(...newSamples);
             ecgChart.update('none');
         }
-    }, 50);
+    }, 80); // Increased from 50ms to 80ms to slow down the scrolling
 
     aiInterval = setInterval(() => {
         if (!isLive) return;
         const currentScreen = ecgChart.data.datasets[0].data.slice();
         analyzeSignal(currentScreen);
-    }, 1000);
+    }, 3000); // Increased from 1000ms to 3000ms to reduce alert frequency
 });
 
 document.getElementById('btn-live-stop').addEventListener('click', () => {
@@ -376,7 +390,7 @@ if (toggleBtn && overlay && sidebar) {
 function initHomePageCharts() {
     const lossCtx = document.getElementById('lossChart');
     const f1Ctx = document.getElementById('f1Chart');
-    
+
     if (lossCtx) {
         new Chart(lossCtx.getContext('2d'), {
             type: 'line',
@@ -406,7 +420,7 @@ function initHomePageCharts() {
             }
         });
     }
-    
+
     if (f1Ctx) {
         new Chart(f1Ctx.getContext('2d'), {
             type: 'bar',
