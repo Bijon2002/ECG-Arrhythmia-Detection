@@ -126,26 +126,16 @@
 
                 <!-- Stats Dashboard Row -->
                 <div class="stats-row"
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; width: 100%;">
+                    style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; width: 100%;">
+                    <!-- Removed Overall Accuracy card as per user request to focus on F1-Score -->
                     <div class="glass-panel stat-card"
-                        style="border-left: 4px solid var(--neon-green); padding: 1.25rem;">
+                        style="border: 1px solid var(--color-accent); border-left: 6px solid var(--color-accent); padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(3, 7, 18, 0.6) 100%); box-shadow: 0 0 25px rgba(139, 92, 246, 0.2); display: flex; flex-direction: column; justify-content: center;">
                         <span
-                            style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Overall
-                            Accuracy</span>
-                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--neon-green); margin: 0.25rem 0;">
-                            98.0%</h2>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Tested on 21,888 unseen
-                            beats</p>
-                    </div>
-                    <div class="glass-panel stat-card"
-                        style="border-left: 4px solid var(--color-accent); padding: 1.25rem;">
-                        <span
-                            style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Macro
+                            style="font-size: 1.2rem; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">
                             F1-Score</span>
-                        <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--color-accent); margin: 0.25rem 0;">
-                            89.0%</h2>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Balanced across 5 AAMI
-                            classes</p>
+                        <h2 style="font-size: 3.5rem; font-weight: 900; color: var(--color-accent); margin: 0.5rem 0; text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);">
+                            89.4%</h2>
+                        <p style="font-size: 0.85rem; color: #e5e7eb; margin: 0; font-weight: 500;">Balanced across 5 AAMI classes</p>
                     </div>
                     <div class="glass-panel stat-card"
                         style="border-left: 4px solid var(--color-warning); padding: 1.25rem;">
@@ -168,6 +158,98 @@
                             MC Dropout</h2>
                         <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">9 stochastic passes /
                             inference</p>
+                    </div>
+                </div>
+
+                <!-- Classification Metrics Table (Moved up) -->
+                <div class="glass-panel info-card" style="margin-bottom: 1.5rem;">
+                    <div class="panel-header">
+                        <i class="ph-fill ph-table panel-icon" style="color: var(--color-warning);"></i>
+                        <h2>Classification Metrics Table</h2>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="metrics-table"
+                            style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                            <thead>
+                                <tr
+                                    style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">
+                                    <th style="padding: 6px 8px;">Class</th>
+                                    <th style="padding: 6px 8px;">Precision</th>
+                                    <th style="padding: 6px 8px;">Recall</th>
+                                    <th style="padding: 6px 8px;">F1-Score</th>
+                                    <th style="padding: 6px 8px;">Support</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                    <td style="padding: 6px 8px; font-weight: 600; color: var(--neon-green);">
+                                        Normal (N)</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">1.00</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.98</td>
+                                    <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99
+                                    </td>
+                                    <td style="padding: 6px 8px; color: var(--text-muted);">18,117</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                    <td
+                                        style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">
+                                        Supraventricular (S)</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.80</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.92</td>
+                                    <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.85
+                                    </td>
+                                    <td style="padding: 6px 8px; color: var(--text-muted);">556</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                    <td style="padding: 6px 8px; font-weight: 600; color: var(--color-danger);">
+                                        Ventricular (V)</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.94</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.98</td>
+                                    <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.96
+                                    </td>
+                                    <td style="padding: 6px 8px; color: var(--text-muted);">1,447</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                    <td
+                                        style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">
+                                        Fusion (F)</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.57</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.85</td>
+                                    <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.68
+                                    </td>
+                                    <td style="padding: 6px 8px; color: var(--text-muted);">160</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                    <td
+                                        style="padding: 6px 8px; font-weight: 600; color: var(--color-unknown);">
+                                        Unknown (Q)</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">0.99</td>
+                                    <td style="padding: 6px 8px; font-family: monospace;">1.00</td>
+                                    <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99
+                                    </td>
+                                    <td style="padding: 6px 8px; color: var(--text-muted);">1,608</td>
+                                </tr>
+                                <tr style="border-top: 1px solid rgba(255,255,255,0.1); font-weight: 600;">
+                                    <td style="padding: 6px 8px; color: #fff;">Overall Accuracy</td>
+                                    <td colspan="3"
+                                        style="padding: 6px 8px; text-align: right; color: var(--neon-green); font-family: monospace;">
+                                        98.0%</td>
+                                    <td style="padding: 6px 8px; color: var(--text-muted);">21,888</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Metrics Explanation (Moved up) -->
+                <div class="glass-panel info-card" style="border-left: 4px solid var(--color-purple); margin-bottom: 1.5rem;">
+                    <div class="panel-header">
+                        <i class="ph-fill ph-info panel-icon" style="color: var(--color-purple);"></i>
+                        <h2 style="color: var(--color-purple);">Understanding the Metrics</h2>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                        <p style="margin-bottom: 0.75rem;"><strong style="color: #fff;">Overall Accuracy (98.0%)</strong>: Out of the 21,888 unseen heartbeats tested, the AI guessed the exact right category 98% of the time. While this sounds great, medical data is heavily imbalanced (most beats are "Normal"). Accuracy alone isn't enough to prove the model catches rare anomalies.</p>
+                        <p><strong style="color: var(--neon-green);">F1-Score (89.4%)</strong>: The F1-Score is a strict grading system that heavily penalizes the AI if it misses rare diseases or guesses "Normal" all the time. An 89.4% F1-Score proves our AI is genuinely learning the complex patterns of rare, dangerous arrhythmias (like Fusion or Ventricular beats) rather than just memorizing the most common class.</p>
                     </div>
                 </div>
 
@@ -273,85 +355,7 @@
                             </div>
                         </div>
 
-                        <!-- Classification Metrics Table -->
-                        <div class="glass-panel info-card">
-                            <div class="panel-header">
-                                <i class="ph-fill ph-table panel-icon" style="color: var(--color-warning);"></i>
-                                <h2>Classification Metrics Table</h2>
-                            </div>
-                            <div style="overflow-x: auto;">
-                                <table class="metrics-table"
-                                    style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
-                                    <thead>
-                                        <tr
-                                            style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">
-                                            <th style="padding: 6px 8px;">Class</th>
-                                            <th style="padding: 6px 8px;">Precision</th>
-                                            <th style="padding: 6px 8px;">Recall</th>
-                                            <th style="padding: 6px 8px;">F1-Score</th>
-                                            <th style="padding: 6px 8px;">Support</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--neon-green);">
-                                                Normal (N)</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">1.00</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.98</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99
-                                            </td>
-                                            <td style="padding: 6px 8px; color: var(--text-muted);">18,117</td>
-                                        </tr>
-                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td
-                                                style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">
-                                                Supraventricular (S)</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.80</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.92</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.85
-                                            </td>
-                                            <td style="padding: 6px 8px; color: var(--text-muted);">556</td>
-                                        </tr>
-                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td style="padding: 6px 8px; font-weight: 600; color: var(--color-danger);">
-                                                Ventricular (V)</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.94</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.98</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.96
-                                            </td>
-                                            <td style="padding: 6px 8px; color: var(--text-muted);">1,447</td>
-                                        </tr>
-                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td
-                                                style="padding: 6px 8px; font-weight: 600; color: var(--color-warning);">
-                                                Fusion (F)</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.57</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.85</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.68
-                                            </td>
-                                            <td style="padding: 6px 8px; color: var(--text-muted);">160</td>
-                                        </tr>
-                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                                            <td
-                                                style="padding: 6px 8px; font-weight: 600; color: var(--color-unknown);">
-                                                Unknown (Q)</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">0.99</td>
-                                            <td style="padding: 6px 8px; font-family: monospace;">1.00</td>
-                                            <td style="padding: 6px 8px; font-family: monospace; font-weight: 600;">0.99
-                                            </td>
-                                            <td style="padding: 6px 8px; color: var(--text-muted);">1,608</td>
-                                        </tr>
-                                        <tr style="border-top: 1px solid rgba(255,255,255,0.1); font-weight: 600;">
-                                            <td style="padding: 6px 8px; color: #fff;">Overall Accuracy</td>
-                                            <td colspan="3"
-                                                style="padding: 6px 8px; text-align: right; color: var(--neon-green); font-family: monospace;">
-                                                98.0%</td>
-                                            <td style="padding: 6px 8px; color: var(--text-muted);">21,888</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <!-- Table moved to top -->
 
                         <!-- logs -->
                         <div class="glass-panel info-card">
