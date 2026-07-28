@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defense Hints & Concepts</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="padding: 2rem;">
+
+    <div class="page-header" style="max-width: 800px; margin: 0 auto;">
+        <div>
+            <h1 class="page-title">Project Theory &amp; Defense Concepts</h1>
+            <p class="page-subtitle">A quick reference guide for your presentation and defense.</p>
+        </div>
+    </div>
+
+    <!-- VIVA QUESTION BOX -->
+    <div class="panel" style="max-width: 800px; margin: 2rem auto;">
+        <div class="panel-header">
+            <h2 class="panel-title" style="color: var(--color-primary);"><i class="ph-fill ph-question"></i> Ask a Viva Question</h2>
+        </div>
+        <div class="panel-body" style="padding: 1rem;">
+            <p style="color: var(--color-text-dim); margin-bottom: 1rem; font-size: 0.95rem;">
+                Have a friend test you! Enter a question below, and it will be saved directly to <code>viva_prep.md</code> in your project folder so you can write the answers later.
+            </p>
+            <textarea id="viva-question-input" rows="3" placeholder="Type a potential Viva question here..." style="width: 100%; background: var(--color-bg); border: 1px solid var(--color-border); color: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="btn-submit-question" class="btn" style="background: var(--color-primary); color: #000; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    Save to viva_prep.md
+                </button>
+                <span id="question-status" style="color: #00ff88; font-weight: 500; display: none;">✅ Saved successfully!</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <!-- 1. The True Deep Ensemble -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title" style="color: var(--color-primary);"><i class="ph-fill ph-stack"></i> 1. The True Deep Ensemble (The Core Decision Maker)</h2>
+            </div>
+            <div class="panel-body">
+                <p style="color: var(--color-text-dim); line-height: 1.6; font-size: 1rem;">
+                    <strong>What it does:</strong> You trained 5 completely separate AI models with different random starting points. When a heartbeat comes in, all 5 models vote on it. You average their probabilities together to get the final `mean_probs`. This is how you make your final diagnosis!
+                </p>
+            </div>
+        </div>
+
+        <!-- 2. Temperature Scaling -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title" style="color: var(--color-warning);"><i class="ph-fill ph-thermometer"></i> 2. Temperature Scaling (Calibration)</h2>
+            </div>
+            <div class="panel-body">
+                <p style="color: var(--color-text-dim); line-height: 1.6; font-size: 1rem;">
+                    <strong>What it does:</strong> Before calculating uncertainty, the AI's raw outputs (logits) are divided by a learned Temperature value (`T`).<br><br>
+                    <strong>Why?</strong> Neural networks are naturally overconfident (they will guess wrong with 99% confidence). Temperature scaling physically "softens" their confidence so that an 80% confidence score actually means there is a true 80% chance of being right.
+                </p>
+            </div>
+        </div>
+
+        <!-- 3. MC Dropout -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title" style="color: var(--color-danger);"><i class="ph-fill ph-shuffle"></i> 3. MC Dropout (Epistemic / Model Uncertainty)</h2>
+            </div>
+            <div class="panel-body">
+                <p style="color: var(--color-text-dim); line-height: 1.6; font-size: 1rem;">
+                    <strong>What it does:</strong> During inference, you turn Dropout <em>ON</em> and run the heartbeat through the network multiple times. You then measure the <em>variance</em> (how much the predictions jump around).<br><br>
+                    <strong>Why?</strong> This tells the doctor: <em>"The model itself is confused because it hasn't seen enough data like this."</em> We display this number on the dashboard for the doctor to see.
+                </p>
+            </div>
+        </div>
+
+        <!-- 4. Entropy Methods -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title" style="color: #a855f7;"><i class="ph-fill ph-graph"></i> 4. Entropy Methods (Aleatoric / Data Uncertainty)</h2>
+            </div>
+            <div class="panel-body">
+                <p style="color: var(--color-text-dim); line-height: 1.6; font-size: 1rem;">
+                    Once you have the final, calibrated probabilities from the Ensemble, you calculate two types of entropy:
+                    <br><br>
+                    <strong>Predictive Entropy:</strong> The standard math formula (Shannon Entropy) that measures how spread out the probabilities are. (e.g. if the AI says 50% Normal, 50% Ventricular, entropy is very high).
+                    <br><br>
+                    <strong>Cluster-Based Entropy:</strong> This is your <strong>most important</strong> metric! You grouped the 5 AAMI classes into clinically similar "clusters". We calculate entropy across the clusters instead of individual classes.
+                    <br><br>
+                    <strong>How it's used:</strong> In your <code>api.py</code> code, the final clinical warning flag is triggered <em>only</em> if the <strong>Cluster-Based Entropy goes above 0.5</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('btn-submit-question').addEventListener('click', async () => {
+            const inputField = document.getElementById('viva-question-input');
+            const statusMsg = document.getElementById('question-status');
+            const question = inputField.value.trim();
+            
+            if (!question) return;
+            
+            try {
+                const response = await fetch('/save_viva_question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                if (response.ok) {
+                    inputField.value = '';
+                    statusMsg.style.display = 'inline-block';
+                    setTimeout(() => {
+                        statusMsg.style.display = 'none';
+                    }, 3000);
+                }
+            } catch (err) {
+                console.error("Failed to save question:", err);
+            }
+        });
+    </script>
+</body>
+</html>

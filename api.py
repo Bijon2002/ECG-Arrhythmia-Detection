@@ -57,6 +57,30 @@ def serve_frontend():
     """Serves the index.html from the frontend folder."""
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/hints')
+def serve_hints():
+    """Serves the hidden hints.html for defense reference."""
+    return send_from_directory(app.static_folder, 'hints.html')
+
+@app.route('/save_viva_question', methods=['POST'])
+def save_viva_question():
+    data = request.json
+    question = data.get('question', '').strip()
+    if not question:
+        return jsonify({"error": "Question is empty"}), 400
+        
+    viva_file = os.path.join(BASE_DIR, 'viva_prep.md')
+    
+    # Create file with a header if it doesn't exist
+    if not os.path.exists(viva_file):
+        with open(viva_file, 'w') as f:
+            f.write("# Viva Preparation Questions\n\n")
+            
+    with open(viva_file, 'a') as f:
+        f.write(f"- **Q:** {question}\n")
+        
+    return jsonify({"success": "Question saved to viva_prep.md!"})
+
 @app.route('/random_beat/<beat_type>', methods=['GET'])
 def get_random_beat(beat_type):
     """Pulls a random heartbeat from our test set! type is 'normal' or 'abnormal'"""
