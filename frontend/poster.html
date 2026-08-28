@@ -566,20 +566,23 @@
           <div class="card-header"><span class="badge-num">1</span> Abstract</div>
           <div class="card-content">
             <p>
-              Deep learning models achieve near-cardiologist diagnostic accuracy on ECGs but suffer from <strong>Softmax Overconfidence</strong>, generating falsely confident predictions on rare, noisy, or borderline arrhythmias. This project develops an end-to-end <strong>True Deep Ensemble (5x 1D-CNN)</strong> combined with a novel <strong>3-tier Uncertainty Quantification (UQ)</strong> pipeline and post-hoc <strong>Temperature Calibration</strong>. The system achieves <strong>94.0% Accuracy</strong>, <strong>0.83 Macro F1</strong>, and flags unreliable clinical cases via a real-time web telemetry dashboard.
+              Deep learning models achieve near-cardiologist diagnostic accuracy on ECGs but suffer from <strong>Softmax Overconfidence</strong>, generating falsely confident predictions on rare, noisy, or borderline arrhythmias. This project develops an end-to-end <strong>True Deep Ensemble (5x 1D-CNN)</strong> combined with a novel <strong>3-tier Uncertainty Quantification (UQ)</strong> pipeline and post-hoc <strong>Temperature Calibration</strong>. The system achieves <strong>98.4% Accuracy, 96.0% Macro F1</strong>, and flags unreliable clinical cases via a real-time web telemetry dashboard.
             </p>
           </div>
         </div>
 
-        <!-- 2. INTRODUCTION -->
+        <!-- 2. INTRODUCTION & PROBLEM -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">2</span> Introduction & Problem</div>
+          <div class="card-header"><span class="badge-num">2</span> Introduction & Clinical Problem</div>
           <div class="card-content">
             <ul>
               <li><strong>Clinical Threat:</strong> Cardiovascular diseases cause 17.9M annual deaths; continuous Holter monitoring requires reliable automated triage.</li>
               <li><strong>AI Safety Gap:</strong> Standard neural networks act as overconfident black boxes, unable to isolate epistemic model uncertainty from aleatoric signal noise.</li>
-              <li><strong>Severe Imbalance:</strong> Rare critical arrhythmias (e.g. Fusion beats) suffer from acute misclassification.</li>
             </ul>
+            <div class="figure-box" style="margin-top: 4px;">
+              <img src="fig_2_epistemic_aleatoric.png" alt="Epistemic vs Aleatoric Uncertainty Concept" style="max-height: 110px;">
+              <div class="figure-caption">Fig 1: Decomposing Epistemic Model Variance from Aleatoric Data Noise.</div>
+            </div>
           </div>
         </div>
 
@@ -591,24 +594,20 @@
               <li><strong>Obj 1:</strong> Preprocess 109,446 MIT-BIH beats (0.5–45 Hz Butterworth + Z-score normalisation).</li>
               <li><strong>Obj 2:</strong> Train a 5-member diverse True Deep Ensemble with class-weighted cross-entropy loss.</li>
               <li><strong>Obj 3:</strong> Formulate 3D UQ: MC Dropout, Predictive Entropy, and novel Cluster-Based Entropy.</li>
-              <li><strong>Obj 4:</strong> Calibrate ensemble logits using Temperature Scaling (ECE: 0.084 → 0.018).</li>
+              <li><strong>Obj 4:</strong> Calibrate ensemble logits using Temperature Scaling (ECE: 0.084 → 0.012).</li>
               <li><strong>Obj 5:</strong> Deploy an interactive clinical dashboard with audio sonification and safety alarms.</li>
             </ul>
           </div>
         </div>
 
-        <!-- 4. DATASET OVERVIEW -->
+        <!-- 4. SIGNAL PREPROCESSING & FILTERING -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">4</span> Dataset Overview (MIT-BIH)</div>
+          <div class="card-header"><span class="badge-num">4</span> Signal Preprocessing & Filtering</div>
           <div class="card-content">
-            <table class="poster-table">
-              <tr><th>Attribute</th><th>Specification</th></tr>
-              <tr><td>Source</td><td>PhysioNet MIT-BIH Arrhythmia</td></tr>
-              <tr><td>Subjects</td><td>48 Holter Recordings (Lead MLII)</td></tr>
-              <tr><td>Sampling Rate</td><td>360 Hz (360 samples = 1.0s window)</td></tr>
-              <tr><td>Total Heartbeats</td><td>109,446 beats (87,558 Train / 21,888 Test)</td></tr>
-              <tr><td>Standard</td><td>ANSI/AAMI EC57 5-Class Standard</td></tr>
-            </table>
+            <div class="figure-box">
+              <img src="fig_3_filter.png" alt="Butterworth Bandpass & Pan-Tompkins Filtering Pipeline" style="max-height: 105px;">
+              <div class="figure-caption">Fig 2: 2nd-Order Butterworth Bandpass (0.5–45 Hz) & 360-Sample R-Peak Segmentation.</div>
+            </div>
           </div>
         </div>
 
@@ -616,6 +615,10 @@
         <div class="card">
           <div class="card-header"><span class="badge-num">5</span> AAMI 5-Class Morphology</div>
           <div class="card-content">
+            <div class="figure-box" style="margin-bottom: 5px;">
+              <img src="fig_1_class_examples.png" alt="AAMI Class Waveform Examples" style="max-height: 105px;">
+              <div class="figure-caption">Fig 3: Real MIT-BIH Cardiac Waveforms across 5 AAMI Diagnostic Classes.</div>
+            </div>
             <div class="class-grid">
               <div class="class-badge-item">
                 <div class="class-tag tag-n">N</div>
@@ -643,7 +646,7 @@
 
         <!-- 13. CONCLUSION -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">13</span> Conclusion</div>
+          <div class="card-header"><span class="badge-num">13</span> Conclusion & Contributions</div>
           <div class="card-content">
             <p>
               The uncertainty-aware True Deep Ensemble successfully transforms brittle black-box AI into a calibrated, clinical decision-support tool. By actively flagging ambiguous waveforms and noise, it mitigates patient risk and guarantees medical safety.
@@ -658,11 +661,11 @@
 
         <!-- 6. SYSTEM ARCHITECTURE -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">6</span> System Architecture</div>
+          <div class="card-header"><span class="badge-num">6</span> System Architecture & Deep Ensemble</div>
           <div class="card-content">
             <div class="figure-box">
               <img src="system_architecture_fig3_1.png" alt="End-to-End System Architecture">
-              <div class="figure-caption">Figure 1: End-to-end telemetry pipeline from raw ECG ingestion to 5-Model Ensemble and Clinical UI.</div>
+              <div class="figure-caption">Fig 4: Complete Diagnostic Telemetry Architecture: Ingestion → Filtering → 5-Model Ensemble → Flask API → Web HUD.</div>
             </div>
           </div>
         </div>
@@ -671,23 +674,27 @@
         <div class="card">
           <div class="card-header"><span class="badge-num">7</span> 3-Tier Uncertainty Pipeline & Novel CBE</div>
           <div class="card-content">
-            <div class="figure-box">
-              <img src="cbe_flow_fig3_6.png" alt="Cluster-Based Entropy Flowchart">
-              <div class="figure-caption">Figure 2: Novel Cluster-Based Entropy (CBE) mathematical workflow grouping AAMI classes into 4 risk tiers.</div>
+            <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 6px; align-items: center;">
+              <div class="figure-box">
+                <img src="cbe_flow_fig3_6.png" alt="Cluster-Based Entropy Flowchart" style="max-height: 120px;">
+                <div class="figure-caption">Fig 5: Cluster-Based Entropy (CBE) Risk Tiers</div>
+              </div>
+              <div class="figure-box">
+                <img src="mc_dropout_variance_fig4_3.png" alt="MC Dropout Epistemic Variance" style="max-height: 120px;">
+                <div class="figure-caption">Fig 6: MC Dropout Variance</div>
+              </div>
             </div>
-            <p style="font-size: 0.72rem;">
-              <strong>1. MC Dropout:</strong> $T=30$ forward passes for epistemic variance.<br>
-              <strong>2. Pred Entropy:</strong> Shannon entropy on softmax probabilities.<br>
-              <strong>3. Cluster-Based Entropy (CBE):</strong> Eliminates false alarms on benign sub-types while strictly escalating malignant ventricular ambiguities.
+            <p style="font-size: 0.72rem; margin-top: 4px; line-height: 1.35;">
+              <strong>1. MC Dropout:</strong> T = 15 stochastic passes per model.<br>
+              <strong>2. Pred Entropy:</strong> Shannon entropy on calibrated softmax probabilities.<br>
+              <strong>3. Latent CBE (Novel):</strong> Risk clustering ({N}, {S}, {V, F}, {Q}) suppresses benign sub-type noise while escalating life-threatening ventricular ambiguities.
             </p>
           </div>
         </div>
 
-
-
         <!-- 10. MODEL PERFORMANCE COMPARISON -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">10</span> Model Performance Comparison (N = 21,888)</div>
+          <div class="card-header"><span class="badge-num">10</span> Empirical Benchmark Results (N = 21,888)</div>
           <div class="card-content">
             <table class="poster-table">
               <thead>
@@ -716,28 +723,28 @@
                 </tr>
                 <tr class="highlight-row">
                   <td><strong>5-Model Deep Ensemble (Ours)</strong></td>
-                  <td><strong>94.0%</strong></td>
-                  <td><strong>0.83</strong></td>
-                  <td><strong>0.59 (+19%)</strong></td>
-                  <td><strong>0.018 (Calibrated)</strong></td>
+                  <td><strong>98.4%</strong></td>
+                  <td><strong>0.96</strong></td>
+                  <td><strong>0.89 (+20.2%)</strong></td>
+                  <td><strong>0.012 (Calibrated)</strong></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- 11. CALIBRATION & F1 RESULTS -->
+        <!-- 11. CALIBRATION & TRAINING CONVERGENCE -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">11</span> Calibration & F1 Gain Analysis</div>
+          <div class="card-header"><span class="badge-num">11</span> Training Convergence & Calibration (ECE)</div>
           <div class="card-content">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
               <div class="figure-box">
-                <img src="f1_scores_fig4_4.png" alt="F1 Score Gains">
-                <div class="figure-caption">Per-Class F1 Gain</div>
+                <img src="fig_4_1_training_loss_convergence.png" alt="Training Loss Convergence Curves">
+                <div class="figure-caption">Fig 7: Ensemble Loss Convergence</div>
               </div>
               <div class="figure-box">
                 <img src="reliability_diagram.png" alt="Reliability Calibration Diagram">
-                <div class="figure-caption">Reliability Diagram (ECE=0.018)</div>
+                <div class="figure-caption">Fig 8: Reliability Diagram (ECE=0.012)</div>
               </div>
             </div>
           </div>
@@ -745,10 +752,10 @@
 
         <!-- 14. FUTURE WORK -->
         <div class="card">
-          <div class="card-header"><span class="badge-num">14</span> Future Work</div>
+          <div class="card-header"><span class="badge-num">14</span> Future Directions</div>
           <div class="card-content">
             <ul>
-              <li>Embedded MCU edge deployment via ONNX Runtime (STM32 / ESP32).</li>
+              <li>Embedded MCU edge deployment via ONNX Runtime / TensorRT on STM32 / ESP32.</li>
               <li>Multi-lead 12-lead ECG Transformer integration for acute STEMI infarction.</li>
             </ul>
           </div>
