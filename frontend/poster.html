@@ -743,7 +743,7 @@
           </div>
           <div class="card-content">
             <p>
-              Deep learning models achieve near-cardiologist diagnostic accuracy on ECGs but suffer from <strong>Softmax Overconfidence</strong>, generating falsely confident predictions on rare, noisy, or borderline arrhythmias. This project develops an end-to-end <strong>True Deep Ensemble (5x 1D-CNN)</strong> combined with a novel <strong>3-tier Uncertainty Quantification (UQ)</strong> pipeline and post-hoc <strong>Temperature Calibration</strong>. The system achieves <strong>98.4% Accuracy, 96.0% Macro F1</strong>, and flags unreliable clinical cases via a real-time web telemetry dashboard.
+              Deep learning models achieve near-cardiologist diagnostic accuracy on ECGs but suffer from <strong>Softmax Overconfidence</strong>, generating falsely confident predictions on rare, noisy, or borderline arrhythmias. This project develops an end-to-end <strong>True Deep Ensemble (5x 1D-CNN)</strong> combined with a novel <strong>3-tier Uncertainty Quantification (UQ)</strong> pipeline and post-hoc <strong>Temperature Calibration</strong>. The system achieves <strong>94.0% Accuracy, 0.83 Macro F1</strong>, and flags unreliable clinical cases via a real-time web telemetry dashboard.
             </p>
           </div>
         </div>
@@ -779,7 +779,7 @@
               <li><strong>Obj 1:</strong> Preprocess 109,446 MIT-BIH beats (0.5–45 Hz Butterworth + Z-score normalisation).</li>
               <li><strong>Obj 2:</strong> Train a 5-member diverse True Deep Ensemble with class-weighted cross-entropy loss.</li>
               <li><strong>Obj 3:</strong> Formulate 3D UQ: MC Dropout, Predictive Entropy, and novel Cluster-Based Entropy.</li>
-              <li><strong>Obj 4:</strong> Calibrate ensemble logits using Temperature Scaling (ECE: 0.084 → 0.012).</li>
+              <li><strong>Obj 4:</strong> Calibrate ensemble logits using Temperature Scaling (ECE: 0.084 → 0.018).</li>
               <li><strong>Obj 5:</strong> Deploy an interactive clinical dashboard with audio sonification and safety alarms.</li>
             </ul>
           </div>
@@ -932,10 +932,10 @@
                 </tr>
                 <tr class="highlight-row">
                   <td><strong>5-Model Deep Ensemble (Ours)</strong></td>
-                  <td><strong>98.4%</strong></td>
-                  <td><strong>0.96</strong></td>
-                  <td><strong>0.89 (+20.2%)</strong></td>
-                  <td><strong>0.012 (Calibrated)</strong></td>
+                  <td><strong>94.0%</strong></td>
+                  <td><strong>0.83</strong></td>
+                  <td><strong>0.59 (+19.0%)</strong></td>
+                  <td><strong>0.018 (Calibrated)</strong></td>
                 </tr>
               </tbody>
             </table>
@@ -957,7 +957,7 @@
               </div>
               <div class="figure-box">
                 <img src="reliability_diagram.png" alt="Reliability Calibration Diagram">
-                <div class="figure-caption">Fig 8: Reliability Diagram (ECE=0.012)</div>
+                <div class="figure-caption">Fig 8: Reliability Diagram (ECE=0.018)</div>
               </div>
             </div>
           </div>
