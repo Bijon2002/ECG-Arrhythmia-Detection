@@ -83,15 +83,36 @@ def save_viva_question():
 
 @app.route('/random_beat/<beat_type>', methods=['GET'])
 def get_random_beat(beat_type):
-    """Pulls a random heartbeat from our test set! type is 'normal' or 'abnormal'"""
+    """Pulls a random heartbeat from our test set! Supports normal, abnormal, N, S, V, F, Q, and noisy."""
     test_data = np.load(os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz'))
     X_test = test_data['X']
     y_test = test_data['y']
     
-    if beat_type == 'normal':
+    beat_type_lower = beat_type.lower()
+    if beat_type_lower in ['normal', 'n', '0']:
         indices = np.where(y_test == 0)[0]
-    elif beat_type == 'abnormal':
+    elif beat_type_lower in ['abnormal']:
         indices = np.where(y_test > 0)[0]
+    elif beat_type_lower in ['s', 'sveb', '1']:
+        indices = np.where(y_test == 1)[0]
+    elif beat_type_lower in ['v', 'veb', 'pvc', '2']:
+        indices = np.where(y_test == 2)[0]
+    elif beat_type_lower in ['f', 'fusion', '3']:
+        indices = np.where(y_test == 3)[0]
+    elif beat_type_lower in ['q', 'paced', 'unknown', '4']:
+        indices = np.where(y_test == 4)[0]
+    elif beat_type_lower in ['noisy', 'artifact', 'ood']:
+        indices = np.where(y_test == 0)[0]
+        random_idx = np.random.choice(indices)
+        clean_sig = X_test[random_idx].copy()
+        t = np.linspace(0, 1, len(clean_sig))
+        noise = 0.45 * np.random.randn(len(clean_sig)) + 0.55 * np.sin(2 * np.pi * 3.5 * t)
+        noisy_sig = (clean_sig + noise).tolist()
+        return jsonify({
+            "signal": noisy_sig,
+            "true_diagnosis": "Electrode Artifact / Noisy OOD Signal",
+            "class_code": "Artifact"
+        })
     else:
         indices = np.arange(len(y_test))
         
@@ -103,7 +124,8 @@ def get_random_beat(beat_type):
     
     return jsonify({
         "signal": signal,
-        "true_diagnosis": true_diagnosis
+        "true_diagnosis": true_diagnosis,
+        "class_code": ["N", "S", "V", "F", "Q"][true_label] if true_label < 5 else "Q"
     })
 
 @app.route('/patient_stream/<int:start_idx>', methods=['GET'])
@@ -147,23 +169,34 @@ def predict():
     
     # Run predictions across the True Deep Ensemble
     ensemble_predictions = []
-    
-    # 1. MC Dropout for Epistemic Uncertainty (As requested in report)
-    # We enable dropout and do multiple forward passes
+    individual_models = []
     mc_dropout_predictions = []
     
     with torch.no_grad():
-        for model, temp in zip(ensemble_models, ensemble_temperatures):
+        for idx, (model, temp) in enumerate(zip(ensemble_models, ensemble_temperatures)):
             # Standard Evaluation (Dropout OFF)
             model.eval()
             logits = model(tensor_signal)
             calibrated_logits = logits / temp
             probs = torch.softmax(calibrated_logits, dim=1)
-            ensemble_predictions.append(probs.numpy())
+            probs_np = probs.numpy()[0]
+            ensemble_predictions.append(probs_np)
+            
+            m_pred_class = int(np.argmax(probs_np))
+            m_diag, m_sev = CLASS_MAPPING.get(m_pred_class, ("Unknown", "unknown"))
+            individual_models.append({
+                "model_id": idx + 1,
+                "predicted_class": m_pred_class,
+                "diagnosis": m_diag,
+                "severity": m_sev,
+                "confidence": float(probs_np[m_pred_class] * 100),
+                "temperature": float(temp),
+                "probs": [float(p) for p in probs_np]
+            })
             
             # MC Dropout Evaluation (Dropout ON)
             enable_dropout(model)
-            for _ in range(3): # 3 passes per model = 9 total MC passes
+            for _ in range(3): # 3 passes per model
                 mc_logits = model(tensor_signal)
                 mc_probs = torch.softmax(mc_logits / temp, dim=1)
                 mc_dropout_predictions.append(mc_probs.numpy())
@@ -194,7 +227,8 @@ def predict():
         "predictive_entropy": pred_entropy,
         "cluster_entropy": cluster_entropy,
         "mc_dropout_uncertainty": mc_dropout_uncertainty,
-        "is_uncertain": is_uncertain
+        "is_uncertain": is_uncertain,
+        "individual_models": individual_models
     })
 
 @app.route('/batch_predict', methods=['POST'])

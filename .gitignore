@@ -26,3 +26,10 @@ venv/
 # IDEs
 .vscode/
 .idea/
+
+# Large Archives & Office Docs (>100MB)
+*.zip
+*.tar.gz
+*.rar
+*.docx
+

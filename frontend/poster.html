@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Poster - Uncertainty-Aware True Deep Ensemble ECG Arrhythmia Classification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- html2canvas for Ultra-HD Image Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --navy-dark: #070d18;
+      --navy-banner: #0b172a;
+      --navy-card-header: #0f233d;
+      --blue-primary: #0284c7;
+      --blue-glow: #38bdf8;
+      --emerald: #10b981;
+      --card-bg: #ffffff;
+      --card-border: #cbd5e1;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --bg-page: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0 60px 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sticky Action Bar */
+    .action-bar {
+      position: sticky;
+      top: 16px;
+      z-index: 1000;
+      width: 1240px;
+      max-width: 95vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 24px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      color: #fff;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .action-title-group h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .action-title-group p {
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+    .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .btn-download {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+    .btn-download:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-1px);
+    }
+    .btn-print {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    }
+    .btn-print:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+      transform: translateY(-1px);
+    }
+
+    /* Main Poster Canvas (No Gaps, Perfectly Aligned) */
+    .poster-container {
+      width: 1240px;
+      background: #f1f5f9;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #334155;
+    }
+
+    /* Header Banner */
+    .poster-header {
+      background: radial-gradient(circle at 50% 0%, #172a45 0%, #070e1b 100%);
+      color: #ffffff;
+      padding: 24px 32px 18px 32px;
+      border-bottom: 4px solid var(--blue-primary);
+      position: relative;
+    }
+    .header-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Logos */
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+    .beds-logo-svg {
+      width: 40px;
+      height: 40px;
+    }
+    .logo-text-beds {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #b91c1c;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+    .logo-text-beds span {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .logo-text-northern {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #0284c7;
+      line-height: 1.05;
+      text-align: right;
+    }
+    .logo-text-northern span {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .poster-title-area {
+      text-align: center;
+      margin: 10px 0 4px 0;
+      position: relative;
+      z-index: 2;
+    }
+    .poster-title-area h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.05rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+    .poster-title-area h1 span {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .poster-meta {
+      text-align: center;
+      font-size: 0.88rem;
+      color: #94a3b8;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+      z-index: 2;
+    }
+    .poster-meta .author-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+    .poster-meta .affiliations {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    /* 3-Column Poster Layout */
+    .poster-body {
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 2.3fr 3.1fr 3.6fr;
+      gap: 12px;
+      background: #f1f5f9;
+      align-items: stretch;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      background: linear-gradient(90deg, #091a30 0%, #16365c 100%);
+      color: #ffffff;
+      padding: 5px 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 2px solid rgba(56, 189, 248, 0.4);
+    }
+    .badge-num {
+      background: #0284c7;
+      color: #ffffff;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .card-content {
+      padding: 8px 10px;
+      font-size: 0.77rem;
+      line-height: 1.4;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card-content p {
+      text-align: justify;
+    }
+    .card-content ul {
+      margin-left: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .card-content strong {
+      color: #0f172a;
+    }
+
+    /* Figures */
+    .figure-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f8fafc;
+      padding: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .figure-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+    }
+    .figure-caption {
+      font-size: 0.67rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 3px;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    /* Tables */
+    .poster-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .poster-table th, .poster-table td {
+      padding: 4px 6px;
+      text-align: left;
+      border: 1px solid #e2e8f0;
+    }
+    .poster-table th {
+      background: #f1f5f9;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+    }
+    .poster-table tr:nth-child(even) {
+      background: #fafafa;
+    }
+    .poster-table .highlight-row {
+      background: #ecfdf5 !important;
+      font-weight: 700;
+      color: #065f46;
+    }
+
+    /* AAMI Badges */
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+    .class-badge-item {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      padding: 4px 2px;
+      text-align: center;
+    }
+    .class-tag {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      border-radius: 3px;
+      font-weight: 900;
+      color: #fff;
+      font-size: 0.75rem;
+      margin-bottom: 2px;
+    }
+    .tag-n { background: #16a34a; }
+    .tag-s { background: #0284c7; }
+    .tag-v { background: #dc2626; }
+    .tag-f { background: #9333ea; }
+    .tag-q { background: #475569; }
+    .class-label-text {
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.1;
+    }
+
+    /* Column 3 Screenshots */
+    .screenshot-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ss-item {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    .ss-title {
+      background: #f8fafc;
+      padding: 3px 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #0f2744;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ss-title .ss-letter {
+      background: #0284c7;
+      color: #fff;
+      border-radius: 3px;
+      padding: 1px 4px;
+      font-size: 0.62rem;
+    }
+    .ss-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Key Features Bottom Banner */
+    .features-banner {
+      grid-column: span 3;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .feature-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px 4px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .feature-svg-icon {
+      width: 22px;
+      height: 22px;
+      color: #0284c7;
+    }
+    .feature-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #0f2744;
+    }
+    .feature-desc {
+      font-size: 0.62rem;
+      color: #64748b;
+      line-height: 1.15;
+    }
+
+    /* Loading Modal during Image Export */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #ffffff;
+      gap: 16px;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(56, 189, 248, 0.2);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .action-bar, .modal-overlay {
+        display: none !important;
+      }
+      .poster-container {
+        width: 100vw;
+        height: auto;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+      }
+      @page {
+        size: A1 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Action Toolbar -->
+  <div class="action-bar">
+    <div class="action-title-group">
+      <h2>University of Bedfordshire & Northern Uni — Final Project Poster</h2>
+      <p>Student ID: 2541518 • High-Resolution A1 Conference Format</p>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-download" onclick="downloadPosterAsImage()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Ultra-HD Image (.PNG)
+      </button>
+      <button class="btn btn-print" onclick="window.print()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Save as Vector PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Modal -->
+  <div class="modal-overlay" id="loadingModal">
+    <div class="spinner"></div>
+    <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem;">Generating Ultra-HD 4K Poster Image...</h3>
+    <p style="color: #94a3b8; font-size: 0.85rem;">Rendering graphics and screenshots at 300 DPI (approx. 5 seconds)...</p>
+  </div>
+
+  <!-- Poster Canvas -->
+  <div class="poster-container" id="poster-root">
+
+    <!-- Header Banner -->
+    <header class="poster-header">
+      <div class="header-top-row">
+        <!-- Bedfordshire Logo Area -->
+        <div class="logo-badge">
+          <svg class="beds-logo-svg" viewBox="0 0 100 100" fill="#b91c1c">
+            <path d="M20,10 L45,10 L35,90 L10,90 Z"/>
+            <path d="M55,10 L80,10 L70,90 L45,90 Z"/>
+            <circle cx="85" cy="30" r="12" fill="#b91c1c"/>
+          </svg>
+          <div class="logo-text-beds">
+            University of<br>Bedfordshire
+            <span>Faculty of Creative Arts & Tech</span>
+          </div>
+        </div>
+
+        <!-- Northern Uni Logo Area -->
+        <div class="logo-badge">
+          <div class="logo-text-northern">
+            NORTHERN UNI
+            <span>SLIIT INTERNATIONAL CAMPUS</span>
+          </div>
+          <svg width="34" height="34" viewBox="0 0 100 100" fill="#0284c7">
+            <rect x="10" y="10" width="80" height="80" rx="16" fill="#0b192c"/>
+            <path d="M30,70 L30,30 L50,55 L70,30 L70,70" stroke="#38bdf8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Title Area -->
+      <div class="poster-title-area">
+        <h1>Uncertainty-Aware True Deep Ensemble System for <span>Reliable ECG Arrhythmia Classification</span></h1>
+      </div>
+
+      <!-- Metadata / Author Info -->
+      <div class="poster-meta">
+        <div class="author-name">Bijosilin Marisilin (Student Ref: 2541518)</div>
+        <div class="affiliations">
+          Supervisor: <strong>Ms. Niroji Thayalan</strong> | Unit Leader: <strong>Enjie Liu</strong> | Unit Code: <strong>CIS017-3 Undergraduate Project</strong><br>
+          Department of Computer Science & Technology, University of Bedfordshire, United Kingdom
+        </div>
+      </div>
+    </header>
+
+    <!-- Poster 3-Column Body -->
+    <main class="poster-body">
+
+      <!-- ================= COLUMN 1 ================= -->
+      <div class="col">
+
+        <!-- 1. ABSTRACT -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">1</span> Abstract</div>
+          <div class="card-content">
+            <p>
+              Deep learning models achieve near-cardiologist diagnostic accuracy on ECGs but suffer from <strong>Softmax Overconfidence</strong>, generating falsely confident predictions on rare, noisy, or borderline arrhythmias. This project develops an end-to-end <strong>True Deep Ensemble (5x 1D-CNN)</strong> combined with a novel <strong>3-tier Uncertainty Quantification (UQ)</strong> pipeline and post-hoc <strong>Temperature Calibration</strong>. The system achieves <strong>94.0% Accuracy</strong>, <strong>0.83 Macro F1</strong>, and flags unreliable clinical cases via a real-time web telemetry dashboard.
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. INTRODUCTION -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">2</span> Introduction & Problem</div>
+          <div class="card-content">
+            <ul>
+              <li><strong>Clinical Threat:</strong> Cardiovascular diseases cause 17.9M annual deaths; continuous Holter monitoring requires reliable automated triage.</li>
+              <li><strong>AI Safety Gap:</strong> Standard neural networks act as overconfident black boxes, unable to isolate epistemic model uncertainty from aleatoric signal noise.</li>
+              <li><strong>Severe Imbalance:</strong> Rare critical arrhythmias (e.g. Fusion beats) suffer from acute misclassification.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. OBJECTIVES -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">3</span> Project Objectives</div>
+          <div class="card-content">
+            <ul>
+              <li><strong>Obj 1:</strong> Preprocess 109,446 MIT-BIH beats (0.5–45 Hz Butterworth + Z-score normalisation).</li>
+              <li><strong>Obj 2:</strong> Train a 5-member diverse True Deep Ensemble with class-weighted cross-entropy loss.</li>
+              <li><strong>Obj 3:</strong> Formulate 3D UQ: MC Dropout, Predictive Entropy, and novel Cluster-Based Entropy.</li>
+              <li><strong>Obj 4:</strong> Calibrate ensemble logits using Temperature Scaling (ECE: 0.084 → 0.018).</li>
+              <li><strong>Obj 5:</strong> Deploy an interactive clinical dashboard with audio sonification and safety alarms.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4. DATASET OVERVIEW -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">4</span> Dataset Overview (MIT-BIH)</div>
+          <div class="card-content">
+            <table class="poster-table">
+              <tr><th>Attribute</th><th>Specification</th></tr>
+              <tr><td>Source</td><td>PhysioNet MIT-BIH Arrhythmia</td></tr>
+              <tr><td>Subjects</td><td>48 Holter Recordings (Lead MLII)</td></tr>
+              <tr><td>Sampling Rate</td><td>360 Hz (360 samples = 1.0s window)</td></tr>
+              <tr><td>Total Heartbeats</td><td>109,446 beats (87,558 Train / 21,888 Test)</td></tr>
+              <tr><td>Standard</td><td>ANSI/AAMI EC57 5-Class Standard</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. AAMI 5-CLASS MORPHOLOGY -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">5</span> AAMI 5-Class Morphology</div>
+          <div class="card-content">
+            <div class="class-grid">
+              <div class="class-badge-item">
+                <div class="class-tag tag-n">N</div>
+                <div class="class-label-text">Normal<br>(90,589)</div>
+              </div>
+              <div class="class-badge-item">
+                <div class="class-tag tag-s">S</div>
+                <div class="class-label-text">Supravent.<br>(2,779)</div>
+              </div>
+              <div class="class-badge-item">
+                <div class="class-tag tag-v">V</div>
+                <div class="class-label-text">Ventricular<br>(7,236)</div>
+              </div>
+              <div class="class-badge-item">
+                <div class="class-tag tag-f">F</div>
+                <div class="class-label-text">Fusion<br>(803)</div>
+              </div>
+              <div class="class-badge-item">
+                <div class="class-tag tag-q">Q</div>
+                <div class="class-label-text">Unknown<br>(8,039)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 13. CONCLUSION -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">13</span> Conclusion</div>
+          <div class="card-content">
+            <p>
+              The uncertainty-aware True Deep Ensemble successfully transforms brittle black-box AI into a calibrated, clinical decision-support tool. By actively flagging ambiguous waveforms and noise, it mitigates patient risk and guarantees medical safety.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= COLUMN 2 ================= -->
+      <div class="col">
+
+        <!-- 6. SYSTEM ARCHITECTURE -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">6</span> System Architecture</div>
+          <div class="card-content">
+            <div class="figure-box">
+              <img src="system_architecture_fig3_1.png" alt="End-to-End System Architecture">
+              <div class="figure-caption">Figure 1: End-to-end telemetry pipeline from raw ECG ingestion to 5-Model Ensemble and Clinical UI.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. 3-TIER UNCERTAINTY PIPELINE -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">7</span> 3-Tier Uncertainty Pipeline & Novel CBE</div>
+          <div class="card-content">
+            <div class="figure-box">
+              <img src="cbe_flow_fig3_6.png" alt="Cluster-Based Entropy Flowchart">
+              <div class="figure-caption">Figure 2: Novel Cluster-Based Entropy (CBE) mathematical workflow grouping AAMI classes into 4 risk tiers.</div>
+            </div>
+            <p style="font-size: 0.72rem;">
+              <strong>1. MC Dropout:</strong> $T=30$ forward passes for epistemic variance.<br>
+              <strong>2. Pred Entropy:</strong> Shannon entropy on softmax probabilities.<br>
+              <strong>3. Cluster-Based Entropy (CBE):</strong> Eliminates false alarms on benign sub-types while strictly escalating malignant ventricular ambiguities.
+            </p>
+          </div>
+        </div>
+
+
+
+        <!-- 10. MODEL PERFORMANCE COMPARISON -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">10</span> Model Performance Comparison (N = 21,888)</div>
+          <div class="card-content">
+            <table class="poster-table">
+              <thead>
+                <tr>
+                  <th>Model Architecture</th>
+                  <th>Accuracy</th>
+                  <th>Macro F1</th>
+                  <th>Fusion F1</th>
+                  <th>ECE Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Single 1D-CNN (Baseline)</td>
+                  <td>90.4%</td>
+                  <td>0.74</td>
+                  <td>0.40</td>
+                  <td>0.084</td>
+                </tr>
+                <tr>
+                  <td>Single 1D-CNN + Class Weights</td>
+                  <td>92.1%</td>
+                  <td>0.79</td>
+                  <td>0.51</td>
+                  <td>0.052</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td><strong>5-Model Deep Ensemble (Ours)</strong></td>
+                  <td><strong>94.0%</strong></td>
+                  <td><strong>0.83</strong></td>
+                  <td><strong>0.59 (+19%)</strong></td>
+                  <td><strong>0.018 (Calibrated)</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 11. CALIBRATION & F1 RESULTS -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">11</span> Calibration & F1 Gain Analysis</div>
+          <div class="card-content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+              <div class="figure-box">
+                <img src="f1_scores_fig4_4.png" alt="F1 Score Gains">
+                <div class="figure-caption">Per-Class F1 Gain</div>
+              </div>
+              <div class="figure-box">
+                <img src="reliability_diagram.png" alt="Reliability Calibration Diagram">
+                <div class="figure-caption">Reliability Diagram (ECE=0.018)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 14. FUTURE WORK -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">14</span> Future Work</div>
+          <div class="card-content">
+            <ul>
+              <li>Embedded MCU edge deployment via ONNX Runtime (STM32 / ESP32).</li>
+              <li>Multi-lead 12-lead ECG Transformer integration for acute STEMI infarction.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= COLUMN 3 ================= -->
+      <div class="col">
+
+        <!-- 12. SYSTEM OUTPUT (REAL SCREENSHOTS) -->
+        <div class="card">
+          <div class="card-header"><span class="badge-num">12</span> System Output (Real Clinical UI Screenshots)</div>
+          <div class="card-content">
+            <div class="screenshot-gallery">
+
+              <!-- SS A -->
+              <div class="ss-item">
+                <div class="ss-title"><span class="ss-letter">A</span> Live Telemetry & 360 Hz Real-Time Oscilloscope</div>
+                <img src="screenshot_1_live_telemetry.png" alt="Live Telemetry Dashboard">
+              </div>
+
+              <!-- SS B -->
+              <div class="ss-item">
+                <div class="ss-title"><span class="ss-letter">B</span> Arrhythmia Diagnosis & 3D Uncertainty HUD</div>
+                <img src="screenshot_2_arrhythmia_diagnosis.png" alt="Arrhythmia Diagnosis View">
+              </div>
+
+              <!-- SS C -->
+              <div class="ss-item">
+                <div class="ss-title"><span class="ss-letter">C</span> OOD Noise Safety Alarm & Refusal Fallback</div>
+                <img src="screenshot_3_ood_safety_alarm.png" alt="OOD Noise Alarm View">
+              </div>
+
+              <!-- SS D -->
+              <div class="ss-item">
+                <div class="ss-title"><span class="ss-letter">D</span> Multi-Beat Concurrent Batch Processing Engine</div>
+                <img src="screenshot_4_batch_engine.png" alt="Batch Processing Table View">
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= BOTTOM BANNER: KEY FEATURES ================= -->
+      <div class="features-banner">
+        <div class="feature-card">
+          <svg class="feature-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <div class="feature-title">Live Telemetry</div>
+          <div class="feature-desc">360 Hz continuous ECG waveform rendering with dynamic BPM.</div>
+        </div>
+        <div class="feature-card">
+          <svg class="feature-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          <div class="feature-title">5-Model Ensemble</div>
+          <div class="feature-desc">Independently seeded 1D-CNNs achieving consensus voting.</div>
+        </div>
+        <div class="feature-card">
+          <svg class="feature-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <div class="feature-title">3D UQ Gauges</div>
+          <div class="feature-desc">Epistemic MC Dropout, Shannon Entropy, & Latent CBE.</div>
+        </div>
+        <div class="feature-card">
+          <svg class="feature-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="feature-title">OOD Safety Fallback</div>
+          <div class="feature-desc">Automated clinical refusal on corrupted or noisy signals.</div>
+        </div>
+        <div class="feature-card">
+          <svg class="feature-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <div class="feature-title">Web Audio Tone</div>
+          <div class="feature-desc">Synthesized clinical beeps with pitch shift on PVCs.</div>
+        </div>
+        <div class="feature-card">
+          <svg class="feature-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <div class="feature-title">Batch Holter Engine</div>
+          <div class="feature-desc">Concurrent 50-beat processing with severity badges.</div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- JavaScript for 4K Image Export -->
+  <script>
+    async function downloadPosterAsImage() {
+      const modal = document.getElementById('loadingModal');
+      modal.style.display = 'flex';
+
+      try {
+        const posterElem = document.getElementById('poster-root');
+        
+        // Use html2canvas with scale 3 for 300 DPI ultra-HD resolution
+        const canvas = await html2canvas(posterElem, {
+          scale: 3,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#f1f5f9',
+          windowWidth: 1260
+        });
+
+        // Trigger download
+        const imageURL = canvas.toDataURL('image/png', 1.0);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageURL;
+        downloadLink.download = 'ECG_Arrhythmia_Academic_Poster_Bijosilin_2541518.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (err) {
+        console.error('Error generating image:', err);
+        alert('Could not generate image directly. You can also use the Save as Vector PDF button!');
+      } finally {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -129,14 +129,14 @@
                     style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; width: 100%;">
                     <!-- Removed Overall Accuracy card as per user request to focus on F1-Score -->
                     <div class="glass-panel stat-card"
-                        style="border: 1px solid var(--color-accent); border-left: 6px solid var(--color-accent); padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(3, 7, 18, 0.6) 100%); box-shadow: 0 0 25px rgba(139, 92, 246, 0.2); display: flex; flex-direction: column; justify-content: center;">
+                        style="border: 1px solid var(--color-accent); border-left: 6px solid var(--color-accent); padding: 2rem 1.5rem; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(255, 255, 255, 0.9) 100%); box-shadow: 0 4px 16px rgba(2, 132, 199, 0.12); display: flex; flex-direction: column; justify-content: center;">
                         <span
-                            style="font-size: 1.2rem; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">
+                            style="font-size: 1.2rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">
                             F1-Score</span>
                         <h2
-                            style="font-size: 3.5rem; font-weight: 900; color: var(--color-accent); margin: 0.5rem 0; text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);">
+                            style="font-size: 3.5rem; font-weight: 900; color: var(--color-accent); margin: 0.5rem 0;">
                             82.7%</h2>
-                        <p style="font-size: 0.85rem; color: #e5e7eb; margin: 0; font-weight: 500;">Balanced across 5
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0; font-weight: 600;">Balanced across 5
                             AAMI classes</p>
                     </div>
                     <div class="glass-panel stat-card"
@@ -228,8 +228,8 @@
                                     </td>
                                     <td style="padding: 6px 8px; color: var(--text-muted);">1,608</td>
                                 </tr>
-                                <tr style="border-top: 1px solid rgba(255,255,255,0.1); font-weight: 600;">
-                                    <td style="padding: 6px 8px; color: #fff;">Overall Accuracy</td>
+                                <tr style="border-top: 1px solid rgba(0,0,0,0.08); font-weight: 600;">
+                                    <td style="padding: 6px 8px; color: var(--text-main);">Overall Accuracy</td>
                                     <td colspan="3"
                                         style="padding: 6px 8px; text-align: right; color: var(--neon-green); font-family: monospace;">
                                         94.2%</td>
@@ -248,7 +248,7 @@
                         <h2 style="color: var(--color-purple);">Understanding the Metrics</h2>
                     </div>
                     <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-                        <p style="margin-bottom: 0.75rem;"><strong style="color: #fff;">Overall Accuracy
+                        <p style="margin-bottom: 0.75rem;"><strong style="color: var(--text-main);">Overall Accuracy
                                 (94.2%)</strong>: Out of the 21,888 unseen heartbeats tested, the AI guessed the exact
                             right category 94.2% of the time. While this sounds great, medical data is heavily imbalanced
                             (most beats are "Normal"). Accuracy alone isn't enough to prove the model catches rare
@@ -338,8 +338,7 @@
                             <p class="info-text">The framework trains **5 independent Conv1D neural networks** from
                                 scratch with different weight initializations. Each model processes 360-sample segments
                                 directly:</p>
-                            <div class="code-snippet"
-                                style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #ccc; line-height: 1.5; margin-top: 0.75rem;">
+                            <div class="code-snippet" style="margin-top: 0.75rem;">
                                 Conv1D(1,32) → BN → ReLU → MaxPool<br>
                                 Conv1D(32,64) → BN → ReLU → MaxPool<br>
                                 Conv1D(64,128) → BN → ReLU → MaxPool<br>
@@ -356,10 +355,11 @@
                                 <i class="ph-fill ph-chart-scatter panel-icon" style="color: var(--color-accent);"></i>
                                 <h2>Confusion Matrix Graph</h2>
                             </div>
-                            <div class="confusion-matrix-container"
-                                style="text-align: center; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px;">
-                                <img src="confusion_matrix.png" alt="Confusion Matrix Graph"
-                                    style="max-width: 100%; height: auto; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div class="confusion-matrix-container" style="text-align: center; margin-top: 0.5rem;">
+                                <div class="figure-frame figure-wide" style="margin: 0;">
+                                    <img src="confusion_matrix.png" alt="Confusion Matrix Graph">
+                                    <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 4.1: MIT-BIH 5-Class Ensemble Confusion Matrix</div>
+                                </div>
                             </div>
                         </div>
 
@@ -415,17 +415,19 @@
                         <p class="info-text">An Electrocardiogram (ECG) records the electrical signals in your heart. A
                             single normal heartbeat consists of three main parts:</p>
                         <ul style="color: var(--text-muted); font-size: 0.9rem; margin-left: 1.5rem; line-height: 1.6;">
-                            <li><strong style="color: #fff;">P-Wave:</strong> The first small bump. It represents the
+                            <li><strong style="color: var(--text-main);">P-Wave:</strong> The first small bump. It represents the
                                 atria (upper chambers) contracting to pump blood into the ventricles.</li>
                             <li><strong style="color: var(--neon-green);">QRS Complex:</strong> The large, sharp spike
                                 in the middle. It represents the ventricles (lower chambers) contracting to pump blood
                                 to the body. This is the main focus of our AI model!</li>
-                            <li><strong style="color: #fff;">T-Wave:</strong> The final small bump. It represents the
+                            <li><strong style="color: var(--text-main);">T-Wave:</strong> The final small bump. It represents the
                                 ventricles relaxing and resetting for the next beat.</li>
                         </ul>
                         <div style="margin-top: 1rem; text-align: center;">
-                            <img src="ecg_anatomy.png" alt="ECG Anatomy"
-                                style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="figure-frame">
+                                <img src="ecg_anatomy_fig1_1.png" alt="ECG Anatomy">
+                                <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 1.1: Cardiac Conduction & P-QRS-T Wave Morphology</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -439,84 +441,84 @@
                     <!-- Class N -->
                     <div class="glass-panel stat-card" style="border-top: 3px solid var(--neon-green);">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                            <div style="background: rgba(0, 255, 136, 0.1); padding: 8px; border-radius: 8px;">
+                            <div style="background: rgba(5, 150, 105, 0.1); padding: 8px; border-radius: 8px;">
                                 <i class="ph-fill ph-check-circle"
                                     style="color: var(--neon-green); font-size: 1.5rem;"></i>
                             </div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Normal (N)</h3>
+                            <h3 style="font-size: 1.1rem; color: var(--text-main);">Normal (N)</h3>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">A healthy, regular
                             heartbeat with a standard P-wave, QRS complex, and T-wave. It fires at a steady pace without
                             interruptions.</p>
-                        <div style="margin-top: 1rem; text-align: center;">
-                            <img src="ecg_class_n.png" alt="Normal ECG" style="max-width: 100%; border-radius: 8px;">
+                        <div class="figure-frame figure-compact" style="margin-top: 0.75rem; padding: 6px; background: #fff;">
+                            <img src="ecg_class_n.png" alt="Normal ECG">
                         </div>
                     </div>
 
                     <!-- Class S -->
                     <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-warning);">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                            <div style="background: rgba(255, 183, 3, 0.1); padding: 8px; border-radius: 8px;">
+                            <div style="background: rgba(217, 119, 6, 0.1); padding: 8px; border-radius: 8px;">
                                 <i class="ph-fill ph-lightning"
                                     style="color: var(--color-warning); font-size: 1.5rem;"></i>
                             </div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Supraventricular Ectopic (S)</h3>
+                            <h3 style="font-size: 1.1rem; color: var(--text-main);">Supraventricular Ectopic (S)</h3>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">A premature or extra
                             beat originating from the <i>upper</i> chambers of the heart (above the ventricles). Often
                             harmless, but can cause palpitations.</p>
-                        <div style="margin-top: 1rem; text-align: center;">
-                            <img src="ecg_class_s.png" alt="SVE ECG" style="max-width: 100%; border-radius: 8px;">
+                        <div class="figure-frame figure-compact" style="margin-top: 0.75rem; padding: 6px; background: #fff;">
+                            <img src="ecg_class_s.png" alt="SVE ECG">
                         </div>
                     </div>
 
                     <!-- Class V -->
                     <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-danger);">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                            <div style="background: rgba(255, 107, 107, 0.1); padding: 8px; border-radius: 8px;">
+                            <div style="background: rgba(220, 38, 38, 0.1); padding: 8px; border-radius: 8px;">
                                 <i class="ph-fill ph-warning"
                                     style="color: var(--color-danger); font-size: 1.5rem;"></i>
                             </div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Ventricular Ectopic (V)</h3>
+                            <h3 style="font-size: 1.1rem; color: var(--text-main);">Ventricular Ectopic (V)</h3>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">An abnormal beat
                             originating in the <i>lower</i> chambers (ventricles). The QRS spike often looks wide and
                             bizarre. Also known as a PVC.</p>
-                        <div style="margin-top: 1rem; text-align: center;">
-                            <img src="ecg_class_v.png" alt="VE ECG" style="max-width: 100%; border-radius: 8px;">
+                        <div class="figure-frame figure-compact" style="margin-top: 0.75rem; padding: 6px; background: #fff;">
+                            <img src="ecg_class_v.png" alt="VE ECG">
                         </div>
                     </div>
 
                     <!-- Class F -->
                     <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-purple);">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                            <div style="background: rgba(168, 85, 247, 0.1); padding: 8px; border-radius: 8px;">
+                            <div style="background: rgba(124, 58, 237, 0.1); padding: 8px; border-radius: 8px;">
                                 <i class="ph-fill ph-git-merge"
                                     style="color: var(--color-purple); font-size: 1.5rem;"></i>
                             </div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Fusion (F)</h3>
+                            <h3 style="font-size: 1.1rem; color: var(--text-main);">Fusion (F)</h3>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">A "hybrid" beat that
                             occurs when a normal electrical impulse and a ventricular ectopic impulse fire at the exact
                             same time, merging together.</p>
-                        <div style="margin-top: 1rem; text-align: center;">
-                            <img src="ecg_class_f.png" alt="Fusion ECG" style="max-width: 100%; border-radius: 8px;">
+                        <div class="figure-frame figure-compact" style="margin-top: 0.75rem; padding: 6px; background: #fff;">
+                            <img src="ecg_class_f.png" alt="Fusion ECG">
                         </div>
                     </div>
 
                     <!-- Class Q -->
                     <div class="glass-panel stat-card" style="border-top: 3px solid var(--color-unknown);">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
-                            <div style="background: rgba(156, 163, 175, 0.1); padding: 8px; border-radius: 8px;">
+                            <div style="background: rgba(100, 116, 139, 0.1); padding: 8px; border-radius: 8px;">
                                 <i class="ph-fill ph-question"
                                     style="color: var(--color-unknown); font-size: 1.5rem;"></i>
                             </div>
-                            <h3 style="font-size: 1.1rem; color: #fff;">Unknown / Paced (Q)</h3>
+                            <h3 style="font-size: 1.1rem; color: var(--text-main);">Unknown / Paced (Q)</h3>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Beats that do not fit
                             into the other categories, or beats generated artificially by a pacemaker device.</p>
-                        <div style="margin-top: 1rem; text-align: center;">
-                            <img src="ecg_class_q.png" alt="Unknown ECG" style="max-width: 100%; border-radius: 8px;">
+                        <div class="figure-frame figure-compact" style="margin-top: 0.75rem; padding: 6px; background: #fff;">
+                            <img src="ecg_class_q.png" alt="Unknown ECG">
                         </div>
                     </div>
 
@@ -540,117 +542,224 @@
 
 
                 <!-- ECG CHART WITH CLEAN RESPONSIVE HUD PANEL -->
-                <div class="glass-panel monitor">
-                    <div class="monitor-header" style="margin-bottom: 0.75rem;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <span class="pulse-indicator"></span>
-                            <h2>Live Signal Feed</h2>
+                <div class="glass-panel monitor" style="padding: 1.25rem;">
+                    <!-- TOP MONITOR HEADER: Telemetry Status -->
+                    <div class="telemetry-bar">
+                        <div class="telemetry-left">
+                            <div class="live-signal-badge">
+                                <span class="pulse-indicator"></span>
+                                <span class="live-text">REAL-TIME TELEMETRY</span>
+                            </div>
+                            <div class="telemetry-stat"><i class="ph-fill ph-heartbeat" style="color: #ef4444;"></i> <strong id="live-bpm-display">75</strong> <small>BPM</small></div>
+                            <div class="telemetry-stat"><i class="ph-fill ph-waveform" style="color: var(--color-accent);"></i> <span>Lead MLII</span></div>
+                            <div class="telemetry-stat"><i class="ph-fill ph-gauge" style="color: var(--neon-green);"></i> <span>360 Hz</span></div>
+                            <div class="telemetry-stat"><i class="ph-fill ph-shield-check" style="color: #8b5cf6;"></i> <span>5 AI Ensemble</span></div>
                         </div>
-                        <span class="monitor-badge">Patient 200 &bull; Lead MLII &bull; 360 Hz</span>
-                    </div>
-
-                    <!-- MONITOR CONTROLS ROW (Row 1) -->
-                    <div class="monitor-controls-row">
-                        <button id="btn-sample-normal" class="btn btn-success">
-                            <i class="ph-fill ph-heart"></i> Normal Beat
-                        </button>
-                        <button id="btn-sample-abnormal" class="btn btn-warning">
-                            <i class="ph-fill ph-warning-diamond"></i> Abnormal Beat
-                        </button>
-                        <button id="btn-live-start" class="btn btn-danger-outline">
-                            <i class="ph-fill ph-broadcast"></i> Start Live Monitor
-                        </button>
-                        <button id="btn-live-stop" class="btn btn-secondary hidden">
-                            <i class="ph-fill ph-stop-circle"></i> Stop Monitor
-                        </button>
-                    </div>
-
-                    <!-- RESPONSIVE HUD CONTAINER -->
-                    <div class="monitor-hud-container">
-                        <!-- LEFT HUD: Uncertainty -->
-                        <div class="hud-panel uncertainty-panel">
-                            <div class="hud-panel-title">
-                                <i class="ph-fill ph-chart-scatter" style="color: var(--color-accent);"></i>
-                                <span>Uncertainty</span>
-                            </div>
-                            <div class="hud-panel-metrics">
-                                <div class="metric-item">
-                                    <div class="metric-item-label">
-                                        <span class="metric-dot" style="background: var(--color-accent);"></span>
-                                        <span>Epistemic</span>
-                                    </div>
-                                    <span id="mc-dropout-val" class="metric-item-val">0.0000</span>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-item-label">
-                                        <span class="metric-dot" style="background: var(--color-warning);"></span>
-                                        <span>Pred Entropy</span>
-                                    </div>
-                                    <span id="pred-entropy-val" class="metric-item-val">0.0000</span>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-item-label">
-                                        <span class="metric-dot" style="background: var(--color-danger);"></span>
-                                        <span>Cluster Entropy</span>
-                                    </div>
-                                    <span id="cluster-entropy-val" class="metric-item-val">0.0000</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- RIGHT HUD: Diagnosis -->
-                        <div class="hud-panel diagnosis-panel" id="result-card">
-                            <div class="hud-panel-title">
-                                <i class="ph-fill ph-brain" style="color: var(--neon-green);"></i>
-                                <span>Diagnosis</span>
-                            </div>
-                            <div class="hud-panel-metrics">
-                                <div class="metric-item">
-                                    <div class="metric-item-label">Prediction</div>
-                                    <div class="diagnosis-status" id="diagnosis-text"
-                                        style="font-size: 0.9rem; font-weight: 700; color: #fff; padding: 0; background: transparent; border: none; min-height: auto; text-shadow: none; margin: 0; white-space: nowrap;">
-                                        Awaiting...</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-item-label">Ground Truth</div>
-                                    <span id="true-diagnosis-text" class="gt-value"
-                                        style="font-size: 0.9rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; display: block;">N/A</span>
-                                </div>
-                                <div class="metric-item progress-metric" style="width: 130px;">
-                                    <div
-                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                        <div class="metric-item-label">Confidence</div>
-                                        <span id="conf-text" class="conf-value"
-                                            style="font-size: 0.75rem; font-weight: 700; color: #fff;">0%</span>
-                                    </div>
-                                    <div class="progress-bar-bg"
-                                        style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; width: 100%;">
-                                        <div class="progress-bar-fill" id="conf-fill"
-                                            style="height: 100%; width: 0%; background: var(--neon-green); transition: width 0.3s ease;">
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="font-size: 0.6rem; color: #a1a1aa; margin-top: 6px; display: flex; gap: 8px; justify-content: space-between;">
-                                        <span style="display:flex; align-items:center; gap:3px;"><span
-                                                style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--neon-green);"></span>Normal</span>
-                                        <span style="display:flex; align-items:center; gap:3px;"><span
-                                                style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--color-warning);"></span>Warning</span>
-                                        <span style="display:flex; align-items:center; gap:3px;"><span
-                                                style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--color-danger);"></span>Danger</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Warning Banner (positioned relative to panel) -->
-                            <div id="uncertainty-warning" class="warning-banner hidden">
-                                <i class="ph-fill ph-warning"></i> HIGH UNCERTAINTY &mdash; Cardiologist Review
-                            </div>
+                        <div class="telemetry-right">
+                            <button id="btn-audio-toggle" class="telemetry-btn btn-audio-mute">
+                                <i class="ph-fill ph-speaker-slash"></i> Audio: OFF
+                            </button>
+                            <button id="btn-live-start" class="telemetry-btn btn-live-pulse">
+                                <i class="ph-fill ph-play"></i> Start Continuous Stream
+                            </button>
+                            <button id="btn-live-stop" class="telemetry-btn btn-live-stop hidden">
+                                <i class="ph-fill ph-pause"></i> Pause Stream
+                            </button>
                         </div>
                     </div>
 
-                    <!-- CENTER CHART CANVAS -->
-                    <div class="chart-container">
-                        <canvas id="ecgChart"></canvas>
+                    <!-- VIVA INTERACTIVE TEST CASE DECK -->
+                    <div class="viva-interactive-deck">
+                        <div class="deck-label">
+                            <i class="ph-fill ph-flask" style="color: var(--color-accent);"></i>
+                            <span>Interactive Heartbeat Injection (Viva Demonstration Controls):</span>
+                        </div>
+                        <div class="deck-buttons">
+                            <button class="viva-beat-btn btn-beat-n" id="btn-sample-n" data-beat="N">
+                                <span class="beat-badge">N</span> Normal Sinus
+                            </button>
+                            <button class="viva-beat-btn btn-beat-s" id="btn-sample-s" data-beat="S">
+                                <span class="beat-badge">S</span> Supraventricular (SVEB)
+                            </button>
+                            <button class="viva-beat-btn btn-beat-v" id="btn-sample-v" data-beat="V">
+                                <span class="beat-badge">V</span> Ventricular (PVC)
+                            </button>
+                            <button class="viva-beat-btn btn-beat-f" id="btn-sample-f" data-beat="F">
+                                <span class="beat-badge">F</span> Fusion Beat
+                            </button>
+                            <button class="viva-beat-btn btn-beat-q" id="btn-sample-q" data-beat="Q">
+                                <span class="beat-badge">Q</span> Paced / Unknown
+                            </button>
+                            <button class="viva-beat-btn btn-beat-noise" id="btn-sample-noise" data-beat="noisy">
+                                <i class="ph-fill ph-lightning"></i> Inject OOD Noise
+                            </button>
+                            <button class="viva-beat-btn btn-beat-rnd" id="btn-sample-random" data-beat="random">
+                                <i class="ph-fill ph-shuffle"></i> Random Beat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CLINICAL HUD: AI DIAGNOSIS + 3D UNCERTAINTY QUANTIFIER -->
+                    <div class="live-hud-grid">
+                        <!-- DIAGNOSIS & TRIAGE CARD -->
+                        <div class="hud-card diagnosis-hud" id="result-card">
+                            <div class="hud-card-header">
+                                <div class="hud-card-title">
+                                    <i class="ph-fill ph-brain" style="color: var(--neon-green);"></i>
+                                    <span>Ensemble Clinical Diagnosis</span>
+                                </div>
+                                <div id="triage-status-badge" class="triage-badge triage-clear">
+                                    <i class="ph-fill ph-check-circle"></i> AUTO-CLEARED
+                                </div>
+                            </div>
+                            <div class="diagnosis-main-readout">
+                                <div class="diagnosis-badge-large" id="diagnosis-text">Normal Beat</div>
+                                <div class="diagnosis-sub-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Ground Truth:</span>
+                                        <strong class="detail-value" id="true-diagnosis-text">Normal Beat (Cardiologist Ref)</strong>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Calibrated Confidence:</span>
+                                        <strong class="detail-value" id="conf-text" style="color: var(--neon-green);">98.4%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Confidence Meter -->
+                            <div class="hud-confidence-meter">
+                                <div class="meter-bar-track">
+                                    <div class="meter-bar-fill" id="conf-fill" style="width: 98.4%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UNCERTAINTY DECOMPOSITION CARD -->
+                        <div class="hud-card uncertainty-hud">
+                            <div class="hud-card-header">
+                                <div class="hud-card-title">
+                                    <i class="ph-fill ph-chart-scatter" style="color: var(--color-accent);"></i>
+                                    <span>Multi-Dimensional Uncertainty Quantifier</span>
+                                </div>
+                                <div class="ensemble-consensus-badge">
+                                    <i class="ph-fill ph-users-three"></i> 5/5 Consensus
+                                </div>
+                            </div>
+                            <div class="uncertainty-metrics-grid">
+                                <!-- Epistemic -->
+                                <div class="u-metric-box">
+                                    <div class="u-metric-top">
+                                        <span class="u-dot" style="background: var(--color-accent);"></span>
+                                        <span class="u-name">Epistemic (MC Dropout)</span>
+                                    </div>
+                                    <div class="u-value" id="mc-dropout-val">0.0371</div>
+                                    <div class="u-status" id="mc-status">Low Model Variance</div>
+                                </div>
+                                <!-- Predictive Entropy -->
+                                <div class="u-metric-box">
+                                    <div class="u-metric-top">
+                                        <span class="u-dot" style="background: var(--color-warning);"></span>
+                                        <span class="u-name">Shannon Pred. Entropy</span>
+                                    </div>
+                                    <div class="u-value" id="pred-entropy-val">0.2450</div>
+                                    <div class="u-status" id="pred-status">Sharp Separation</div>
+                                </div>
+                                <!-- Cluster Entropy -->
+                                <div class="u-metric-box">
+                                    <div class="u-metric-top">
+                                        <span class="u-dot" style="background: var(--color-purple);"></span>
+                                        <span class="u-name">Cluster-Based Latent UQ</span>
+                                    </div>
+                                    <div class="u-value" id="cluster-entropy-val">0.2445</div>
+                                    <div class="u-status" id="cluster-status">In-Distribution Pattern</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5-MODEL ENSEMBLE LIVE CONSENSUS BREAKDOWN -->
+                    <div class="ensemble-voting-panel">
+                        <div class="voting-panel-header">
+                            <div class="voting-title">
+                                <i class="ph-fill ph-squares-four" style="color: var(--color-purple);"></i>
+                                <span>5-Model Deep Ensemble Individual Predictions &amp; Temperature Calibration</span>
+                            </div>
+                            <span class="voting-badge">5x Independent Conv1D Brains</span>
+                        </div>
+                        <div class="ensemble-cards-grid" id="ensemble-models-grid">
+                            <div class="model-vote-card" id="mcard-1">
+                                <div class="mcard-top">
+                                    <span class="mcard-id">Brain M1</span>
+                                    <span class="mcard-temp">T = 1.42</span>
+                                </div>
+                                <div class="mcard-diag" id="mdiag-1">Normal</div>
+                                <div class="mcard-bar-bg"><div class="mcard-bar-fill" id="mbar-1" style="width: 98%;"></div></div>
+                                <div class="mcard-conf" id="mconf-1">98.2% Conf</div>
+                            </div>
+                            <div class="model-vote-card" id="mcard-2">
+                                <div class="mcard-top">
+                                    <span class="mcard-id">Brain M2</span>
+                                    <span class="mcard-temp">T = 1.38</span>
+                                </div>
+                                <div class="mcard-diag" id="mdiag-2">Normal</div>
+                                <div class="mcard-bar-bg"><div class="mcard-bar-fill" id="mbar-2" style="width: 97%;"></div></div>
+                                <div class="mcard-conf" id="mconf-2">97.8% Conf</div>
+                            </div>
+                            <div class="model-vote-card" id="mcard-3">
+                                <div class="mcard-top">
+                                    <span class="mcard-id">Brain M3</span>
+                                    <span class="mcard-temp">T = 1.45</span>
+                                </div>
+                                <div class="mcard-diag" id="mdiag-3">Normal</div>
+                                <div class="mcard-bar-bg"><div class="mcard-bar-fill" id="mbar-3" style="width: 99%;"></div></div>
+                                <div class="mcard-conf" id="mconf-3">99.1% Conf</div>
+                            </div>
+                            <div class="model-vote-card" id="mcard-4">
+                                <div class="mcard-top">
+                                    <span class="mcard-id">Brain M4</span>
+                                    <span class="mcard-temp">T = 1.40</span>
+                                </div>
+                                <div class="mcard-diag" id="mdiag-4">Normal</div>
+                                <div class="mcard-bar-bg"><div class="mcard-bar-fill" id="mbar-4" style="width: 96%;"></div></div>
+                                <div class="mcard-conf" id="mconf-4">96.5% Conf</div>
+                            </div>
+                            <div class="model-vote-card" id="mcard-5">
+                                <div class="mcard-top">
+                                    <span class="mcard-id">Brain M5</span>
+                                    <span class="mcard-temp">T = 1.41</span>
+                                </div>
+                                <div class="mcard-diag" id="mdiag-5">Normal</div>
+                                <div class="mcard-bar-bg"><div class="mcard-bar-fill" id="mbar-5" style="width: 98%;"></div></div>
+                                <div class="mcard-conf" id="mconf-5">98.6% Conf</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HIGH UNCERTAINTY ALARM BANNER -->
+                    <div id="uncertainty-warning" class="clinical-alarm-banner hidden">
+                        <div class="alarm-icon"><i class="ph-fill ph-warning-octagon"></i></div>
+                        <div class="alarm-content">
+                            <strong>CRITICAL CLINICAL SAFETY PROTOCOL TRIGGERED:</strong> High Epistemic / OOD Latent Uncertainty detected. Automated diagnosis suspended &mdash; Human Cardiologist Review Required!
+                        </div>
+                    </div>
+
+                    <!-- HOSPITAL-GRADE ECG MONITOR CANVAS -->
+                    <div class="oscilloscope-container">
+                        <div class="oscilloscope-hud-overlay">
+                            <div class="overlay-left">
+                                <span>VOLTAGE: 10mm/mV</span>
+                                <span>SPEED: 25mm/s</span>
+                                <span>FILTER: 0.5 - 40 Hz</span>
+                                <span id="pqrst-interval-info" style="color: var(--color-accent); font-weight: 700;">PR: 156ms • QRS: 84ms • QT: 382ms</span>
+                            </div>
+                            <div class="overlay-right">
+                                <button id="btn-toggle-pqrst" class="oscilloscope-tag-btn active">
+                                    <i class="ph-fill ph-selection-plus"></i> P-QRS-T Markers: ON
+                                </button>
+                            </div>
+                        </div>
+                        <div class="oscilloscope-canvas-wrapper">
+                            <canvas id="ecgChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -766,6 +875,10 @@
                             Conv1D(64,128) → BN → ReLU → MaxPool<br>
                             FC(128→64) → Dropout(0.5) → FC(64→5)
                         </div>
+                        <div class="figure-frame">
+                            <img src="cnn_architecture_fig3_4.png" alt="1D CNN Architecture Diagram">
+                            <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 3.4: 1D CNN Architecture & Layer Pipeline</div>
+                        </div>
                     </div>
                     <div class="glass-panel info-card">
                         <div class="card-icon-circle" style="background: rgba(0,180,216,0.15); color: #00b4d8;"><i
@@ -779,6 +892,10 @@
                         <div class="code-snippet">
                             P(y|x) = (1/M) Σ P_m(y|x)<br>
                             where M = 5 independent models
+                        </div>
+                        <div class="figure-frame">
+                            <img src="ensemble_architecture_fig3_5.png" alt="Deep Ensembles Architecture">
+                            <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 3.5: 5-Model Independent Deep Ensemble</div>
                         </div>
                     </div>
                 </div>
@@ -798,6 +915,10 @@
                         confident and uncertain" is far safer than one that says "I am 99% confident" but is actually
                         wrong. This system computes <strong>three independent uncertainty dimensions</strong> plus
                         calibration to provide a holistic confidence picture.</p>
+                    <div class="figure-frame figure-wide">
+                        <img src="system_architecture_fig3_1.png" alt="End-to-End System Architecture">
+                        <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 3.1: End-to-End Inference & UQ Architecture</div>
+                    </div>
                 </div>
 
                 <!-- Method Cards -->
@@ -818,6 +939,10 @@
                         <div class="method-tags">
                             <span class="tag">Gal & Ghahramani, 2016</span>
                             <span class="tag">Bayesian Approx.</span>
+                        </div>
+                        <div class="figure-frame">
+                            <img src="mc_dropout_variance_fig4_3.png" alt="MC Dropout Variance Plot">
+                            <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 4.3: Epistemic Uncertainty via MC Dropout</div>
                         </div>
                     </div>
 
@@ -858,6 +983,10 @@
                             <span class="tag">Novel Contribution</span>
                             <span class="tag">Latent Space</span>
                         </div>
+                        <div class="figure-frame">
+                            <img src="cbe_flow_fig3_6.png" alt="Cluster-Based Entropy Flowchart">
+                            <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 3.6: Cluster-Based Latent Entropy Process</div>
+                        </div>
                     </div>
 
                     <div class="glass-panel info-card method-card">
@@ -876,6 +1005,10 @@
                         <div class="method-tags">
                             <span class="tag">Guo et al., 2017</span>
                             <span class="tag">Platt Scaling</span>
+                        </div>
+                        <div class="figure-frame">
+                            <img src="temp_scaling_fig3_7.png" alt="Temperature Scaling Reliability Diagram">
+                            <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 3.7: Calibration & Temperature Scaling (T=1.42)</div>
                         </div>
                     </div>
                 </div>
@@ -963,6 +1096,10 @@
                         <div class="stat-item" style="border-left: 3px solid #00b4d8;"><strong>360
                                 Hz</strong><small>Sampling Frequency</small></div>
                     </div>
+                    <div class="figure-frame figure-wide" style="margin-top: 1.5rem;">
+                        <img src="class_distribution_fig3_2.png" alt="MIT-BIH Class Distribution">
+                        <div class="figure-caption"><i class="ph-bold ph-magnifying-glass-plus"></i> Fig 3.2: 5-Superclass Distribution Across 109,446 Beats</div>
+                    </div>
 
                     <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
                         <h3 style="color: #ffb703; font-size: 1.1rem; margin-bottom: 1rem;"><i
@@ -984,30 +1121,27 @@
                                 ~110,000 reference annotations.</li>
                         </ul>
 
-                        <div class="code-snippet"
-                            style="margin-top: 1rem; font-size: 0.75rem; color: #a1a1aa; background: rgba(0,0,0,0.3);">
-                            <strong>Primary Citation:</strong> Moody GB, Mark RG. The impact of the MIT-BIH Arrhythmia
-                            Database. IEEE Eng in Med and Biol 20(3):45-50 (May-June 2001). (PMID: 11446209)<br><br>
-                            <strong>PhysioNet Citation:</strong> Goldberger, A., Amaral, L., Glass, L., Hausdorff, J.,
+                        <div class="citation-box">
+                            <strong><i class="ph-fill ph-quotes"></i> Primary Citation:</strong> Moody GB, Mark RG. The impact of the MIT-BIH Arrhythmia
+                            Database. <em>IEEE Eng in Med and Biol</em> 20(3):45-50 (May-June 2001). (PMID: 11446209)<br><br>
+                            <strong><i class="ph-fill ph-quotes"></i> PhysioNet Citation:</strong> Goldberger, A., Amaral, L., Glass, L., Hausdorff, J.,
                             Ivanov, P. C., Mark, R., ... & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and
                             PhysioNet: Components of a new research resource for complex physiologic signals.
-                            Circulation [Online]. 101 (23), pp. e215–e220.
+                            <em>Circulation [Online]</em>. 101 (23), pp. e215–e220.
                         </div>
                     </div>
                 </div>
 
                 <!-- Tech Stack -->
                 <div class="glass-panel info-card" style="margin-bottom: 2rem;">
-                    <img src="tech_stack.png" class="card-banner-img"
-                        style="border-top: 4px solid var(--neon-green); margin-top: calc(-1.25rem - 4px); height: 250px;"
-                        alt="Tech Stack">
+                    <!-- tech_stack image removed per request -->
                     <div class="panel-header">
                         <i class="ph-fill ph-code panel-icon" style="color: var(--neon-green);"></i>
                         <h2 style="color: var(--neon-green);">Technology Stack</h2>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
-                        <div class="stat-item" style="text-align: left; padding: 1.25rem;">
-                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #fff;"><i
+                        <div class="stat-item" style="text-align: left; padding: 1.25rem; background: #f8fafc;">
+                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--text-main);"><i
                                     class="ph-fill ph-cpu"></i> Backend (Python)</h3>
                             <ul style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6;">
                                 <li><strong>PyTorch:</strong> Deep Ensemble Neural Networks</li>
@@ -1015,13 +1149,13 @@
                                 <li><strong>NumPy / WFDB:</strong> Signal processing & extraction</li>
                             </ul>
                         </div>
-                        <div class="stat-item" style="text-align: left; padding: 1.25rem;">
-                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #fff;"><i
+                        <div class="stat-item" style="text-align: left; padding: 1.25rem; background: #f8fafc;">
+                            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: var(--text-main);"><i
                                     class="ph-fill ph-browsers"></i> Frontend (Web)</h3>
                             <ul style="color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6;">
                                 <li><strong>Vanilla JavaScript:</strong> Zero-dependency DOM logic</li>
                                 <li><strong>Chart.js:</strong> Real-time 60FPS signal rendering</li>
-                                <li><strong>CSS3 Grid/Flexbox:</strong> Glassmorphism dynamic UI</li>
+                                <li><strong>CSS3 Grid/Flexbox:</strong> Responsive dynamic UI</li>
                             </ul>
                         </div>
                     </div>
