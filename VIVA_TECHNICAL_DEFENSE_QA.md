@@ -237,3 +237,16 @@
 ### 🚨 Trap 2: "If Temperature Scaling divides logits by $T$, does it change which class wins?"
 * **Your Answer:**  
   > *"No, mathematically it cannot change the predicted class. Dividing all logits by a single positive scalar $T$ is a strictly monotonic transformation ($f(x) = x / T$). The class with the largest logit remains the largest. Therefore, classification accuracy and F1 score remain completely unchanged. What changes is the **confidence spread**: it softens artificially extreme 99.9% confidences down to well-calibrated probabilities, reducing our ECE error from 0.084 down to 0.018."*
+
+---
+
+## 8. Key Engineering & Research Challenges Overcome
+
+| # | Challenge Encountered | Why It Was Dangerous | Engineering Resolution & Evidence |
+|---|---|---|---|
+| **1** | **Extreme Class Imbalance** | Normal beats (90k) outnumbered Fusion beats (803) by 112:1. Standard cross-entropy achieved 90% accuracy by simply ignoring rare arrhythmias. | Applied **Class-Weighted Cross-Entropy** ($w_c \propto 1/N_c$), penalizing Fusion misclassifications 112x more. Combined with ensemble soft voting, this boosted **Fusion F1 from 0.40 to 0.59 (+19.0%)**. |
+| **2** | **Phase Distortion & Signal Noise** | Patient breathing caused 0.1–0.3 Hz baseline drift, while muscle tremor added >50 Hz noise. Naive single-pass IIR filters shifted R-peak timings across time. | Built a **zero-phase 2nd-order Butterworth bandpass filter (0.5–45 Hz)** using `scipy.signal.filtfilt` (forward-backward filtering), ensuring **0.0 ms phase shift** while stripping noise. |
+| **3** | **Softmax Overconfidence & OOD Noise** | Neural networks output 99% confident predictions on electrode disconnects or motion noise. | Implemented **Post-Hoc Temperature Scaling ($T=1.48$)**, reducing Expected Calibration Error from **0.084 to 0.018 (-78.6%)**, and added an **OOD Safety Fallback** that halts diagnosis when variance > threshold. |
+| **4** | **Alarm Fatigue vs Lethal Arrhythmias** | Standard Shannon entropy treats all confusion equally. Confusing Normal with Supraventricular is benign, but triggered the same alarm as lethal Ventricular beats. | Invented **Cluster-Based Entropy (CBE)**: grouped classes into 4 risk tiers ($\{N\}$, $\{S\}$, $\{V,F\}$, $\{Q\}$). Zero entropy is generated for benign intra-cluster confusion, while ventricular ambiguity triggers an immediate clinical alarm. |
+| **5** | **Real-Time Telemetry Latency Bottleneck** | Running 5 deep networks + 15 MC Dropout stochastic forward passes threatened to lag 360 Hz live telemetry. | Avoided heavy 2D spectrogram models; built an optimized **1D-CNN (only 1.53M params)**. The entire 3D UQ inference pipeline runs in **18–24 ms**, taking less than **3% of the 800 ms cardiac cycle**. |
+

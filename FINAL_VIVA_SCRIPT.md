@@ -125,7 +125,25 @@ To demonstrate how this translates into hospital practice, I developed a product
 
 ---
 
-### [08:00 - 08:45] SECTION 6: CONCLUSION & FUTURE WORK
+### [07:30 – 08:30] SECTION 5B: CHALLENGES FACED & HOW I RESOLVED THEM
+
+"Throughout this project, I faced **four major technical and clinical challenges**:
+
+1. **Extreme Class Imbalance:**  
+   Normal beats outnumbered rare Fusion beats by over 100 to 1. Initial baseline models simply ignored Fusion beats because overall accuracy still looked high. I resolved this by applying **Class-Weighted Cross-Entropy**, penalizing Fusion misclassifications over 100 times more heavily, and combining it with ensemble voting. This boosted our Fusion F1 score by **+19.0%** (from 0.40 to 0.59).
+
+2. **Phase Distortion & Signal Noise:**  
+   Raw patient recordings contained severe respiratory baseline drift and muscle tremor. Naive filtering shifted the R-peak positions in time. I resolved this by designing a **zero-phase 2nd-order Butterworth filter (0.5–45 Hz) using forward-backward `filtfilt`**, stripping away breathing drift and mains hum while preserving exact peak alignments.
+
+3. **Clinical Alarm Fatigue vs. Lethal Beats:**  
+   Standard Shannon entropy treats all confusion equally. If the model was slightly unsure between Normal and a harmless Supraventricular beat, it would sound the alarm, causing doctors to ignore alerts. I resolved this by inventing **Cluster-Based Entropy (CBE)**: grouping beats into 4 risk tiers so harmless confusion is silenced, but ventricular ambiguity immediately escalates to high alert.
+
+4. **Inference Latency in Real-Time Telemetry:**  
+   Running 5 deep models plus 15 MC Dropout passes threatened to lag continuous telemetry. By avoiding heavy 2D image models and engineering a streamlined **1D-CNN (only 1.53M parameters)**, the entire 3D UQ pipeline executes in just **18 to 24 milliseconds**—using less than 3% of the 800 ms cardiac cycle."
+
+---
+
+### [08:30 – 09:15] SECTION 6: CONCLUSION & FUTURE WORK
 
 To conclude, this project demonstrates that we do not have to accept opaque, overconfident black-box AI in healthcare. 
 
