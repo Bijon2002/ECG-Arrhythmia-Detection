@@ -1,215 +1,210 @@
-# Comprehensive Viva Presentation Script & Defense Guide
+# Complete Viva Presentation Script & Defense Guide (Full Step-by-Step Flow)
 **Project Title:** Uncertainty-Aware True Deep Ensemble System for Reliable ECG Arrhythmia Classification  
 **Student:** Bijosilin Marisilin (Student ID: 2541518)  
-**Supervisor:** Ms. Niroji Thayalan  
+**Supervisor:** Ms. Niroji Thayalan | **Unit Leader:** Enjie Liu  
 **Unit:** CIS017-3 Undergraduate Project  
 **Institution:** University of Bedfordshire (UK) in partnership with Northern Uni (SLIIT)
 
 ---
 
-## ⏱️ Presentation Timing Breakdown (Approx. 8–10 Minutes)
-1. **Introduction & Motivation:** 1.5 mins
-2. **Research Problem & Objectives:** 1.5 mins
-3. **Dataset & Preprocessing:** 1.5 mins
-4. **Proposed Methodology & 3-Tier UQ:** 2.5 mins
-5. **Key Results & Clinical Dashboard Demo:** 2 mins
-6. **Conclusion & Future Directions:** 1 min
-7. **Viva Q&A Defense Session:** (Panel Questions)
+## ⏱️ Presentation Timing Breakdown (Approx. 10–12 Minutes)
+1. **Introduction & How I Got This Idea:** 2.0 mins
+2. **Where I Got The Dataset (PhysioNet MIT-BIH):** 1.5 mins
+3. **Step-by-Step Data Engineering & Preprocessing:** 2.0 mins
+4. **1D-CNN Model Architecture & Deep Ensemble:** 2.0 mins
+5. **How I Trained the Models (Step-by-Step):** 2.0 mins
+6. **Novel 3-Tier Uncertainty Pipeline & Temperature Calibration:** 1.5 mins
+7. **Empirical Results & Live Dashboard Demo:** 1.5 mins
+8. **Conclusion & Future Work:** 0.5 min
+9. **Viva Panel Q&A Defense Session**
 
 ---
 
-## 🎙️ Full Spoken Script (Word-for-Word in Simple, Clear English)
+## 🎙️ Spoken Presentation Script (Word-for-Word Narrative Flow)
 
-### 1. Opening & Introduction
+### 1. Opening & How I Got This Idea
 > "Good morning / afternoon respected examiners and members of the evaluation panel.
 >
-> Hi, I'm **Bijosilin Marisilin**, student ID **2541518**. 
-> Today, I am proud to present my undergraduate final project titled: **'Uncertainty-Aware True Deep Ensemble System for Reliable ECG Arrhythmia Classification'**, developed under the supervision of **Ms. Niroji Thayalan** for the module **CIS017-3** at the **University of Bedfordshire** in partnership with **Northern Uni**.
+> Hi, I'm **Bijosilin Marisilin**, student ID **2541518**. Today, I am excited to present my undergraduate final project: **'Uncertainty-Aware True Deep Ensemble System for Reliable ECG Arrhythmia Classification'**, conducted under the supervision of **Ms. Niroji Thayalan** for unit **CIS017-3** at the **University of Bedfordshire** and **Northern Uni**.
 >
-> Let me start with a simple question: *Would a doctor trust an AI that claims 99% confidence on a completely corrupted or rare heart signal?*
-> In clinical practice, the answer is an absolute **no**."
+> **Let me share how I got this idea:**  
+> During my research into medical artificial intelligence, I noticed a striking paradox. We have deep learning models boasting 98% or 99% accuracy on paper, yet doctors in clinical intensive care units (ICUs) refuse to deploy them autonomously. 
+> 
+> When I investigated *why*, I discovered a critical flaw called **Softmax Overconfidence**. Traditional neural networks are built to give a hard prediction no matter what. If an elderly patient rolls over in bed and their ECG electrode slips, creating jagged electrical noise, a standard deep learning model won't say *'I don't know'*. Instead, it will look at the noise and confidently predict *'Ventricular Tachycardia'* with 99% certainty!
+>
+> Furthermore, in real life, lethal arrhythmias like **Fusion beats** are extremely rare, while healthy normal beats are abundant. Standard models get biased towards normal beats and silently misclassify the dangerous ones. 
+>
+> That led to my central research question:  
+> *Can we build an AI that not only classifies heartbeats with high precision, but is also self-aware enough to know when it is uncertain, isolate signal noise from model confusion, and safely refuse to guess when patient safety is on the line?*  
+> That is the foundation of this project."
 
 ---
 
-### 2. Clinical Problem & The "AI Safety Gap"
-> "Cardiovascular diseases are the world’s leading cause of death, taking over **17.9 million lives** each year. Continuous 24-hour ambulatory Holter monitoring is essential to catch silent arrhythmias before they become fatal.
+### 2. Where I Got the Dataset (MIT-BIH via PhysioNet)
+> "To build a clinically valid system, I needed real human patient data rather than synthetic simulations.
 >
-> However, cardiologists cannot manually inspect every heartbeat across 100,000 beats per patient per day. Automated machine learning models are supposed to assist them. But standard neural networks have a dangerous flaw called **Softmax Overconfidence**. 
+> I sourced our data from **PhysioNet**, a public research repository maintained by **MIT and Beth Israel Hospital in Boston**, funded by the National Institutes of Health (NIH). Specifically, I utilized the **MIT-BIH Arrhythmia Database**, which has been the globally recognized gold-standard benchmark in cardiac research since 1980.
 >
-> Even when an ECG signal is corrupted by electrode movement, baseline wander, or a rare borderline heartbeat, traditional deep learning models force a single hard diagnosis with dangerously high confidence. They cannot tell the difference between:
-> 1. What the model genuinely knows, and
-> 2. What is simply noise or unfamiliar data.
->
-> In healthcare, an overconfident wrong diagnosis can be fatal. This is the **AI Safety Gap** that my project directly solves."
+> **The dataset characteristics:**
+> * It consists of **48 continuous, half-hour, 2-channel ambulatory Holter ECG recordings** taken from 47 individual subjects (25 men and 22 women).
+> * The signals were digitized at a clinical sampling rate of **360 samples per second (360 Hz)** per channel, with 11-bit resolution over a 10 mV range.
+> * Most importantly, **every single heartbeat in this database was manually annotated and cross-verified by two independent certified cardiologists**. 
+> * For this project, I used **Lead MLII (Modified Limb Lead II)**, which is the standard lead used in telemetry because it aligns with the heart's electrical axis and makes the P-wave and QRS complex prominent."
 
 ---
 
-### 3. Project Objectives
-> "To address this critical gap, I set **five core engineering and research objectives**:
+### 3. Step-by-Step Data Engineering & Preprocessing Pipeline
+> "Raw ECG signals from a moving patient are filled with physical noise. Before feeding them to any neural network, I designed a **multi-stage signal processing pipeline in Python using the `wfdb` (WaveForm DataBase) library**:
 >
-> * **First:** Preprocess and segment raw ECG telemetry into isolated single heartbeats following standard clinical frequencies.
-> * **Second:** Design and train a diverse **5-member True Deep Ensemble** using class-weighted cross-entropy to handle extreme class imbalance.
-> * **Third:** Engineer a novel **3-Tier Uncertainty Quantification (UQ)** framework incorporating Monte Carlo Dropout, Shannon Predictive Entropy, and a new clinical metric I formulated called **Cluster-Based Entropy (CBE)**.
-> * **Fourth:** Calibrate the ensemble’s probability outputs using post-hoc **Temperature Scaling** to eliminate overconfidence and minimize the Expected Calibration Error (ECE).
-> * **Fifth:** Build and deploy a real-time, interactive **Clinical Decision-Support Web Dashboard** equipped with live 360 Hz telemetry, audio sonification beeps, and an automatic safety refusal trigger."
+> **Step 1 — Noise Filtering (0.5 to 45 Hz Butterworth Bandpass):**  
+> Raw recordings suffer from two major noise sources:
+> 1. *Low-frequency baseline wander* (0.1–0.5 Hz) caused by patient breathing and chest movement.
+> 2. *High-frequency noise* (>50 Hz) caused by electromyographic muscle tremor and 50/60 Hz power-line interference.  
+> To clean this without distorting the heartbeat shape, I implemented a zero-phase **2nd-order Butterworth Bandpass Filter** with a passband between **0.5 Hz and 45 Hz**.
+>
+> **Step 2 — R-Peak Centering & Segmentation:**  
+> Using the cardiologists' verified annotation locations, I extracted individual beats. To capture the full electrophysiological cycle (the P-wave, QRS complex, and T-wave), I extracted a **360-sample window** around each R-peak. That is exactly **1.0 second of cardiac data** (90 samples before the peak, and 270 samples after).
+>
+> **Step 3 — Z-Score Normalization:**  
+> Different patients have different chest skin impedances and signal voltages. To prevent amplitude discrepancies from confusing the neural network, I applied **Z-score standardization** to every beat vector:  
+> $$x_{norm} = \frac{x - \mu}{\sigma}$$  
+> This ensures every beat has zero mean and unit variance.
+>
+> **Step 4 — Standard Clinical Class Mapping (AAMI EC57):**  
+> The raw database contains over 15 granular rhythm codes. Following the clinical **ANSI/AAMI EC57 international standard**, I mapped all 109,446 beats into the **5 universal cardiac classes**:
+> 1. **Class N (Normal / Bundle Branch Block):** 90,589 beats
+> 2. **Class S (Supraventricular Ectopic):** 2,779 beats
+> 3. **Class V (Ventricular Ectopic / Premature Contractions):** 7,236 beats
+> 4. **Class F (Fusion of Ventricular & Normal):** 803 beats *(severe minority)*
+> 5. **Class Q (Unknown / Paced):** 8,039 beats
+>
+> **Step 5 — Train/Test Stratified Split:**  
+> I split the 109,446 beats into **87,558 training beats (80%)** and **21,888 independent test beats (20%)**, maintaining exact class ratios."
 
 ---
 
-### 4. Dataset & Preprocessing Pipeline
-> "For our benchmark data, I utilized the gold-standard **PhysioNet MIT-BIH Arrhythmia Database**, consisting of 48 half-hour ambulatory Holter recordings sampled at **360 Hz** from Lead MLII. 
+### 4. Detailed 1D-CNN Model Architecture
+> "Now let me explain the model architecture. 
+> 
+> Many researchers convert ECG signals into 2D spectrogram images and pass them into heavy image networks like ResNet-50. I intentionally avoided this. Converting a 1D electrical signal into an image loses temporal phase information, adds unnecessary parameters, and slows down inference.
 >
-> The raw signals contain significant noise: baseline wander from patient breathing and high-frequency muscular tremor (EMG).
+> Instead, I designed an optimized, high-speed **1D-Convolutional Neural Network (1D-CNN)** that processes the raw temporal signal directly:
 >
-> To clean this:
-> 1. I passed the signals through a zero-phase **2nd-order Butterworth Bandpass Filter (0.5 to 45 Hz)**.
-> 2. Using annotated R-peak locations, I extracted **360-sample windows**—corresponding to 1 second of cardiac activity centered around each R-peak.
-> 3. Each beat was normalized using **Z-score standardization** to remove patient-specific amplitude differences.
->
-> The dataset comprises **109,446 heartbeats**, mapped to the official **AAMI EC57 5-Class standard**:
-> - **N (Normal):** over 90,000 beats
-> - **S (Supraventricular ectopic):** 2,779 beats
-> - **V (Ventricular ectopic):** 7,236 beats
-> - **F (Fusion of ventricular and normal):** 803 beats *(severe minority class)*
-> - **Q (Unknown / Paced):** 8,039 beats
->
-> I partitioned this into **87,558 training beats (80%)** and **21,888 test beats (20%)** for rigorous evaluation."
+> * **Input Layer:** Takes a 1-dimensional vector of size `(Batch_Size, 1, 360)`.
+> * **Convolutional Block 1:**  
+>   - 1D Convolution with **32 filters**, kernel size of 5, stride 1, padding 2.  
+>   - Batch Normalization to stabilize activations.  
+>   - ReLU non-linearity.  
+>   - Max Pooling with kernel size 2 (reducing temporal dimension from 360 to 180).  
+>   - Spatial Dropout of 0.2 to prevent co-adaptation.
+> * **Convolutional Block 2:**  
+>   - 1D Convolution with **64 filters**, kernel size 5.  
+>   - Batch Normalization + ReLU.  
+>   - Max Pooling with kernel size 2 (reducing dimension from 180 to 90).  
+>   - Dropout of 0.2.
+> * **Convolutional Block 3:**  
+>   - 1D Convolution with **128 filters**, kernel size 3, capturing deep morphological features.  
+>   - Batch Normalization + ReLU.  
+>   - Max Pooling with kernel size 2 (reducing dimension from 90 to 45).  
+>   - Dropout of 0.3.
+> * **Classification Head:**  
+>   - Flatten layer converting feature maps into a vector of size $45 \times 128 = 5,760$.  
+>   - Fully Connected Dense Linear layer down to **128 hidden neurons** with ReLU and 0.4 Dropout.  
+>   - Final Output Linear layer producing **5 raw unnormalized logits**, corresponding to classes N, S, V, F, and Q."
 
 ---
 
-### 5. Model Architecture & True Deep Ensemble
-> "Instead of relying on a single neural network, I designed a **True Deep Ensemble** consisting of **5 distinct 1D-Convolutional Neural Networks (1D-CNNs)**.
+### 5. Step-by-Step Training of the 5-Member True Deep Ensemble
+> "To eliminate single-model bias, I trained a **True Deep Ensemble of 5 independent 1D-CNN models**. Here is the exact training methodology:
 >
-> Each individual network has 3 convolutional feature extraction blocks with batch normalization, ReLU activation, max pooling, and spatial dropout, followed by fully connected dense layers.
+> **Step 1 — Diversity via Seed Randomization:**  
+> Rather than training one model or using simple cross-validation, I initialized 5 completely distinct networks with **5 distinct random seeds: 42, 101, 202, 303, and 404**. This forced each model’s weights to initialize in different regions of the non-convex loss surface and encounter mini-batches in different randomized orders.
 >
-> What makes this a **True Ensemble**?
-> * Each of the 5 models was initialized with a **different random seed** (Seeds 42, 101, 202, 303, and 404) and exposed to randomized batch orders.
-> * This forces the models to explore completely different local minima on the non-convex loss surface.
-> * When predicting, we aggregate the predictions across all 5 models. If all 5 agree, confidence is genuine. If they disagree, the disagreement itself signals clinical uncertainty."
+> **Step 2 — Solving Class Imbalance via Class-Weighted Cross-Entropy:**  
+> Because Normal beats outnumber Fusion beats by more than 100 to 1, standard cross-entropy would ignore Fusion beats. I calculated inverse-frequency class weights:  
+> $$w_c = \frac{N_{total}}{K \cdot N_c}$$  
+> This penalized the network heavily whenever it misclassified rare Fusion (F) or Supraventricular (S) beats.
+>
+> **Step 3 — Optimization Hyperparameters:**  
+> - **Optimizer:** Adam optimizer with an initial learning rate of $\eta = 0.001$.  
+> - **Batch Size:** 64 beats per mini-batch.  
+> - **Epochs:** 5 full epochs per model (across 87,558 training beats, this is 1,368 gradient steps per epoch).
+>
+> **Step 4 — Training Loss Convergence:**  
+> As documented in our **Figure 4.1**:
+> - All 5 models started at an initial loss of approximately **0.39 to 0.41** in Epoch 1.  
+> - They converged smoothly down to a final training loss between **0.127 and 0.142** in Epoch 5 (Ensemble mean loss = **0.1327**).  
+> - No divergence or oscillation occurred, demonstrating exceptional optimization stability.
+>
+> **Step 5 — Model Checkpointing:**  
+> Each converged model state was saved to disk (`model_seed_42.pth` through `model_seed_404.pth`), totaling 5 independent expert models ready for consensus voting."
 
 ---
 
-### 6. Our Novelty: 3-Tier Uncertainty Quantification & CBE
-> "The heart of my research contribution is the **3-Tier Uncertainty Framework**:
+### 6. Novel 3-Tier Uncertainty Pipeline & Temperature Calibration
+> "Once the ensemble was trained, I integrated our **3-Tier Uncertainty Framework** to make the system clinically trustworthy:
 >
 > 1. **Tier 1 - Epistemic Model Uncertainty (MC Dropout):**  
->    By keeping dropout active at inference time and running $T=15$ stochastic forward passes, we measure the variance across predictions. High variance means the model lacks knowledge about this specific waveform.
+>    During inference, I kept dropout active and executed $T=15$ stochastic forward passes across the ensemble. We compute the variance across predicted probabilities:  
+>    $$\sigma^2_{MC} = \frac{1}{T}\sum_{t=1}^T (p_t - \bar{p})^2$$  
+>    High variance means the model has never seen a waveform like this before.
 >
-> 2. **Tier 2 - Aleatoric Data Noise (Predictive Entropy):**  
->    We calculate the Shannon Entropy on the softmax distribution. If the probabilities are split 50/50, predictive entropy spikes, detecting ambiguous beat morphology.
+> 2. **Tier 2 - Aleatoric Data Uncertainty (Predictive Entropy):**  
+>    We calculate Shannon Entropy on the mean ensemble softmax probabilities:  
+>    $$H(p) = -\sum_{c=1}^5 p_c \log_2(p_c)$$  
+>    If probabilities are ambiguous (e.g. 50% Normal and 50% PVC), entropy spikes, flagging borderline beat shapes.
 >
-> 3. **Tier 3 - My Novel Contribution: Cluster-Based Entropy (CBE):**  
->    Standard Shannon entropy treats all classification confusion equally. But medically, confusing a Normal beat with a Supraventricular beat is minor, whereas confusing a Normal beat with a lethal Ventricular ectopic is an emergency!  
->    I grouped the 5 AAMI classes into **4 risk clusters**:
->    - Cluster 1: Normal $\{N\}$
->    - Cluster 2: Supraventricular $\{S\}$
->    - Cluster 3: Malignant Ventricular & Fusion $\{V, F\}$
->    - Cluster 4: Unknown / Paced $\{Q\}$
->    
->    CBE calculates entropy across these risk clusters. It prevents false alarms when benign classes overlap, but triggers an immediate clinical emergency alert whenever ventricular ambiguity occurs."
-
----
-
-### 7. Temperature Calibration
-> "Even an ensemble can produce miscalibrated probabilities. To fix this, I applied **Temperature Scaling** on the validation logits using a learned parameter $T = 1.48$. 
+> 3. **Tier 3 - My Novel Innovation: Cluster-Based Entropy (CBE):**  
+>    Standard Shannon entropy treats all confusion equally. But medically, confusing a Normal beat with a benign Supraventricular ectopic ($N \leftrightarrow S$) is acceptable, whereas confusing a Normal beat with a life-threatening Ventricular ectopic ($N \leftrightarrow V$) is dangerous!  
+>    I grouped the 5 classes into **4 Clinical Risk Tiers**:  
+>    - Tier 1: Normal $\{N\}$  
+>    - Tier 2: Supraventricular $\{S\}$  
+>    - Tier 3: Malignant Ventricular & Fusion $\{V, F\}$  
+>    - Tier 4: Unknown / Paced $\{Q\}$  
+>    CBE calculates entropy across these risk tiers:  
+>    $$H_{cluster} = -\sum_{k=1}^4 P(Cluster_k) \log_2 P(Cluster_k)$$  
+>    This suppresses false alarms on harmless sub-type variations, but strictly escalates life-threatening ventricular ambiguities!
 >
-> It scales the logits before softmax without changing the classification ranking. This reduced our **Expected Calibration Error (ECE)** from **0.084 down to 0.018**. 
-> This means when our system says it is 95% confident, it is statistically accurate 95% of the time."
+> 4. **Post-Hoc Temperature Calibration:**  
+>    Even an ensemble can produce overconfident raw probabilities. I optimized a post-hoc Temperature parameter $T = 1.48$ on validation logits via Negative Log-Likelihood. This dropped our **Expected Calibration Error (ECE)** from **0.084 down to 0.018**, ensuring probability values match true clinical correctness rates."
 
 ---
 
-### 8. Empirical Results & Performance Gains
-> "Looking at our quantitative benchmarks evaluated on the **21,888 independent test beats**:
+### 7. Quantitative Results & Live Clinical Dashboard Demo
+> "Evaluating on the **21,888 unseen test beats**, our empirical results proved superior to single-model baselines:
 >
-> * **Overall Accuracy:** Reached **94.0%** (up from 90.4% baseline).
-> * **Macro Average F1-Score:** Increased from **0.74 to 0.83**.
-> * **Rare Fusion Beat F1 (Class F):** Crucially jumped from **0.40 to 0.59**—an absolute improvement of **+19.0%**! This proves that our class-weighted loss and deep ensemble successfully rescued rare, lethal arrhythmias from being missed.
-> * **Ventricular Sensitivity (Class V):** Achieved **98% Recall**, ensuring dangerous PVCs are not overlooked."
-
----
-
-### 9. Clinical Web Dashboard & Practical Demonstration
-> "To prove that this research works in the real world, I built an interactive, production-ready **Clinical Decision Support System**:
+> * **Overall Accuracy:** Reached **94.0%** (compared to 90.4% baseline).
+> * **Macro Average F1:** Rose from **0.74 to 0.83**.
+> * **Rare Fusion Beat F1 (Class F):** Jumped from **0.40 to 0.59**—an absolute improvement of **+19.0%**!
+> * **Ventricular Sensitivity (Class V):** Achieved **98% Recall**, ensuring critical PVCs are not missed.
 >
-> * **Real-Time 360 Hz Oscilloscope:** Streams live continuous ECG waveforms with a dynamic BPM counter and P-Q-R-S-T peak markers.
-> * **Interactive Waveform Injection:** A doctor can click to inject Normal, Ventricular, Fusion, or Out-Of-Distribution (OOD) noise beats in real time.
-> * **3D Uncertainty Gauges & Radar:** Displays the 3 uncertainty gauges side-by-side with color-coded safety thresholds.
-> * **Web Audio Sonification:** The dashboard synthesizes audio beeps matching the patient's heart rate, automatically shifting pitch when an abnormal ventricular beat is detected.
-> * **Automated Safety Fallback:** If high epistemic uncertainty or electrode artifact is detected, the AI refuses to guess, halts autonomous diagnosis, and displays: *'CRITICAL CLINICAL SAFETY PROTOCOL TRIGGERED: Automated diagnosis suspended. Human Cardiologist Review Required.'*
-> * **50-Beat Holter Batch Engine:** Cardiologists can upload a recording and instantly receive a color-coded triage table sorting beats by diagnostic risk and uncertainty."
+> **The Real-Time Clinical Dashboard:**  
+> To demonstrate practical hospital deployment, I built a full-stack clinical interface using **Flask, HTML5 Canvas, and Web Audio**:
+> * Streams continuous 360 Hz ECG with animated P-Q-R-S-T peaks and dynamic BPM.
+> * Displays our **3D Uncertainty HUD** (Epistemic Variance, Predictive Entropy, and CBE gauges).
+> * Synthesizes real-time cardiac audio beeps that shift tone during ventricular arrhythmias.
+> * Includes an **Out-Of-Distribution (OOD) Safety Fallback**: If an electrode disconnects or noise spikes, the system halts autonomous prediction and alerts: *'CRITICAL CLINICAL SAFETY PROTOCOL TRIGGERED: Automated diagnosis suspended. Human Cardiologist Review Required.'*
+> * A **50-Beat Holter Batch Engine** that automates bulk triage for busy cardiologists."
 
 ---
 
-### 10. Conclusion & Future Work
-> "In conclusion, this project demonstrates that we do not have to settle for black-box neural networks in healthcare. By combining a **5-member True Deep Ensemble**, **3-tier Uncertainty Quantification**, and **Temperature Calibration**, we have created a transparent, safe, and clinically trustworthy ECG diagnostic system.
+### 8. Conclusion & Future Directions
+> "To conclude, this project bridges the gap between deep learning research and clinical trust. By moving away from overconfident black-box models and introducing a **5-member True Deep Ensemble**, **3-tier Uncertainty Quantification**, and **Temperature Calibration**, we provide cardiologists with a system that is accurate, calibrated, and humble enough to ask for human assistance when uncertain.
 >
-> For future work, I plan to:
-> 1. Port the trained ensemble to low-power edge microcontrollers like STM32 or ESP32 using ONNX Runtime for wearable Holter patches.
-> 2. Extend the architecture from single-lead MLII to full 12-lead ECGs using Spatial-Temporal Transformers for acute myocardial infarction (STEMI) detection.
+> For future research, I aim to deploy this model to low-cost **STM32 / ESP32 microcontrollers via ONNX Runtime** for wearable cardiac patches, and expand from single-lead to full 12-lead multi-channel ECG transformers.
 >
-> Thank you very much for your time and kind attention. I am now open to your questions."
+> Thank you for your time. I am now delighted to answer your questions."
 
 ---
 
-## 🎯 Top 10 Tough Viva Questions & Winning Answers
+## 💡 Examiner Rapid-Fire Cheat Sheet (Quick Answers)
 
-### Q1: Why did you choose a 5-member True Deep Ensemble over Bayesian Neural Networks (BNNs) or MC Dropout alone?
-**Answer:**
-> "While BNNs provide theoretically sound posteriors, they double the parameter count, are notoriously difficult to converge via variational inference, and often suffer from posterior collapse. MC Dropout is fast, but because it only uses a single trained weight checkpoint, it explores only a local neighborhood around one minimum. True Deep Ensembles train distinct models from different random initializations. DeepMind and Lakshminarayanan et al. empirically proved that Deep Ensembles capture diverse modes in the loss landscape and are superior to BNNs in both calibration and out-of-distribution detection."
-
----
-
-### Q2: Explain the difference between Aleatoric and Epistemic uncertainty in your ECG context.
-**Answer:**
-> "*Aleatoric uncertainty* is noise inherent in the data—such as electrode motion artifacts, baseline wander, or overlapping class boundaries between similar beats. It cannot be reduced by collecting more training data of the same type.  
-> *Epistemic uncertainty* is model ignorance—when the AI encounters a rare arrhythmia or a pattern it was never trained on. This uncertainty can be reduced by feeding the model more relevant training data. Our system separates them using Predictive Entropy for aleatoric noise and MC Dropout variance across models for epistemic uncertainty."
-
----
-
-### Q3: What is the clinical motivation behind your novel Cluster-Based Entropy (CBE)?
-**Answer:**
-> "Standard Shannon entropy treats all misclassifications with equal penalty. In a medical setting, if the model is slightly unsure whether a beat is a Normal beat ($N$) or a benign Supraventricular ectopic ($S$), raising a high-priority alarm leads to alarm fatigue. However, if the model is unsure between Normal ($N$) and a malignant Ventricular ectopic ($V$), missing it could allow ventricular fibrillation and cardiac arrest. CBE collapses the 5 classes into 4 clinical risk tiers ($\{N\}$, $\{S\}$, $\{V,F\}$, $\{Q\}$). Ambiguity inside the same cluster produces zero cluster entropy, whereas ambiguity crossing into the ventricular cluster triggers an immediate alarm."
-
----
-
-### Q4: How did you select the hyperparameters for the Butterworth filter (0.5 to 45 Hz)?
-**Answer:**
-> "According to clinical cardiology guidelines and the American Heart Association (AHA), meaningful diagnostic ECG frequency content lies between 0.67 Hz and 40 Hz. The 0.5 Hz high-pass cutoff eliminates low-frequency baseline drift caused by patient respiration and perspiration without distorting the ST-segment. The 45 Hz low-pass cutoff suppresses 50/60 Hz electrical mains hum and high-frequency electromyographic (EMG) muscle tremor while preserving the rapid QRS complex slope."
-
----
-
-### Q5: How does Temperature Scaling work and why does it improve calibration without hurting accuracy?
-**Answer:**
-> "Temperature Scaling introduces a single positive scalar $T$ to divide the output logits before applying the softmax function: $\hat{p}_i = \frac{e^{z_i / T}}{\sum_j e^{z_j / T}}$.  
-> Because $T$ is applied uniformly across all logits, the relative order (the argmax) remains identical, meaning classification accuracy is 100% preserved. When $T > 1$, it softens overconfident probabilities towards a uniform distribution. We optimized $T$ using Negative Log-Likelihood on validation data, achieving $T = 1.48$ and dropping ECE from 0.084 down to 0.018."
-
----
-
-### Q6: Your dataset has 90,000 Normal beats and only 803 Fusion beats. How did you handle this extreme imbalance?
-**Answer:**
-> "Severe imbalance was tackled using two coordinated strategies:  
-> First, **Class-Weighted Cross-Entropy Loss**, where the loss weight for class $c$ is inversely proportional to its frequency: $w_c = \frac{N}{K \cdot N_c}$. This penalized the model heavily whenever it misclassified rare Fusion or Supraventricular beats.  
-> Second, the **Deep Ensemble consensus voting** combined with ensemble variance prevented the majority Normal class from washing out the minority predictions. As a result, our Fusion F1 score rose by $+19.0\%$ (from 0.40 to 0.59)."
-
----
-
-### Q7: Why did you choose 360 samples per heartbeat window?
-**Answer:**
-> "The MIT-BIH database is sampled at 360 Hz. A window of 360 samples corresponds to exactly 1.0 second in real time. Because a normal human heart rate ranges between 60 to 100 beats per minute, 1.0 second centered on the R-peak (90 samples before the R-peak and 270 samples after) reliably captures the preceding P-wave, the entire QRS complex, and the following T-wave across diverse heart rates."
-
----
-
-### Q8: What happens in your system when a patient disconnects an electrode lead?
-**Answer:**
-> "When an electrode lead falls off or suffers severe motion artifact, the resulting flatline or extreme high-amplitude noise is completely Out-Of-Distribution (OOD). The 5 ensemble models produce conflicting, high-variance outputs, and predictive entropy spikes above our safety threshold of 0.85. The safety gate immediately activates, pauses automated diagnosis, rings an audio alert, and instructs the medical staff to inspect the lead connection."
-
----
-
-### Q9: Could this model run on an Apple Watch or an embedded wearable device?
-**Answer:**
-> "Yes. While training 5 deep models requires a GPU, inference on 1D-CNNs is lightweight. A 360-sample 1D vector requires negligible floating-point operations (FLOPs) compared to 2D image models. By converting our PyTorch ensemble to ONNX format and applying FP16 or INT8 post-training quantization, all 5 models can run in under 45 milliseconds on microcontrollers like an ARM Cortex-M4 (STM32) or ESP32."
-
----
-
-### Q10: What is your primary takeaway from completing this undergraduate project?
-**Answer:**
-> "My key takeaway is that in safety-critical medical engineering, predictive accuracy alone is insufficient. An AI system must possess self-awareness of its own uncertainty. Building a system that knows *when it does not know* and safely defers to human experts is the true bridge between theoretical deep learning and real-world clinical adoption."
+| Question Area | Examiner Might Ask | Your 10-Second Bulletproof Answer |
+| :--- | :--- | :--- |
+| **Origin of Idea** | *"Why did you do this instead of standard image classification?"* | *"Because 17.9M people die from CVD annually, and AI models fail in hospitals due to softmax overconfidence on noisy Holter data. I wanted an AI that knows when it does not know."* |
+| **Dataset Source** | *"Where does this data come from?"* | *"PhysioNet MIT-BIH Arrhythmia Database from Beth Israel Hospital Boston & MIT; 48 patient records at 360 Hz with certified cardiologist beat annotations."* |
+| **Why 1D-CNN?** | *"Why not 2D CNN or ResNet?"* | *"1D-CNN operates directly on the native 360-sample temporal voltage series without lossy spectrogram conversion, using 10x fewer parameters and running in under 5 ms."* |
+| **Novelty (CBE)** | *"What makes Cluster-Based Entropy novel?"* | *"Standard entropy treats N vs S confusion the same as N vs V. Medically, N vs V is lethal. CBE clusters classes into 4 risk tiers so only life-threatening ambiguities sound alarms."* |
+| **Ensemble Training** | *"Why 5 seeds instead of K-fold?"* | *"K-fold trains on different data subsets. Deep Ensembles train on the full dataset with randomized weight initializations (seeds 42 to 404), exploring distinct non-convex minima to capture epistemic variance."* |
+| **Fusion Beats (+19%)**| *"Why did Fusion beats improve so much?"* | *"Fusion beats represent only 0.7% of the data. Inverse class weighting forced the gradient to penalize Fusion errors, while the 5-model consensus voting prevented the majority Normal class from overwhelming it."* |
+| **Temperature $T=1.48$**| *"Does Temperature Scaling change accuracy?"* | *"No, because dividing logits by scalar $T$ is strictly monotonic; the argmax ranking remains unchanged. It strictly softens overconfidence, lowering ECE from 0.084 to 0.018."* |
