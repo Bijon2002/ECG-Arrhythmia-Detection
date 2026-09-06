@@ -139,10 +139,21 @@ def main():
     elif start_live:
         st.subheader("📡 Live Patient Monitor")
         
-        # Load test data and stitch 30 random heartbeats together into a long continuous line
-        test_data = np.load(os.path.join(PROCESSED_DIR, 'test_data.npz'))
+        # Load test data or fallback to lightweight cloud samples
+        test_data_path = os.path.join(PROCESSED_DIR, 'test_data.npz')
+        sample_path = os.path.join(BASE_DIR, 'data', 'samples', 'live_stream_samples.npz')
+        
+        if os.path.exists(test_data_path):
+            test_data = np.load(test_data_path)
+        elif os.path.exists(sample_path):
+            test_data = np.load(sample_path)
+        else:
+            st.error("No ECG stream data found.")
+            return
+            
         X = test_data['X']
-        random_indices = np.random.choice(len(X), size=30, replace=False)
+        num_beats = min(30, len(X))
+        random_indices = np.random.choice(len(X), size=num_beats, replace=False)
         continuous_signal = np.concatenate(X[random_indices])
         
         # Create placeholders that we can overwrite dynamically over and over
