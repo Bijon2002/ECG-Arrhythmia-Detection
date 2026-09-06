@@ -5,7 +5,6 @@ import torch
 import numpy as np
 import wfdb
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
 
 # Setup path to import src
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,7 +15,11 @@ from uncertainty import calculate_predictive_entropy, calculate_cluster_based_en
 # --- FLASK CONFIGURATION ---
 # We configure Flask to serve our static HTML frontend automatically!
 app = Flask(__name__, static_folder='frontend', static_url_path='')
-CORS(app)
+try:
+    from flask_cors import CORS
+    CORS(app)
+except ImportError:
+    pass
 
 print("Starting True Ensemble Flask API...")
 

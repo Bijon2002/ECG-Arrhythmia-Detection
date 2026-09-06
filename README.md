@@ -1,3 +1,14 @@
+---
+title: ECG Arrhythmia AI
+emoji: 🫀
+colorFrom: red
+colorTo: blue
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app_hf.py
+pinned: false
+---
+
 <div align="center">
 
 # 🫀 High-Confidence ECG Arrhythmia Classification & Uncertainty Quantification System
