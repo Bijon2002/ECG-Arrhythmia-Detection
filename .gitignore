@@ -2,9 +2,9 @@
 data/raw/
 data/processed/
 
-# Models
-models/*.pt
-models/*.pth
+# Models (Trained weights are tracked for deployment)
+# models/*.pt
+# models/*.pth
 
 # Results and Logs
 results/
