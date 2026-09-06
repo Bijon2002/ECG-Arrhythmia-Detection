@@ -60,6 +60,11 @@ def serve_frontend():
     """Serves the index.html from the frontend folder."""
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/favicon.ico')
+def serve_favicon():
+    return send_from_directory(app.static_folder, 'images.png')
+
+
 @app.route('/hints')
 def serve_hints():
     """Serves the hidden hints.html for defense reference."""
@@ -329,16 +334,26 @@ def batch_predict():
 @app.route('/batch_predict/auto', methods=['POST'])
 def batch_predict_auto():
     try:
-        test_data = np.load(os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz'))
+        test_data_path = os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz')
+        sample_path = os.path.join(BASE_DIR, 'data', 'samples', 'live_stream_samples.npz')
+        
+        if os.path.exists(test_data_path):
+            test_data = np.load(test_data_path)
+        elif os.path.exists(sample_path):
+            test_data = np.load(sample_path)
+        else:
+            return jsonify({"error": "Test data not available"}), 404
+            
         X_test = test_data['X']
         y_test = test_data['y']
         
         normal_indices = np.where(y_test == 0)[0]
         abnormal_indices = np.where(y_test > 0)[0]
         
-        # Grab 25 of each
-        selected_normals = np.random.choice(normal_indices, 25, replace=False)
-        selected_abnormals = np.random.choice(abnormal_indices, 25, replace=False)
+        n_normals = min(25, len(normal_indices))
+        n_abnormals = min(25, len(abnormal_indices))
+        selected_normals = np.random.choice(normal_indices, n_normals, replace=False) if n_normals > 0 else np.array([], dtype=int)
+        selected_abnormals = np.random.choice(abnormal_indices, n_abnormals, replace=False) if n_abnormals > 0 else np.array([], dtype=int)
         all_indices = np.concatenate([selected_normals, selected_abnormals])
         np.random.shuffle(all_indices)
         
