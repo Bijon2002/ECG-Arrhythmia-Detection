@@ -84,7 +84,16 @@ def save_viva_question():
 @app.route('/random_beat/<beat_type>', methods=['GET'])
 def get_random_beat(beat_type):
     """Pulls a random heartbeat from our test set! Supports normal, abnormal, N, S, V, F, Q, and noisy."""
-    test_data = np.load(os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz'))
+    test_data_path = os.path.join(BASE_DIR, 'data', 'processed', 'test_data.npz')
+    sample_path = os.path.join(BASE_DIR, 'data', 'samples', 'live_stream_samples.npz')
+    
+    if os.path.exists(test_data_path):
+        test_data = np.load(test_data_path)
+    elif os.path.exists(sample_path):
+        test_data = np.load(sample_path)
+    else:
+        return jsonify({"error": "No test data available"}), 404
+        
     X_test = test_data['X']
     y_test = test_data['y']
     
@@ -135,9 +144,18 @@ def get_patient_stream(start_idx):
         # Read a 5-second chunk (1800 samples) to ensure we always have buffer
         chunk_size = 1800
         record_path = os.path.join(BASE_DIR, 'data', 'raw', '200')
+        fallback_stream = os.path.join(BASE_DIR, 'data', 'samples', 'patient_200_stream.npy')
         
-        record = wfdb.rdrecord(record_path, sampfrom=start_idx, sampto=start_idx + chunk_size)
-        signal = record.p_signal[:, 0]
+        if os.path.exists(record_path + '.hea'):
+            record = wfdb.rdrecord(record_path, sampfrom=start_idx, sampto=start_idx + chunk_size)
+            signal = record.p_signal[:, 0]
+        elif os.path.exists(fallback_stream):
+            full_stream = np.load(fallback_stream)
+            max_idx = max(0, len(full_stream) - chunk_size)
+            idx = (start_idx % max_idx) if max_idx > 0 else 0
+            signal = full_stream[idx:idx + chunk_size]
+        else:
+            return jsonify({"error": "Stream data not available"}), 404
         
         # Simple normalization to [-1, 1] range for visualization
         signal = (signal - np.mean(signal)) / (np.std(signal) + 1e-8)
@@ -369,4 +387,6 @@ def batch_predict_auto():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    port = int(os.environ.get("PORT", 7860))
+    app.run(host='0.0.0.0', port=port, debug=False)
+
