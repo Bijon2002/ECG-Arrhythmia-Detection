@@ -350,8 +350,8 @@ def batch_predict_auto():
         normal_indices = np.where(y_test == 0)[0]
         abnormal_indices = np.where(y_test > 0)[0]
         
-        n_normals = min(25, len(normal_indices))
-        n_abnormals = min(25, len(abnormal_indices))
+        n_normals = min(15, len(normal_indices))
+        n_abnormals = min(15, len(abnormal_indices))
         selected_normals = np.random.choice(normal_indices, n_normals, replace=False) if n_normals > 0 else np.array([], dtype=int)
         selected_abnormals = np.random.choice(abnormal_indices, n_abnormals, replace=False) if n_abnormals > 0 else np.array([], dtype=int)
         all_indices = np.concatenate([selected_normals, selected_abnormals])
