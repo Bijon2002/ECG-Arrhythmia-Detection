@@ -1,3 +1,34 @@
+// --- Theme Management (Default Light Theme) ---
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+            showToast(`Switched to ${newTheme === 'light' ? 'Light' : 'Dark'} theme`, 'info', 1800);
+        });
+    }
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+        if (theme === 'dark') {
+            themeToggleBtn.innerHTML = '<i class="ph-fill ph-moon"></i> <span>Theme: Dark</span>';
+        } else {
+            themeToggleBtn.innerHTML = '<i class="ph-fill ph-sun"></i> <span>Theme: Light</span>';
+        }
+    }
+}
+
+initTheme();
+
 // --- Tab Navigation Logic ---
 document.querySelectorAll('.nav-links li').forEach(item => {
     item.addEventListener('click', (e) => {
@@ -94,7 +125,258 @@ function showAlert(title, subtitle, details, type = 'danger') {
     requestAnimationFrame(() => overlay.classList.add('alert-visible'));
 }
 
-// --- Initialize Chart.js ---
+// --- Safe Badge Drawing Helper (100% cross-browser compatible) ---
+function drawClinicalBadge(c, x, y, w, h, r, bgColor, borderColor, text, textColor) {
+    if (!isFinite(x) || !isFinite(y) || !isFinite(w) || !isFinite(h)) return;
+    c.save();
+    c.fillStyle = bgColor;
+    c.strokeStyle = borderColor;
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.lineTo(x + w - r, y);
+    c.quadraticCurveTo(x + w, y, x + w, y + r);
+    c.lineTo(x + w, y + h - r);
+    c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    c.lineTo(x + r, y + h);
+    c.quadraticCurveTo(x, y + h, x, y + h - r);
+    c.lineTo(x, y + r);
+    c.quadraticCurveTo(x, y, x + r, y);
+    c.closePath();
+    c.fill();
+    c.stroke();
+
+    c.font = "800 8.5px 'JetBrains Mono', monospace";
+    c.fillStyle = textColor;
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText(text, x + w / 2, y + h / 2);
+    c.restore();
+}
+
+// --- Clinical Telemetry ECG Markings Plugin ---
+const ecgClinicalPlugin = {
+    id: 'ecgClinicalMarkings',
+    afterDraw(chart) {
+        try {
+            const { ctx, chartArea, scales: { y } } = chart;
+            if (!chartArea || !ctx || !y) return;
+
+            ctx.save();
+
+            // 1. Draw Isoelectric Reference Baseline (0.0 mV)
+            const rawZero = y.getPixelForValue(0);
+            const yZero = isFinite(rawZero) ? rawZero : (chartArea.top + chartArea.height / 2);
+
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left, yZero);
+            ctx.lineTo(chartArea.right, yZero);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Label for 0.0 mV Isoelectric baseline
+            ctx.font = "600 8px 'JetBrains Mono', monospace";
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.6)';
+            ctx.textAlign = 'right';
+            ctx.fillText('0.0 mV BASELINE', chartArea.right - 8, yZero - 4);
+
+            // 2. Draw Standard 1.0 mV Calibration Pulse (⎍ 10mm Standard)
+            const rawOne = y.getPixelForValue(1.0);
+            const yOne = isFinite(rawOne) ? rawOne : (yZero - 35);
+            const calStartX = chartArea.left + 14;
+            const calStepWidth = 18;
+            const calTail = 6;
+
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(calStartX, yZero);
+            ctx.lineTo(calStartX + calTail, yZero);
+            ctx.lineTo(calStartX + calTail, yOne);
+            ctx.lineTo(calStartX + calTail + calStepWidth, yOne);
+            ctx.lineTo(calStartX + calTail + calStepWidth, yZero);
+            ctx.lineTo(calStartX + calTail + calStepWidth + calTail, yZero);
+            ctx.stroke();
+
+            // Label above Calibration Pulse
+            ctx.font = "800 8px 'JetBrains Mono', monospace";
+            ctx.fillStyle = '#00ff88';
+            ctx.textAlign = 'center';
+            ctx.fillText('1.0mV CAL', calStartX + calTail + (calStepWidth / 2), yOne - 5);
+
+            // 3. Draw Voltage Calibration Ticks (+2mV, +1mV, -1mV, -2mV)
+            [-2, -1, 1, 2].forEach(v => {
+                const py = y.getPixelForValue(v);
+                if (isFinite(py)) {
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(chartArea.left + 8, py);
+                    ctx.lineTo(chartArea.left + 16, py);
+                    ctx.stroke();
+
+                    ctx.font = "600 8px 'JetBrains Mono', monospace";
+                    ctx.fillStyle = 'rgba(148, 163, 184, 0.7)';
+                    ctx.textAlign = 'left';
+                    ctx.fillText((v > 0 ? `+${v}.0` : `${v}.0`) + ' mV', chartArea.left + 18, py + 3);
+                }
+            });
+
+            // 4. Draw Physiological P-Q-R-S-T Fiducial Markers (when enabled)
+            if (showPQRST) {
+                const dataset = chart.data.datasets[0];
+                const data = dataset ? dataset.data : null;
+                const meta = chart.getDatasetMeta(0);
+
+                if (data && data.length >= 300 && meta && meta.data && meta.data.length >= 300) {
+                    // Helper to get guaranteed finite pixel coordinates
+                    const getPt = (idx) => {
+                        const pt = meta.data[idx];
+                        if (pt && isFinite(pt.x) && isFinite(pt.y)) {
+                            return { x: pt.x, y: pt.y };
+                        }
+                        const px = chartArea.left + (chartArea.width * (idx / (data.length - 1)));
+                        const py = y.getPixelForValue(data[idx] || 0);
+                        return {
+                            x: isFinite(px) ? px : chartArea.left,
+                            y: isFinite(py) ? py : yZero
+                        };
+                    };
+
+                    // Find R peak (maximum amplitude peak)
+                    let rIdx = 180;
+                    let maxVal = -Infinity;
+                    for (let i = 100; i < 260; i++) {
+                        if (data[i] > maxVal) {
+                            maxVal = data[i];
+                            rIdx = i;
+                        }
+                    }
+
+                    if (maxVal > 0.3) {
+                        // Q dip (minimum before R)
+                        let qIdx = rIdx - 8;
+                        let minQ = Infinity;
+                        for (let i = Math.max(0, rIdx - 25); i < rIdx; i++) {
+                            if (data[i] < minQ) {
+                                minQ = data[i];
+                                qIdx = i;
+                            }
+                        }
+
+                        // S dip (minimum after R)
+                        let sIdx = rIdx + 8;
+                        let minS = Infinity;
+                        for (let i = rIdx + 1; i <= Math.min(data.length - 1, rIdx + 28); i++) {
+                            if (data[i] < minS) {
+                                minS = data[i];
+                                sIdx = i;
+                            }
+                        }
+
+                        // P wave peak (before Q)
+                        let pIdx = Math.max(0, qIdx - 45);
+                        let maxP = -Infinity;
+                        for (let i = Math.max(0, qIdx - 85); i < Math.max(0, qIdx - 15); i++) {
+                            if (data[i] > maxP) {
+                                maxP = data[i];
+                                pIdx = i;
+                            }
+                        }
+
+                        // T wave peak (after S)
+                        let tIdx = Math.min(data.length - 1, sIdx + 55);
+                        let maxT = -Infinity;
+                        for (let i = Math.min(data.length - 1, sIdx + 20); i < Math.min(data.length - 1, sIdx + 110); i++) {
+                            if (data[i] > maxT) {
+                                maxT = data[i];
+                                tIdx = i;
+                            }
+                        }
+
+                        // Helper to draw clean pinned badge
+                        const drawPin = (idx, label, color, isAbove = true, extraText = '') => {
+                            const pt = getPt(idx);
+                            const px = pt.x;
+                            const py = pt.y;
+                            const offset = isAbove ? -22 : 22;
+
+                            // Pin stem
+                            ctx.strokeStyle = color;
+                            ctx.lineWidth = 1.2;
+                            ctx.setLineDash([2, 2]);
+                            ctx.beginPath();
+                            ctx.moveTo(px, py);
+                            ctx.lineTo(px, py + offset);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+
+                            // Pin point dot
+                            ctx.fillStyle = color;
+                            ctx.beginPath();
+                            ctx.arc(px, py, 3, 0, Math.PI * 2);
+                            ctx.fill();
+
+                            // Badge Box
+                            const badgeW = extraText ? 66 : 18;
+                            const badgeH = 15;
+                            const badgeY = isAbove ? py + offset - badgeH : py + offset;
+                            const badgeX = px - (badgeW / 2);
+
+                            drawClinicalBadge(
+                                ctx,
+                                badgeX,
+                                badgeY,
+                                badgeW,
+                                badgeH,
+                                3,
+                                'rgba(2, 6, 18, 0.92)',
+                                color,
+                                extraText ? `${label} ${extraText}` : label,
+                                color
+                            );
+                        };
+
+                        // Draw the wave pins
+                        drawPin(pIdx, 'P', '#38bdf8', true);
+                        drawPin(qIdx, 'Q', '#fbbf24', false);
+                        drawPin(rIdx, 'R', '#00ff88', true, `(+${maxVal.toFixed(2)}mV)`);
+                        drawPin(sIdx, 'S', '#fbbf24', false);
+                        drawPin(tIdx, 'T', '#38bdf8', true);
+
+                        // Draw QRS Span Bracket below baseline
+                        const ptQ = getPt(qIdx);
+                        const ptS = getPt(sIdx);
+                        const bracketY = yZero + 36;
+
+                        ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(ptQ.x, bracketY - 4);
+                        ctx.lineTo(ptQ.x, bracketY);
+                        ctx.lineTo(ptS.x, bracketY);
+                        ctx.lineTo(ptS.x, bracketY - 4);
+                        ctx.stroke();
+
+                        ctx.font = "700 8px 'JetBrains Mono', monospace";
+                        ctx.fillStyle = '#fbbf24';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('QRS: 84ms', (ptQ.x + ptS.x) / 2, bracketY + 9);
+                    }
+                }
+            }
+
+            ctx.restore();
+        } catch (err) {
+            console.warn("ECG Plugin Draw Exception Guard:", err);
+        }
+    }
+};
+
+// --- Initialize Chart.js with Neon Phosphor Styling ---
 const ctx = document.getElementById('ecgChart').getContext('2d');
 
 const ecgChart = new Chart(ctx, {
@@ -103,18 +385,18 @@ const ecgChart = new Chart(ctx, {
         labels: Array.from({ length: 360 }, (_, i) => i),
         datasets: [{
             data: Array(360).fill(0),
-            borderColor: '#059669',
-            borderWidth: 2,
+            borderColor: '#00ff88',
+            borderWidth: 2.2,
             pointRadius: 0,
-            tension: 0.3,
+            tension: 0.25,
             fill: true,
             backgroundColor: (context) => {
                 const chart = context.chart;
                 const { ctx: c, chartArea } = chart;
                 if (!chartArea) return 'transparent';
                 const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                gradient.addColorStop(0, 'rgba(5, 150, 105, 0.12)');
-                gradient.addColorStop(1, 'rgba(5, 150, 105, 0.0)');
+                gradient.addColorStop(0, 'rgba(0, 255, 136, 0.16)');
+                gradient.addColorStop(1, 'rgba(0, 255, 136, 0.0)');
                 return gradient;
             }
         }]
@@ -122,22 +404,18 @@ const ecgChart = new Chart(ctx, {
     options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { duration: 400 },
+        animation: false,
         plugins: { legend: { display: false } },
         scales: {
             x: { display: false },
             y: {
-                display: true,
+                display: false,
                 min: -3,
-                max: 3,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.06)',
-                    drawBorder: false
-                },
-                ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+                max: 3
             }
         }
-    }
+    },
+    plugins: [ecgClinicalPlugin]
 });
 
 // --- Clinical Audio Synthesizer (Web Audio API) ---
@@ -211,25 +489,25 @@ function updateEnsembleVotingCards(individualModels) {
         const cardEl = document.getElementById(`mcard-${m.model_id}`);
 
         const colorMap = {
-            'normal': '#059669',
-            'warning': '#d97706',
-            'danger': '#dc2626',
-            'unknown': '#64748b'
+            'normal': '#00ff88',
+            'warning': '#fbbf24',
+            'danger': '#f87171',
+            'unknown': '#94a3b8'
         };
 
         if (diagEl) {
             diagEl.textContent = m.diagnosis.replace(' Beat', '');
-            diagEl.style.color = colorMap[m.severity] || '#059669';
+            diagEl.style.color = colorMap[m.severity] || '#00ff88';
         }
         if (barEl) {
             barEl.style.width = `${m.confidence.toFixed(1)}%`;
-            barEl.style.backgroundColor = colorMap[m.severity] || '#059669';
+            barEl.style.backgroundColor = colorMap[m.severity] || '#00ff88';
         }
         if (confEl) {
             confEl.textContent = `${m.confidence.toFixed(1)}% Conf`;
         }
         if (cardEl) {
-            cardEl.style.borderColor = m.severity === 'danger' ? '#fca5a5' : '#e2e8f0';
+            cardEl.style.borderColor = m.severity === 'danger' ? '#f87171' : '#14243c';
         }
     });
 }
@@ -246,6 +524,7 @@ if (pqrstBtn) {
             '<i class="ph-fill ph-selection-slash"></i> P-QRS-T Markers: OFF';
         const intervalInfo = document.getElementById('pqrst-interval-info');
         if (intervalInfo) intervalInfo.style.opacity = showPQRST ? '1' : '0.25';
+        ecgChart.update('none');
     });
 }
 
@@ -254,11 +533,20 @@ function updatePQRSTIntervals(signalArray) {
     if (!intervalInfo) return;
     
     // Approximate physiological cardiac intervals based on sample analysis
-    const pr = Math.floor(150 + (Math.random() * 15));
-    const qrs = Math.floor(82 + (Math.random() * 12));
-    const qt = Math.floor(375 + (Math.random() * 20));
-    intervalInfo.innerHTML = `PR: ${pr}ms &bull; QRS: ${qrs}ms &bull; QT: ${qt}ms`;
+    const pr = Math.floor(150 + (Math.random() * 14));
+    const qrs = Math.floor(82 + (Math.random() * 10));
+    const qt = Math.floor(375 + (Math.random() * 18));
+    const qtc = Math.floor(qt + 32);
+    intervalInfo.innerHTML = `PR: ${pr}ms &bull; QRS: ${qrs}ms &bull; QT: ${qt}ms &bull; QTc: ${qtc}ms`;
 }
+
+// Automatically load initial Normal Sinus Beat (N) on page ready
+window.addEventListener('DOMContentLoaded', () => {
+    const btnN = document.getElementById('btn-sample-n');
+    if (btnN) {
+        setTimeout(() => btnN.click(), 400);
+    }
+});
 
 // --- API Communication ---
 const API_URL = "/predict";
@@ -517,12 +805,6 @@ document.getElementById('btn-live-start').addEventListener('click', async () => 
     document.getElementById('btn-live-start').classList.add('hidden');
     document.getElementById('btn-live-stop').classList.remove('hidden');
 
-    // Request fullscreen on the right-col monitor
-    const monitorElement = document.querySelector('.right-col');
-    if (monitorElement && monitorElement.requestFullscreen) {
-        monitorElement.requestFullscreen().catch(err => console.log(err));
-    }
-
     ecgChart.data.datasets[0].data = Array(360).fill(0);
     ecgChart.update();
 
@@ -538,13 +820,13 @@ document.getElementById('btn-live-start').addEventListener('click', async () => 
             ecgChart.data.datasets[0].data.push(...newSamples);
             ecgChart.update('none');
         }
-    }, 80); // Increased from 50ms to 80ms to slow down the scrolling
+    }, 80); // 80ms interval for smooth scrolling
 
     aiInterval = setInterval(() => {
         if (!isLive) return;
         const currentScreen = ecgChart.data.datasets[0].data.slice();
         analyzeSignal(currentScreen);
-    }, 3000); // Increased from 1000ms to 3000ms to reduce alert frequency
+    }, 3000);
 });
 
 document.getElementById('btn-live-stop').addEventListener('click', () => {
@@ -556,11 +838,78 @@ document.getElementById('btn-live-stop').addEventListener('click', () => {
     document.getElementById('diagnosis-text').textContent = "Monitor Stopped";
     document.getElementById('diagnosis-text').className = "diagnosis-status status-unknown";
 
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => console.log(err));
-    }
     showToast('Live monitor stopped.', 'info', 2000);
 });
+
+// --- Fullscreen ECG Monitor Logic ---
+function initFullscreenHandler() {
+    const fullscreenBtn = document.getElementById('btn-fullscreen-ecg');
+    if (!fullscreenBtn) return;
+
+    fullscreenBtn.addEventListener('click', async () => {
+        try {
+            const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+            if (!isFull) {
+                const targetElem = document.getElementById('tab-live') || document.documentElement;
+                if (targetElem.requestFullscreen) {
+                    await targetElem.requestFullscreen();
+                } else if (targetElem.webkitRequestFullscreen) {
+                    await targetElem.webkitRequestFullscreen();
+                } else if (targetElem.mozRequestFullScreen) {
+                    await targetElem.mozRequestFullScreen();
+                } else if (targetElem.msRequestFullscreen) {
+                    await targetElem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    await document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    await document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    await document.msExitFullscreen();
+                }
+            }
+        } catch (err) {
+            console.error("Fullscreen toggle failed:", err);
+            // Fallback: toggle fullscreen class manually
+            const liveTab = document.getElementById('tab-live');
+            if (liveTab) {
+                const isManualFull = liveTab.classList.toggle('is-fullscreen');
+                updateFullscreenBtnState(isManualFull);
+            }
+        }
+    });
+
+    function updateFullscreenBtnState(isFull) {
+        const liveTab = document.getElementById('tab-live');
+        if (isFull) {
+            fullscreenBtn.innerHTML = '<i class="ph-fill ph-arrows-in-simple"></i> Exit Fullscreen';
+            fullscreenBtn.classList.add('active');
+            if (liveTab) liveTab.classList.add('is-fullscreen');
+        } else {
+            fullscreenBtn.innerHTML = '<i class="ph-fill ph-arrows-out-simple"></i> Fullscreen';
+            fullscreenBtn.classList.remove('active');
+            if (liveTab) liveTab.classList.remove('is-fullscreen');
+        }
+        setTimeout(() => {
+            if (typeof ecgChart !== 'undefined' && ecgChart) ecgChart.resize();
+        }, 150);
+    }
+
+    const onFullscreenChange = () => {
+        const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        updateFullscreenBtnState(isFull);
+    };
+
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.addEventListener('mozfullscreenchange', onFullscreenChange);
+    document.addEventListener('MSFullscreenChange', onFullscreenChange);
+}
+
+initFullscreenHandler();
 
 // --- Responsive Sidebar Toggle ---
 const sidebar = document.querySelector('.sidebar');
