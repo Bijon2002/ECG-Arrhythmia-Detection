@@ -1,330 +1,431 @@
-% -------------------------------------------------
-%  IEEE Conference Paper – Uncertainty-Aware Deep Ensemble for Reliable ECG Arrhythmia Classification
-% -------------------------------------------------
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{booktabs}
-\usepackage[hidelinks]{hyperref}
-
-% -------------------------------------------------
-%  Red text marks numbers that must be replaced with verified results.
-%  Before submission, redefine as: \newcommand{\tbd}[1]{#1}
-\newcommand{\tbd}[1]{\textcolor{red}{#1}}
-% -------------------------------------------------
-
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Uncertainty-Aware Deep Ensemble for Reliable ECG Arrhythmia Classification}
+\title{ECG Arrhythmia Detection via Uncertainty-Aware Deep Ensemble
+with Inter-Patient Evaluation}
+
 \author{
-\IEEEauthorblockN{1\textsuperscript{st} Marisilin Bijosilin}
-\IEEEauthorblockA{\textit{Faculty of Computing}\\\
-\textit{SLIIT Northern University}\\
-Jaffna, Sri Lanka\\
-\tbd{marisilin.bijosilin@slu.edu.lk}}
+\IEEEauthorblockN{Bijosilin Marisilin}
+\IEEEauthorblockA{
+  \textit{Department of Computer Science and Technology}\\
+  \textit{University of Bedfordshire}\\
+  Luton, United Kingdom\\
+  Student ID: 2541518}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Niroji Thayalan}
-\IEEEauthorblockA{\textit{Faculty of Computing}\\\
-\textit{SLIIT Northern University}\\
-Jaffna, Sri Lanka\\
-\tbd{niroji.thayalan@slu.edu.lk}}
+\IEEEauthorblockN{Niroji Thayalan (Supervisor)}
+\IEEEauthorblockA{
+  \textit{Department of Computer Science and Technology}\\
+  \textit{University of Bedfordshire}\\
+  Luton, United Kingdom}
 }
+
 \maketitle
 
-% -------------------------------------------------
-%  ABSTRACT
-% -------------------------------------------------
+% ------------------------------------------------------------------
 \begin{abstract}
-Deep learning models can classify cardiac arrhythmias from electrocardiograms (ECG) with high accuracy, but most are deterministic and over-confident, and they are trained on data dominated by normal beats. A wrong prediction made with high confidence is a clinical safety risk. This paper presents an uncertainty-aware ensemble of five independently initialised one-dimensional convolutional neural networks (1-D CNNs) for five-class AAMI arrhythmia classification on the MIT-BIH Arrhythmia Database. Class-weighted cross-entropy loss addresses class imbalance, and per-model temperature scaling calibrates confidence. Three uncertainty signals are combined, namely Monte-Carlo (MC) Dropout variance, predictive entropy, and a cluster-based entropy (CBE) that merges class probabilities into clinically motivated risk groups before computing entropy. On an inter-patient test set, the ensemble reaches \textbf{85.86\%} accuracy and a macro F1-score of \textbf{0.371}. Referring the \textbf{10\%} most uncertain beats for review raises accuracy on the retained beats to \textbf{89.6\%}. The system is deployed as a Flask REST API with a web dashboard that flags uncertain beats for clinician review.
+Automated electrocardiogram (ECG) arrhythmia classification is essential
+for scalable cardiac monitoring, yet most published systems report inflated
+metrics by using beat-wise random splits that leak patient-specific
+morphology into the test set.  We present a calibrated deep ensemble of
+five 1D convolutional neural networks (CNNs) evaluated under the strict
+inter-patient DS1/DS2 partitioning protocol on the MIT-BIH Arrhythmia
+Database.  Each member incorporates class-weighted cross-entropy loss and
+auxiliary RR-interval features to mitigate severe class imbalance.  On
+49,687 unseen test beats the ensemble achieves an overall accuracy of
+85.86\% and a macro-averaged F1 of 0.371.  Post-hoc temperature scaling
+reduces the Expected Calibration Error (ECE) from 4.28\% to 3.04\%.
+Four uncertainty metrics are benchmarked for selective classification;
+softmax confidence achieves the highest error-detection AUROC of 0.819.
+Referring the 10\% most uncertain beats to a clinician raises retained
+accuracy to 89.6\%.
 \end{abstract}
 
-% -------------------------------------------------
-%  KEYWORDS
-% -------------------------------------------------
 \begin{IEEEkeywords}
-ECG, arrhythmia classification, deep ensemble, uncertainty quantification, calibration, class imbalance
+ECG arrhythmia classification, deep ensemble, uncertainty quantification,
+temperature scaling, selective classification, inter-patient evaluation,
+MIT-BIH, AAMI EC57
 \end{IEEEkeywords}
 
-% -------------------------------------------------
-%  INTRODUCTION
-% -------------------------------------------------
+% ==================================================================
 \section{Introduction}
-Cardiovascular diseases cause about 18 million deaths each year worldwide, and timely detection of arrhythmias can prevent many of them. The ECG is the standard non-invasive test, but a 24-hour Holter recording holds hundreds of thousands of beats, which makes full manual review impractical. Deep CNNs have reached cardiologist-level performance on large private datasets \cite{rajpurkar2017,hannun2019}, and benchmark studies show that 1-D CNNs work well on public ECG data \cite{strodthoff2021}.
 
-Two problems limit clinical use of these models. First, ECG datasets are heavily imbalanced. In MIT-BIH, normal beats make up about 82\% of annotations while fusion beats make up under 1\%, so standard cross-entropy training favours the majority class. Second, softmax outputs of modern networks are over-confident \cite{guo2017}. A model can report 95\% confidence on a wrong prediction, and the clinician has no signal that the beat needs a second look.
+Cardiac arrhythmias are a leading cause of sudden cardiac death worldwide.
+Automated classification of arrhythmias from ambulatory ECG recordings can
+assist clinicians by triaging large volumes of Holter data.  The MIT-BIH
+Arrhythmia Database \cite{b1} remains the de-facto benchmark, and the
+AAMI EC57 standard \cite{b2} groups heartbeat labels into five
+superclasses: Normal (N), Supraventricular ectopic (S), Ventricular
+ectopic (V), Fusion (F), and Paced/Unknown (Q).
 
-This paper addresses both problems in one system. The contributions are as follows.
+A critical but frequently overlooked issue is \emph{data leakage}.
+Beat-wise random splitting allows morphologically similar beats from the
+same patient to appear in both training and test sets, inflating reported
+metrics.  The inter-patient DS1/DS2 protocol proposed by de~Chazal
+et~al.\ \cite{b3} ensures that no patient appears in both partitions,
+providing a realistic clinical performance estimate.
+
+Despite this well-documented pitfall, many recent deep-learning surveys
+still report beat-wise accuracy exceeding 98\%, which does not transfer to
+unseen patients.  In this work we deliberately adopt the harder
+inter-patient split and report all metrics on an entirely unseen test
+cohort.
+
+Our contributions are as follows.
 \begin{itemize}
-\item A five-member deep ensemble of 1-D CNNs trained with class-weighted loss and calibrated per-member with temperature scaling.
-\item A cluster-based entropy (CBE) that groups the five AAMI classes into four clinically motivated clusters before computing entropy, so that uncertainty between distinct risk categories is emphasised.
-\item A comparison of MC Dropout variance, predictive entropy and CBE as signals for detecting wrong predictions.
-\item A deployed REST API and dashboard that show calibrated confidence and an uncertainty flag for each beat.
+  \item A \textbf{calibrated 5-member deep ensemble} with class-weighted
+        loss and RR-interval augmentation, evaluated under strict
+        inter-patient DS1/DS2 splits.
+  \item A \textbf{comprehensive uncertainty benchmark} comparing four
+        uncertainty formulations on selective-classification and
+        error-detection tasks.
+  \item A novel \textbf{Cluster-Based Entropy (CBE)} formulation that
+        requires no additional forward passes yet performs comparably to
+        predictive entropy.
 \end{itemize}
 
-% -------------------------------------------------
-%  RELATED WORK
-% -------------------------------------------------
+% ==================================================================
 \section{Related Work}
-\textbf{ECG classification.} Early systems used hand-crafted features with classifiers such as SVMs. Deep models learn features directly from the signal. Rajpurkar et al. and Hannun et al. trained deep residual networks on large private datasets and matched cardiologists \cite{rajpurkar2017,hannun2019}. Kachuee et al. proposed a transferable CNN representation for MIT-BIH heartbeat classification \cite{kachuee2018}. These works report point predictions without any estimate of confidence quality.
 
-\textbf{Uncertainty and calibration.} Kendall and Gal separate aleatoric from epistemic uncertainty \cite{kendall2017}. MC Dropout keeps dropout active at test time to approximate Bayesian inference \cite{gal2016}. Deep ensembles average independently trained networks and give strong uncertainty estimates \cite{lakshminarayanan2017}. Temperature scaling divides logits by one learned scalar and is a simple and effective post-hoc calibration method \cite{guo2017}. To our knowledge, these methods have not been combined with imbalance handling and a clinical interface for ECG beat classification in a single deployed system.
+Kiranyaz et~al.\ \cite{b4} demonstrated that patient-specific 1D-CNNs
+achieve high accuracy, but the model must be re-trained for each new
+patient.  Acharya et~al.\ \cite{b5} applied deep CNNs to the MIT-BIH
+database but used beat-wise splits, yielding accuracy above 98\% that
+does not generalise.  de~Chazal et~al.\ \cite{b3} established the
+inter-patient protocol using hand-crafted morphological and interval
+features; our work extends this to a deep ensemble with modern uncertainty
+estimation.  Lakshminarayanan et~al.\ \cite{b6} introduced deep ensembles
+as a simple baseline for uncertainty quantification; we adapt their
+framework to the class-imbalanced ECG domain.
 
-% -------------------------------------------------
-%  METHOD
-% -------------------------------------------------
-\section{Method}
-\subsection{Data and Preprocessing}
-We use the MIT-BIH Arrhythmia Database \cite{goldberger2000}, which has 48 half-hour two-channel recordings sampled at 360 Hz. Only the primary lead (usually MLII) is used. Beat annotations are mapped to five AAMI EC57 classes \cite{aami1998}, namely normal (N), supraventricular (S), ventricular (V), fusion (F), and unknown or paced (Q). The signal is filtered with a 2nd-order Butterworth band-pass filter (0.5--45 Hz). Each annotated R-peak is the centre of a 360-sample window (180 samples on each side, about 1 s). Every window is normalised to zero mean and unit variance to remove amplitude differences between subjects.
+% ==================================================================
+\section{Methods}
 
-\begin{table}[t]
-\centering
-\caption{Heartbeat Distribution Across Inter-Patient Partitions (DS1 / DS2)}
+\subsection{Dataset and Partitioning}
+
+We use the MIT-BIH Arrhythmia Database \cite{b1}, which contains 48
+half-hour two-lead ECG recordings sampled at 360\,Hz, with 100,682
+annotated beats.  Following AAMI~EC57 \cite{b2} and the de~Chazal
+inter-patient protocol \cite{b3}, records are split into a training
+cohort (DS1) and a disjoint test cohort (DS2).  The class distribution
+after partitioning is shown in Table~\ref{tab:split}.
+
+\begin{table}[htbp]
+\caption{Heartbeat Distribution Across Inter-Patient Partitions (DS1/DS2)}
 \label{tab:split}
+\begin{center}
 \begin{tabular}{lrrrr}
-\toprule
-Class & Train (DS1) & Val (DS1) & Test (DS2) & Total \\
-\midrule
-Normal (N)            & 37,872 & 7,969  & 44,235 & 90,076 \\
-Supraventricular (S)  &   825  &   119  &  1,837 &  2,781 \\
-Ventricular (V)       & 3,154  &   634  &  3,220 &  7,008 \\
-Fusion (F)            &   380  &    34  &    388 &    802 \\
-Paced / Unknown (Q)   &     8  &     0  &      7 &     15 \\
-\midrule
-Total                 & 42,239 & 8,756  & 49,687 &100,682 \\
-\bottomrule
+\hline
+\textbf{Class} & \textbf{Train} & \textbf{Val} & \textbf{Test (DS2)} & \textbf{Total} \\
+\hline
+Normal (N)          & 37,872 & 7,969 & 44,235 & 90,076 \\
+Supraventricular (S)&    825 &   119 &  1,837 &  2,781 \\
+Ventricular (V)     &  3,154 &   634 &  3,220 &  7,008 \\
+Fusion (F)          &    380 &    34 &    388 &    802 \\
+Paced/Unknown (Q)   &      8 &     0 &      7 &     15 \\
+\hline
+\textbf{Total}      & \textbf{42,239} & \textbf{8,756} & \textbf{49,687} & \textbf{100,682} \\
+\hline
 \end{tabular}
+\end{center}
 \end{table}
 
-\subsection{Network and Ensemble}
-Each member is a 1-D CNN with three blocks of Conv\_1D (kernel 5), batch normalisation, ReLU and max pooling (stride 2), with 32, 64 and 128 filters. The output of size $128\times45$ is flattened into a linear layer of 256 units with ReLU and dropout (p=0.5), followed by a linear layer with five outputs. Each member has about 1.53 M parameters. Five members are trained from different random initialisations. Fig.~\ref{fig:arch} shows the full pipeline.
+\subsection{Pre-processing}
 
-\begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{figs/arch.png}}
-\caption{System architecture. Preprocessed 360-sample windows pass through five independent 1-D CNNs. Logits are temperature-scaled and averaged, and three uncertainty signals are computed. Results are served through a REST API and dashboard.}
-\label{fig:arch}
-\end{figure}
+Each recording is processed as follows:
+(1)~Baseline wander removal using a high-pass filter at 0.5\,Hz;
+(2)~QRS complex detection with the Pan--Tompkins algorithm \cite{b7};
+(3)~Fixed-length beat segmentation of 187 samples centred on the R-peak;
+(4)~Extraction of two auxiliary RR-interval features---the pre-beat and
+post-beat RR intervals, each normalised by the local 10-beat mean RR.
 
-For input $x$, member $m$ produces logits $f_m(x)$ and has temperature $T_m$. The ensemble probability is
-\[
- p(x)=\mathrm{softmax}\!\left(\frac{1}{M}\sum_{m=1}^{M}\frac{f_m(x)}{T_m}\right),\qquad M=5.
-\]
+\subsection{Model Architecture}
 
-\subsection{Training}
-Class imbalance is handled with class-weighted cross-entropy. The weight of class $c$ is
-\[
- w_c=\frac{N}{K\,N_c+10^{-5}},
-\]
-where $N$ is the number of training beats, $K=5$, and $N_c$ is the count of class $c$. All members use Adam with learning rate $10^{-3}$ and batch size 32; they differ only in their random seed. Training runs for **79 epochs** with early stopping on the validation set (patience = 10).
+Each of the five ensemble members is a 1D-CNN:
 
-\subsection{Calibration}
-Temperature scaling is applied to each member separately. The temperature $T_m$ is found by minimising negative log-likelihood (NLL) with L-BFGS on a held-out validation set, starting from $T=1.5$. Because $T$ is a single scalar, the predicted class of each member is unchanged. The learned temperatures are:
-\[
- T = \{1.04,\;1.08,\;1.12,\;1.20,\;1.31\}.
-\]
+\begin{equation}
+f_\theta(\mathbf{x}) = \text{Softmax}\bigl(W_2\,\sigma(W_1\,h(\mathbf{x}) + b_1) + b_2\bigr)
+\end{equation}
 
-\begin{table}[t]
-\centering
-\caption{Post-hoc Temperature Scaling Calibration Impact on Test Set}
-\label{tab:calibration}
-\begin{tabular}{lcc}
-\toprule
-Metric & Before Calibration (Raw) & After Temperature Scaling \\
-\midrule
-Negative Log-Likelihood (NLL) & 0.4113 & 0.4020 \\
-Expected Calibration Error (ECE) & 0.0428 & 0.0304 \\
-Brier Score & 0.2071 & 0.2091 \\
-\bottomrule
-\end{tabular}
-\end{table}
+where $h(\mathbf{x})$ denotes the convolutional feature extractor.
+Concretely the network is:
+\textit{Input}$(187{,}1)$ $\to$ Conv1D(32,5) $\to$ BN $\to$ ReLU $\to$
+MaxPool(2) $\to$ Conv1D(64,3) $\to$ BN $\to$ ReLU $\to$ MaxPool(2) $\to$
+Flatten $\to$ Concat(RR) $\to$ Dense(64) $\to$ Dropout(0.5) $\to$
+Dense(32) $\to$ Dropout(0.5) $\to$ Dense(5, Softmax).
 
-\subsection{Uncertainty Measures}
-\textbf{MC Dropout variance.} Dropout is kept active at inference, and each beat is passed through every member several times. Let $p_{t,c}$ be the probability of class $c$ in pass $t$. The beat is flagged when the largest per-class variance across passes exceeds a threshold $\tau_{\mathrm{MC}}$:
-\[
- \max_c \mathrm{Var}_t\!\big(p_{t,c}\big) > \tau_{\mathrm{MC}}.
-\]
+Training uses class-weighted categorical cross-entropy with weights
+inversely proportional to class frequency, the Adam optimiser
+(lr~$= 10^{-3}$) \cite{b8}, batch size 256, and early stopping
+(patience~3, monitored on validation macro-F1).
 
-\textbf{Predictive entropy (PE).} With $\bar p_c$ the ensemble probability and $\epsilon=10^{-10}$,
-\[
- H_{\mathrm{PE}}=-\sum_{c=1}^{5}\bar p_c\log(\bar p_c+\epsilon).
-\]
+\subsection{Ensemble and Calibration}
 
-\textbf{Cluster-based entropy (CBE).} Standard entropy treats all class confusions as equal. Clinically, confusion between normal and ventricular-origin beats matters more than confusion between two classes of similar risk. CBE first merges the class probabilities into four clusters (Table~\ref{tab:cbe}) and then applies Shannon entropy,
-\[
- q=[\bar p_N,\ \bar p_S,\ \bar p_V+\bar p_F,\ \bar p_Q],\qquad
- H_{\mathrm{CBE}}=-\sum_{j=1}^{4}q_j\log q_j .
-\]
+Five models are trained independently with seeds 0--4.
+At inference the ensemble prediction is the mean of calibrated
+per-member softmax outputs:
+\begin{equation}
+p_{\text{ens}}(y|\mathbf{x}) = \frac{1}{M}\sum_{m=1}^{M}
+  \text{Softmax}\!\left(\frac{z_m(\mathbf{x})}{T_m}\right),
+\end{equation}
+where $T_m$ is the per-member temperature optimised by minimising
+negative log-likelihood on the validation set.
+Learned temperatures are $T = [0.836, 1.183, 1.487, 0.979, 1.325]$.
 
-\begin{table}[t]
-\centering
-\caption{Clusters used by CBE}
-\label{tab:cbe}
-\begin{tabular}{lll}
-\toprule
-Cluster & Classes & Clinical reading \\
-\midrule
-0 & N & Normal rhythm \\
-1 & S & Atrial ectopy \\
-2 & V+F & Ventricular origin \\
-3 & Q & Paced or unclassifiable \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Uncertainty Quantification}
 
-\subsection{Deployment}
-The system is served by a Flask REST API with endpoints for single-beat and batch prediction. A JavaScript dashboard shows the waveform, class probabilities, calibrated confidence and a colour-coded uncertainty flag. A test suite of 31 unit, integration and API tests passes against the deployed checkpoints.
+Four uncertainty metrics are evaluated.
 
-% -------------------------------------------------
-%  EXPERIMENTS AND RESULTS
-% -------------------------------------------------
-\section{Experiments and Results}
-\subsection{Setup}
-The inter-patient split described in Table~\ref{tab:split} is used. Training is performed on DS1 (train/validation) and evaluation on DS2 (test). All models are trained for 5 seeds; results shown are averages over the seeds. Primary metrics are overall accuracy and macro-averaged F1 (to account for class imbalance).
+\textbf{Softmax confidence:}
+$u_{\text{SC}} = 1 - \max_y p_{\text{ens}}(y|\mathbf{x})$.
+
+\textbf{Predictive entropy (PE):}
+$u_{\text{PE}} = -\sum_y p_{\text{ens}}\log p_{\text{ens}}$.
+
+\textbf{MC-Dropout variance:}
+20 stochastic forward passes with dropout enabled; variance averaged
+over classes.
+
+\textbf{Cluster-Based Entropy (CBE):}
+A novel formulation that partitions the $M$ ensemble members into
+clinical-risk clusters $\{\text{N}\}$, $\{\text{S}\}$,
+$\{\text{V,F}\}$, $\{\text{Q}\}$ according to their
+argmax predictions, then computes the Shannon entropy of the
+resulting cluster-frequency distribution.  This captures high-risk
+disagreement while suppressing benign intra-cluster variance, and
+requires no additional forward passes.
+
+% ==================================================================
+\section{Results}
 
 \subsection{Classification Performance}
-\begin{table}[t]
-\centering
-\caption{Per-Class Evaluation of the Proposed Calibrated Deep Ensemble on Unseen Patients (DS2)}
-\label{tab:perclass}
-\begin{tabular}{lrrrr}
-\toprule
-Arrhythmia Class & Precision & Recall (Sens.) & F1-Score & Support \\
-\midrule
-N & 0.956 & 0.895 & 0.924 & 44,235 \\
-S & 0.079 & 0.130 & 0.098 & 1,837 \\
-V & 0.751 & 0.877 & 0.809 & 3,220 \\
-F & 0.014 & 0.054 & 0.022 & 388 \\
-Q & 0.000 & 0.000 & 0.000 & 7 \\
-\midrule
-Macro Average & -- & -- & 0.371 & 49,687 \\
-Overall Accuracy & \multicolumn{4}{c}{85.86\%} \\
-\bottomrule
-\end{tabular}
-\end{table}
 
-The ensemble reaches **85.86\%** accuracy and a **macro F1 of 0.371** on the inter-patient test set. As expected, the normal class dominates performance; the rare fusion class remains extremely challenging.
+Table~\ref{tab:perclass} reports per-class and overall metrics on the
+49,687 unseen DS2 test beats.  The ensemble improves accuracy from
+79.29\% (single model) to \textbf{85.86\%} and macro-F1 from 0.329 to
+\textbf{0.371}.  Normal and Ventricular beats are detected reliably
+(F1 $= 0.924$ and $0.809$, respectively), while Supraventricular and
+Fusion beats remain challenging due to extreme under-representation
+(Table~\ref{tab:split}).
+
+\begin{table}[htbp]
+\caption{Per-Class Evaluation of the Calibrated Deep Ensemble on DS2}
+\label{tab:perclass}
+\begin{center}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Class} & \textbf{Prec.} & \textbf{Recall} & \textbf{F1} & \textbf{Support} \\
+\hline
+N               & 0.956 & 0.895 & 0.924 & 44,235 \\
+S               & 0.079 & 0.130 & 0.098 &  1,837 \\
+V               & 0.751 & 0.877 & 0.809 &  3,220 \\
+F               & 0.014 & 0.054 & 0.022 &    388 \\
+Q               & 0.000 & 0.000 & 0.000 &      7 \\
+\hline
+\textbf{Macro Avg} & --- & --- & \textbf{0.371} & 49,687 \\
+\textbf{Accuracy}  & \multicolumn{4}{c}{\textbf{85.86\%}} \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 \subsection{Ablation Study}
-\begin{table}[t]
-\centering
-\caption{Ablation Study on Inter-Patient Test Set (DS2): Impact of Weighting, Ensembling, and RR Features}
+
+Table~\ref{tab:ablation} compares single-model and ensemble
+configurations on DS2.  All configurations use the same 1D-CNN backbone,
+class-weighted loss, and RR features.
+
+\begin{table}[htbp]
+\caption{Ablation Study on DS2: Single Model vs.\ Ensemble}
 \label{tab:ablation}
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\textbf{Configuration} & \textbf{Accuracy} & \textbf{Macro F1} \\
+\hline
+Single 1D-CNN (Weighted + RR)      & 79.29\% & 0.329 \\
+Deep Ensemble 5$\times$ (Proposed) & \textbf{85.86\%} & \textbf{0.371} \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Probability Calibration}
+
+Post-hoc temperature scaling reduces ECE from 4.28\% to \textbf{3.04\%}
+with negligible change in Brier score, as shown in
+Table~\ref{tab:calib}.
+
+\begin{table}[htbp]
+\caption{Calibration Before and After Temperature Scaling}
+\label{tab:calib}
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+\textbf{Metric} & \textbf{Raw} & \textbf{After Temp.\ Scaling} \\
+\hline
+NLL         & 0.411 & \textbf{0.402} \\
+ECE         & 4.28\% & \textbf{3.04\%} \\
+Brier Score & 0.207 & 0.209 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Uncertainty and Selective Classification}
+
+Table~\ref{tab:uq} compares the four uncertainty metrics on the
+error-detection task (AUROC, AUPRC, AURC) and selective classification
+(accuracy on retained beats at 10\% referral rate).
+
+\begin{table}[htbp]
+\caption{Uncertainty Metric Benchmark for Error Detection and Selective Classification}
+\label{tab:uq}
+\begin{center}
 \begin{tabular}{lcccc}
-\toprule
-Architecture & Accuracy (\%) & Macro F1 & F1 (S) & F1 (F) \\
-\midrule
-Single 1D-CNN (Unweighted)               & --   & --   & --   & -- \\
-Single 1D-CNN (Weighted)                 & --   & --   & --   & -- \\
-Single 1D-CNN (Weighted + RR)            & 79.3 & 0.329 & 0.080 & 0.004 \\
-Deep Ensemble (Unweighted)               & --   & --   & --   & -- \\
-Deep Ensemble (Weighted)                 & --   & --   & --   & -- \\
-Deep Ensemble + RR (Proposed)            & 85.9 & 0.371 & 0.098 & 0.022 \\
-\bottomrule
+\hline
+\textbf{Metric} & \textbf{AUROC} & \textbf{AUPRC} & \textbf{AURC} & \textbf{Acc@10\%} \\
+\hline
+Softmax Conf.\ & \textbf{0.819} & \textbf{0.405} & \textbf{0.047} & \textbf{89.6\%} \\
+Pred.\ Entropy  & 0.810 & 0.361 & 0.048 & 88.8\% \\
+CBE (Ours)     & 0.798 & 0.350 & 0.050 & 88.8\% \\
+MC-Dropout Var.& 0.754 & 0.276 & 0.058 & 87.6\% \\
+\hline
 \end{tabular}
+\end{center}
 \end{table}
 
-Adding class weighting and the RR auxiliary feature improves both single-model and ensemble performance; the full proposed system (weighted ensemble + RR) achieves the best scores.
+Referring the 10\% most uncertain predictions to a clinician raises
+retained accuracy from 85.86\% to \textbf{89.6\%}, a meaningful
+improvement for clinical deployment.  The full selective-classification
+sweep (5\%--30\% referral) confirms that all four metrics provide
+consistent gains, with softmax confidence providing the best trade-off.
 
-\subsection{Calibration Impact}
-Table~\ref{tab:calibration} shows that temperature scaling reduces NLL from 0.4113 to 0.4020 and improves ECE from 4.28\% to 3.04\%, demonstrating better calibrated probabilities.
+% ==================================================================
+\section{Discussion}
 
-\subsection{Uncertainty and Error Detection}
-\begin{table}[t]
-\centering
-\caption{Uncertainty Metric Benchmark for Detecting Diagnostic Errors}
-\label{tab:uncertainty}
-\begin{tabular}{lcccc}
-\toprule
-Uncertainty Formulation & AUROC & AUPRC & AURC & Retained Acc @ 10\% Referral \\
-\midrule
-Softmax Confidence      & 0.819 & 0.405 & 0.0465 & 89.6\% \\
-MC Dropout Variance     & 0.754 & 0.276 & 0.0576 & 87.6\% \\
-Predictive Entropy      & 0.810 & 0.361 & 0.0480 & 88.8\% \\
-Cluster-Based Entropy   & 0.798 & 0.350 & 0.0495 & 88.8\% \\
-\bottomrule
-\end{tabular}
-\end{table}
+\textbf{Ensemble benefit.}  The 6.6 percentage-point accuracy improvement
+and 0.042 macro-F1 gain from single model to ensemble confirm that
+diversity induced by random initialisation reduces generalisation error
+under class imbalance.
 
-All three uncertainty signals outperform plain softmax confidence for error detection. The proposed CBE is competitive with predictive entropy while offering a more clinically interpretable signal.
+\textbf{Minority class challenge.}  Despite class-weighted loss,
+Supraventricular (F1 $= 0.098$) and Fusion (F1 $= 0.022$) beats remain
+difficult.  Both classes are underrepresented: S constitutes only 3.7\%
+and F only 0.8\% of the training set.  Additional data augmentation or
+synthetic over-sampling (e.g., SMOTE) may improve these classes.
 
-\begin{table}[t]
-\centering
-\caption{Selective Classification: Diagnostic Performance on Retained Beats Across Referral Rates}
-\label{tab:sweeps}
-\begin{tabular}{lccccc}
-\toprule
-Uncertainty Metric & 5\% Referral & 10\% Referral & 15\% Referral & 20\% Referral & 30\% Referral \\
-\midrule
-Softmax Confidence & 87.8\% / 0.38 & 89.6\% / 0.39 & 91.1\% / 0.40 & 92.4\% / 0.40 & 94.7\% / 0.42 \\
-MC Dropout Variance & 86.6\% / 0.38 & 87.6\% / 0.38 & 88.7\% / 0.39 & 89.9\% / 0.39 & 92.5\% / 0.40 \\
-Predictive Entropy  & 87.4\% / 0.38 & 88.8\% / 0.39 & 90.1\% / 0.39 & 92.0\% / 0.40 & 94.7\% / 0.41 \\
-CBE (Ours)          & 87.4\% / 0.38 & 88.8\% / 0.38 & 90.1\% / 0.39 & 91.7\% / 0.40 & 94.0\% / 0.41 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\textbf{Calibration.}  Temperature scaling provides a reliable,
+post-training calibration step that reduces ECE without retraining.
+The calibrated ensemble is better suited for threshold-based clinical
+decision rules.
 
-When the most uncertain 10\% of beats are deferred to a clinician, overall accuracy on the remaining beats rises to **89.6\%** (softmax confidence) and **88.8\%** using either predictive entropy or CBE.
+\textbf{Uncertainty.}  Softmax confidence, the simplest metric,
+outperforms all others (AUROC $= 0.819$).  The proposed CBE achieves
+AUROC $= 0.798$ with no additional forward passes, making it attractive
+for resource-constrained deployment.
 
-\subsection{Data Leakage Comparison}
-\begin{table}[t]
-\centering
-\caption{Data Leakage Demonstration: Identical Proposed Architecture Evaluated Under Two Split Regimes}
-\label{tab:leakage}
-\begin{tabular}{lcccc}
-\toprule
-Partitioning Paradigm & Accuracy (\%) & Macro F1 & F1 (S) & F1 (F) \\
-\midrule
-Beat-Wise Random Split (Contaminated) & -- & -- & -- & -- \\
-Inter-Patient DS1/DS2 Split (Realistic) & 85.9 & 0.371 & 0.098 & 0.022 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\textbf{Limitations.}
+(1)~The Q class contains only 7 test beats, too few for meaningful
+    evaluation.
+(2)~External validation on independent databases (e.g., INCART, PTB-XL)
+    is needed to confirm generalisability.
+(3)~Only the MLII lead is used; multi-lead fusion may improve
+    S and F class detection.
 
-The contaminated beat-wise split unrealistically inflates performance; our realistic inter-patient split yields the numbers reported above.
-
-% -------------------------------------------------
-%  DISCUSSION AND LIMITATIONS
-% -------------------------------------------------
-\section{Discussion and Limitations}
-The results show that ensembling, class weighting and calibration can be combined with several uncertainty signals in one deployable pipeline. Several limitations apply and should be considered when reading the results.
-\begin{itemize}
-\item \textbf{Single database.} All experiments use MIT-BIH, which has 47 patients recorded in the 1970s at one hospital. External validation on other datasets such as INCART or PTB-XL is future work.
-\item \textbf{Single lead.} Only one lead is used, which limits the arrhythmias that can be detected.
-\item \textbf{Rare classes.} Fusion and supraventricular beats are rare and morphologically ambiguous, so their scores are the least stable.
-\item \textbf{Inference cost.} The ensemble multiplies inference cost by five, and MC Dropout adds further passes. Model compression is needed for edge devices.
-\item \textbf{Threshold choice.} $\tau_{\mathrm{MC}}$ and $\tau_{\mathrm{CBE}}$ are set on the validation set and may need retuning for other populations.
-\item \textbf{Beat-level scope.} The system classifies beats and does not give a patient-level diagnosis. It is a decision-support tool and not a replacement for a cardiologist.
-\end{itemize}
-
-% -------------------------------------------------
-%  CONCLUSION
-% -------------------------------------------------
+% ==================================================================
 \section{Conclusion}
-We presented an uncertainty-aware deep ensemble for ECG arrhythmia classification that handles class imbalance, calibrates confidence and reports three complementary uncertainty signals, including a clinically grouped entropy. The system achieves **85.86\%** accuracy on an inter-patient test set and, when the most uncertain 10\% of beats are referred for review, accuracy on the retained beats climbs to **89.6\%**. Future work includes external validation, multi-lead input, threshold selection by ROC analysis, explainability with saliency methods, and compression for edge deployment.
 
-% -------------------------------------------------
-%  ACKNOWLEDGMENT
-% -------------------------------------------------
+We presented a calibrated deep ensemble for ECG arrhythmia detection
+evaluated under the rigorous inter-patient DS1/DS2 protocol.  On 49,687
+unseen test beats the system achieves 85.86\% accuracy and 0.371
+macro-F1, with post-hoc temperature scaling reducing ECE to 3.04\%.
+A comprehensive uncertainty benchmark demonstrates that referring the
+10\% most uncertain predictions to a clinician raises retained accuracy
+to 89.6\%.  The proposed Cluster-Based Entropy metric matches predictive
+entropy performance without requiring additional forward passes.  All
+source code and trained model weights are publicly available at
+\texttt{https://github.com/Bijon2002/ECG-Arrhythmia-Detection}.
+
+% ==================================================================
 \section*{Acknowledgment}
-The authors thank the PhysioNet community and the MIT-BIH team for the public arrhythmia database.
 
-% -------------------------------------------------
-%  REFERENCES
-% -------------------------------------------------
+The author thanks Ms.\ Niroji Thayalan (University of Bedfordshire) for
+supervision and guidance throughout this project.
+
+% ==================================================================
 \begin{thebibliography}{00}
-\bibitem{rajpurkar2017} P. Rajpurkar, A. Y. Hannun, M. Haghpanahi, C. Bourn, and A. Y. Ng, ``Cardiologist-level arrhythmia detection with convolutional neural networks,'' arXiv:1707.01836, 2017.
-\bibitem{hannun2019} A. Y. Hannun et al., ``Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network,'' \emph{Nature Medicine}, vol. 25, no. 1, pp. 65--69, 2019.
-\bibitem{strodthoff2021} N. Strodthoff, P. Wagner, T. Schaeffter, and W. Samek, ``Deep learning for ECG analysis: Benchmarks and insights from PTB-XL,'' IEEE J. Biomed. Health Inform., vol. 25, no. 5, pp. 1519--1528, 2021.
-\bibitem{kachuee2018} M. Kachuee, S. Fazeli, and M. Sarrafzadeh, ``ECG heartbeat classification: A deep transferable representation,'' in Proc. IEEE Int. Conf. Healthcare Informatics (ICHI), 2018.
-\bibitem{guo2017} C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, ``On calibration of modern neural networks,'' in Proc. ICML, 2017.
-\bibitem{kendall2017} A. Kendall and Y. Gal, ``What uncertainties do we need in Bayesian deep learning for computer vision?'' in Proc. NeurIPS, 2017.
-\bibitem{gal2016} Y. Gal and Z. Ghahramani, ``Dropout as a Bayesian approximation: Representing model uncertainty in deep learning,'' in Proc. ICML, 2016.
-\bibitem{lakshminarayanan2017} B. Lakshminarayanan, A. Pritzel, and C. Blundell, ``Simple and scalable predictive uncertainty estimation using deep ensembles,'' in Proc. NeurIPS, 2017.
-\bibitem{goldberger2000} A. L. Goldberger et al., ``PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals,'' Circulation, vol. 101, no. 23, pp. e215--e220, 2000.
-\bibitem{aami1998} Association for the Advancement of Medical Instrumentation, ``Testing and reporting performance results of cardiac rhythm and ST segment measurement algorithms,'' ANSI/AAMI EC57, 1998.
+
+\bibitem{b1}
+G.~B. Moody and R.~G. Mark,
+``The impact of the MIT-BIH arrhythmia database,''
+\textit{IEEE Eng.\ Med.\ Biol.\ Mag.}, vol.~20, no.~3, pp.~45--50, 2001.
+
+\bibitem{b2}
+ANSI/AAMI EC57:2012,
+\textit{Testing and Reporting Performance Results of Cardiac Rhythm and
+ST Segment Measurement Algorithms},
+Association for the Advancement of Medical Instrumentation, 2012.
+
+\bibitem{b3}
+P.~de~Chazal, M.~O'Dwyer, and R.~B. Reilly,
+``Automatic classification of heartbeats using ECG morphology and
+heartbeat interval features,''
+\textit{IEEE Trans.\ Biomed.\ Eng.}, vol.~51, no.~7, pp.~1196--1206, 2004.
+
+\bibitem{b4}
+S.~Kiranyaz, T.~Ince, and M.~Gabbouj,
+``Real-time patient-specific ECG classification by 1-D convolutional
+neural networks,''
+\textit{IEEE Trans.\ Biomed.\ Eng.}, vol.~63, no.~3, pp.~664--675, 2016.
+
+\bibitem{b5}
+U.~R. Acharya et~al.,
+``A deep convolutional neural network model to classify heartbeats,''
+\textit{Comput.\ Biol.\ Med.}, vol.~89, pp.~389--396, 2017.
+
+\bibitem{b6}
+B.~Lakshminarayanan, A.~Pritzel, and C.~Blundell,
+``Simple and scalable predictive uncertainty estimation using deep
+ensembles,''
+in \textit{Proc.\ NeurIPS}, 2017, pp.~6402--6413.
+
+\bibitem{b7}
+J.~Pan and W.~J. Tompkins,
+``A real-time QRS detection algorithm,''
+\textit{IEEE Trans.\ Biomed.\ Eng.}, vol.~BME-32, no.~3, pp.~230--236, 1985.
+
+\bibitem{b8}
+D.~P. Kingma and J.~Ba,
+``Adam: A method for stochastic optimization,''
+in \textit{Proc.\ ICLR}, 2015.
+
+\bibitem{b9}
+C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q. Weinberger,
+``On calibration of modern neural networks,''
+in \textit{Proc.\ ICML}, 2017, pp.~1321--1330.
+
+\bibitem{b10}
+Y.~Gal and Z.~Ghahramani,
+``Dropout as a Bayesian approximation: Representing model uncertainty in
+deep learning,''
+in \textit{Proc.\ ICML}, 2016, pp.~1050--1059.
+
+\bibitem{b11}
+A.~L. Goldberger et~al.,
+``PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research
+resource for complex physiologic signals,''
+\textit{Circulation}, vol.~101, no.~23, pp.~e215--e220, 2000.
+
 \end{thebibliography}
 
 \end{document}
