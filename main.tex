@@ -108,6 +108,7 @@ Four paced records (102, 104, 107, 217) are excluded. We split DS1 into a traini
 \centering
 \caption{Heartbeat Distribution Across Inter-Patient Partitions (DS1 / DS2)}
 \label{tab:split}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lrrrr}
 \toprule
 \textbf{AAMI Class} & \textbf{Train (DS1)} & \textbf{Val (DS1)} & \textbf{Test (DS2)} & \textbf{Total} \\
@@ -120,7 +121,8 @@ Paced / Unknown ($Q$)  &      8 &     0 &      7 &     15 \\
 \midrule
 \textbf{Total}         & \textbf{42,239} & \textbf{8,756} & \textbf{49,687} & \textbf{100,682} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Preprocessing & Auxiliary Timing Features}
@@ -186,6 +188,7 @@ Under rejection threshold $\tau$, beats with uncertainty $u(\mathbf{x}) > \tau$ 
 \centering
 \caption{Diagnostic Performance on Unseen Patients (DS2) and Data Leakage Comparison}
 \label{tab:diagnostic}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lrrrr}
 \toprule
 \textbf{Metric / Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
@@ -203,7 +206,8 @@ Paced / Unknown ($Q$)   & 0.000 & 0.000 & 0.000 &      7 \\
 Beat-Wise Split (Contaminated)   & -- & -- & 0.921 & 98.4\% Acc \\
 Inter-Patient DS1/DS2 (Proposed) & -- & -- & \textbf{0.371} & \textbf{85.9\% Acc} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Performance on Unseen Patients & Leakage Gap}
@@ -218,6 +222,7 @@ Table~\ref{tab:ablation_calib} details architectural ablations and calibration o
 \centering
 \caption{Ablation Study and Post-Hoc Calibration Impact (Test DS2)}
 \label{tab:ablation_calib}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Configuration} & \textbf{Accuracy} & \textbf{Macro F1} & \textbf{F1 ($S$)} & \textbf{F1 ($V$)} \\
@@ -231,7 +236,8 @@ Negative Log-Likelihood (NLL) & \multicolumn{2}{c}{0.4113} & \multicolumn{2}{c}{
 Expected Calibration Error (ECE) & \multicolumn{2}{c}{4.28\%} & \multicolumn{2}{c}{\textbf{3.04\%}} \\
 Brier Score & \multicolumn{2}{c}{0.2071} & \multicolumn{2}{c}{0.2091} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[t]
@@ -245,16 +251,18 @@ Brier Score & \multicolumn{2}{c}{0.2071} & \multicolumn{2}{c}{0.2091} \\
 \centering
 \caption{Uncertainty Benchmark for Error Detection and Selective Referral}
 \label{tab:uncertainty}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Uncertainty Metric} & \textbf{AUROC} & \textbf{AUPRC} & \textbf{AURC} & \textbf{Acc@10\%} & \textbf{Acc@30\%} \\
 \midrule
 Softmax Confidence           & \textbf{0.819} & \textbf{0.405} & \textbf{0.0465} & \textbf{89.6\%} & \textbf{94.7\%} \\
 Predictive Entropy           & 0.810          & 0.361          & 0.0480          & 88.8\%          & 94.7\% \\
-Cluster-Based Entropy (Ours) & 0.798          & 0.350          & 0.0495          & 88.8\%          & 94.0\% \\
+CBE (Ours)                   & 0.798          & 0.350          & 0.0495          & 88.8\%          & 94.0\% \\
 MC Dropout Variance          & 0.754          & 0.276          & 0.0576          & 87.6\%          & 92.5\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Uncertainty Benchmarking & Selective Classification}
