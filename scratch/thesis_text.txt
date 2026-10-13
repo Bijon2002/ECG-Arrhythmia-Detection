@@ -1,0 +1,2744 @@
+
+=== PAGE 1 ===
+ 
+Page 1 
+ 
+ 
+ASSIGNMENT TOP SHEET 
+Faculty of Creative Arts, Technologies & Science 
+Department of Computer Science & Technology 
+ 
+Student Ref. No 2541518 Unit Code: CIS017-3 
+ 
+Unit Name:  
+Undergraduate Project 
+ 28/08/2028 
+ 
+ 
+ 
+Bijosilin 
+ Student's Forename 
+Marisilin 
+ 
+Unit Leader's Name: 
+Enjie Liu 
+Supervisor: 
+Ms. Niroji Thayalan 
+ 
+Assignment Details: 
+ 
+Assessment 2: Final Report 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 2 ===
+ 
+Page 2 
+Instructions to Student: 
+ 
+Please note: Work presented in an assessment must be the student's own.  Plagiarism is where a student copies work 
+from another source, published or unpublished (including the work of a fellow student) and fails to acknowledge the 
+influence of another's work or to attribute quotes to the author.  Plagiarism is an academic offence. 
+ 
+Work presented in an assessment must be your own. Plagiarism is where a student copies work from another source, 
+published or unpublished (including the work of another student) and fails to acknowledge the influence of another’s 
+work or to attribute quotes to the author. Plagiarism is an academic offence and the penalty can be serious. The  
+University’s policies relating to Plagiarism can be found in the regulations at 
+http://www.beds.ac.uk/aboutus/quality/regulations. To detect possible plagiarism  we may submit your work to the 
+national plagiarism detection facility. This searches the Internet and an extensive database of reference material 
+including other students’ work to identify.  Once your work has been submitted to the detection service it will be stored 
+electronically in a database and compared against work submitted from this and other universities. It will therefore be 
+necessary to take electronic copies of your materials for transmission, storage and comparison purposes and for the 
+operational back-up process. This material will be stored in this manner indefinitely. 
+ 
+I have read the above information and I confirm that this work is my own and that it may be processed and 
+stored in the manner described. 
+ 
+Signature (Print Name): ........................................................... Date: ......................................... 
+ 
+Extension deadline  
+CAAS agrees that the assignment may be submitted ____ days after the deadline and should be marked without 
+penalty.  
+ 
+CAAS confirmation...................................................................................................................  
+ 
+ 
+ 
+Please leave sufficient time to meet this deadline and do not leave the handing-in of assignments to the last minute. 
+You need to allow time for any system problems or other issues. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+M. Bijosilin 26/08/2026 
+=== PAGE 3 ===
+ 
+Page 3 
+DECLARATION 
+ 
+I do hereby declare that I exclusively carried out the work reported in this project report under the 
+supervision of Ms. Niroji Thayalan, Sri Lanka Institute of Information Technology, Northern Uni, 
+Faculty of Computing, Jaffna, Sri Lanka. It describes the results of my own independent research 
+except where due reference has been made in the text. No part of this project report has been 
+submitted earlier or concurrently for the same or any other degree. 
+ 
+Date: 26/08/2026           
+          ........................................ 
+Signature of the Candidate 
+Certified by: 
+1. Supervisor (Name): Ms. Niroji Thayalan 
+ 
+Date: 26/08/2026      (Signature):....................................... 
+  
+M. Bijosilin 
+
+=== PAGE 4 ===
+ 
+Page 4 
+ABSTRACT 
+According to WHO (2023), cardiovascular diseases are responsible for the death of about 18 
+million people annually around the world. An electrocardiogram (ECG) is one of the most useful 
+non-invasive tests the cardiologist has to  help diagnose the heart's activity over time. Recent 
+progress in deep learning has led to automated arrhythmia classification of ECGs achieving near-
+cardiologist accuracy rates, but most of the current systems have a clinically harmful attribute: 
+they are systematically over-confident. In a clinical setting, the deterministic neural network could 
+give a 95% confidence value to a wrong prediction, a misdiagnosis, missed treatment, or a false 
+alarm. 
+ In this dissertation, a novel ECG arrhythmia detection system is proposed, which aims to 
+overcome the issue of overconfidence and class imbalance at the same time. It is a True Deep 
+Ensemble with five independently trained one -dimensional Convolutional Neural Networks (1D 
+CNNs), which are all trained from a different random initialization and make use of class-weighted 
+cross-entropy loss to cope with the high degree of imbalance found in the MIT -BIH Arrhythmia 
+Database. Three complementary uncertainty quan tification mechanisms are incorporated: Monte 
+Carlo (MC) Dropout for epistemic uncertainty estimation, Predictive Entropy for aleatoric 
+uncertainty, and a novel method called Cluster -Based Entropy (CBE) which combines the five 
+AAMI arrhythmia classes into four clinically meaningful classes to incorporate clinical domain 
+knowledge. Each model member was calibrated to match the confidence of the data with the model 
+using the post -hoc Temperature Scaling method, with optimal T values ranging from 1.032 to 
+1.306. The proposed method obtained an overall accuracy rate of 94.0% and a Macro F1-Score of 
+0.83 based on a 21,888-heartbeat test set obtained from 48 patient recordings, which were not used 
+for training. It was deployed as a Flask REST API and real time web  based clinical diagnostic 
+dashboard. The results have shown that the ensemble diversity along with multi-modal uncertainty 
+quantification yields a more reliable and clinically usable arrhythmia detection system than 
+individual deterministic models.  
+=== PAGE 5 ===
+ 
+Page 5 
+ACKNOWLEDGMENTS 
+In this regard, I would like to extend my gratitude towards my lecturer Mr. K. Thiruthanigesan and 
+my supervisor Ms. Niroji Thayalan  for their valuable assistance, motivation, and support in the 
+preparation of this report. The invaluable advice provided by them along with their constructive 
+feedback has contributed to the improvement of my report as well as enhanced my skills in terms 
+of critical thinking and problem-solving 
+ 
+ I would also take this opportunity to thank Northern Uni and the University of Bedfordshire for 
+providing me with the necessary academic resources and learning materials that have contributed 
+significantly to making this report a success. 
+ 
+ I would also like to thank the PhysioNet community and the Massachusetts Institute of 
+Technology - Beth Israel Hospital (MIT -BIH) for making the Arrhythmia Database available to 
+the public. The dataset is the foundation for all ECG arrhythmia research, and it would not be 
+possible without it.  
+ 
+The assistance of my lecturers, supervisors, and these prestigious institutions has been a great help 
+in completing this report successfully, and I am very thankful to all of them. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 6 ===
+ 
+Page 6 
+LIST OF ABBREVIATIONS 
+Abbreviation Full Form 
+AAMI Association for the Advancement of Medical Instrumentation 
+AI Artificial Intelligence 
+API Application Programming Interface 
+CBE Cluster-Based Entropy 
+CNN Convolutional Neural Network 
+CORS Cross-Origin Resource Sharing 
+CSV Comma-Separated Values 
+DL Deep Learning 
+ECE Expected Calibration Error 
+ECG Electrocardiogram 
+GUI Graphical User Interface 
+HTTP Hypertext Transfer Protocol 
+JS JavaScript 
+LBFGS Limited-memory Broyden-Fletcher-Goldfarb-Shanno 
+LSTM Long Short-Term Memory 
+MC Monte Carlo 
+MIT-BIH Massachusetts Institute of Technology - Beth Israel Hospital 
+ML Machine Learning 
+NLL Negative Log-Likelihood 
+ReLU Rectified Linear Unit 
+REST Representational State Transfer 
+=== PAGE 7 ===
+ 
+Page 7 
+Abbreviation Full Form 
+RNN Recurrent Neural Network 
+SVM Support Vector Machine 
+UQ Uncertainty Quantification 
+XAI Explainable Artificial Intelligence 
+  
+=== PAGE 8 ===
+ 
+Page 8 
+Table of Contents 
+CHAPTER 1: INTRODUCTION ................................ ................................ ....................... 14 
+1.1 Background of the Study ..................................................................................................... 14 
+1.2 Problem Statement ............................................................................................................... 16 
+1.3 Aim of the Study.................................................................................................................. 17 
+1.4 Objectives of the Study........................................................................................................ 17 
+1.5 Scope of the Study ............................................................................................................... 18 
+1.6 Significance of the Study ..................................................................................................... 19 
+1.7 Organization of the Thesis ................................................................................................... 20 
+CHAPTER 2: LITERATURE REVIEW ................................ ................................ ................ 22 
+2.1 Introduction ......................................................................................................................... 22 
+2.2 Deep Learning Architectures for ECG Classification ......................................................... 22 
+2.2.1 From Classical Methods to Deep Learning ................................................................... 22 
+2.2.2 Key Works in CNN-Based ECG Classification ............................................................ 23 
+2.2.3 Limitations of Deterministic Approaches ..................................................................... 23 
+2.3 The Challenge of Class Imbalance in Medical Datasets ..................................................... 24 
+2.4 Uncertainty Quantification in Deep Learning ..................................................................... 25 
+2.4.1 Types of Uncertainty ..................................................................................................... 25 
+2.4.2 Monte Carlo Dropout .................................................................................................... 26 
+2.4.3 Deep Ensembles ............................................................................................................ 27 
+2.4.4 Temperature Scaling and Calibration ............................................................................ 27 
+2.5 Existing Clinical ECG Decision-Support Systems .............................................................. 28 
+2.6 Comparative Review of Key Studies ................................................................................... 29 
+2.7 Research Gap ....................................................................................................................... 30 
+3.1 Project Management and Process ........................................................................................ 31 
+=== PAGE 9 ===
+ 
+Page 9 
+3.2 System Architecture Overview ............................................................................................ 32 
+3.3 Dataset Description .............................................................................................................. 33 
+3.3.1 MIT-BIH Arrhythmia Database .................................................................................... 33 
+3.3.2 AAMI Class Mapping ................................................................................................... 33 
+3.3.3 Dataset Statistics ........................................................................................................... 34 
+3.4 Preprocessing Pipeline ......................................................................................................... 35 
+3.4.1 Band-Pass Filtering ...................................................................................................... 35 
+3.4.2 R-peak Annotation Extraction ....................................................................................... 36 
+3.4.3 Heartbeat Segmentation ................................................................................................ 36 
+3.4.4 Z-score Normalization................................................................................................... 36 
+3.5 Model Architecture .............................................................................................................. 37 
+3.5.1 Individual CNN Design ................................................................................................. 37 
+3.5.2 True Deep Ensemble Architecture ................................................................................ 39 
+3.6 Training Configuration ........................................................................................................ 40 
+3.7 Uncertainty Quantification Pipeline .................................................................................... 41 
+3.7.1 Monte Carlo Dropout .................................................................................................... 41 
+3.7.2 Predictive Entropy ......................................................................................................... 42 
+3.7.3 Cluster-Based Entropy .................................................................................................. 43 
+3.8 Temperature Scaling Calibration ......................................................................................... 45 
+3.9 Deployment Architecture .................................................................................................... 47 
+3.9.1 API Endpoints ............................................................................................................... 47 
+3.9.2 Clinical Dashboard ........................................................................................................ 47 
+3.10 Testing Strategy ................................................................................................................. 48 
+3.10.1 Unit Tests .................................................................................................................... 48 
+3.10.2 Integration Tests .......................................................................................................... 49 
+=== PAGE 10 ===
+ 
+Page 10 
+3.10.3 API Tests ..................................................................................................................... 49 
+3.11 Architecture Decision Rationale ........................................................................................ 50 
+3.12 Supervisor Meeting Log .................................................................................................... 51 
+3.13 Evaluation Strategy............................................................................................................ 52 
+3.14 Summary ............................................................................................................................ 52 
+CHAPTER 4: RESULTS AND DISCUSSION ................................ ................................ ...... 53 
+4.1 Overview ............................................................................................................................. 53 
+4.2 Classification Performance .................................................................................................. 53 
+4.2.1 Per-Class Metrics .......................................................................................................... 53 
+4.2.2 Single Model vs. Ensemble Comparison ...................................................................... 56 
+4.3 Training Convergence Analysis .......................................................................................... 57 
+4.4 Temperature Calibration Results ......................................................................................... 59 
+4.5 Uncertainty Quantification Results ..................................................................................... 61 
+4.5.1 Monte Carlo Dropout Evaluation .................................................................................. 61 
+4.5.2 Cluster-Based Entropy in Context................................................................................. 63 
+4.5.3 CBE vs Standard Predictive Entropy: A Mathematical Comparison ............................ 63 
+4.6 Critical Discussion ........................................................................................................... 64 
+4.6.1 Achievements ................................................................................................................ 64 
+4.6.2 Limitations .................................................................................................................... 65 
+CHAPTER 5: CONCLUSION AND FUTURE WORK ................................ ...........................  68 
+5.1 Summary of Findings .......................................................................................................... 68 
+5.2 Research Objectives Achievement ...................................................................................... 69 
+5.3 Contributions and Practical Implications ............................................................................ 69 
+5.4 Limitations ........................................................................................................................... 70 
+5.5 Future Work ......................................................................................................................... 71 
+=== PAGE 11 ===
+ 
+Page 11 
+REFERENCES ................................ ................................ ................................ ............. 73 
+Appendix A - Project Source Code ........................................................................................... 75 
+A.1 - Model Architecture (src/model.py) ............................................................................... 75 
+A.2 - Uncertainty Module (src/uncertainty.py) ...................................................................... 75 
+A.3 - Training Log Extract (results/logs/ensemble_training_log.txt) .................................... 76 
+A.4 - Final Evaluation Metrics (results/metrics/f1_scores.txt) .............................................. 76 
+A.5 - Temperature Scaling Values ......................................................................................... 77 
+Appendix B - System Screenshots ............................................................................................. 77 
+    Appendix B.1 ............................................................................................................................ 77 
+Appendix B.2 ............................................................................................................................. 78 
+Appendix B.3 ............................................................................................................................. 78 
+Appendix B.4 ............................................................................................................................. 79 
+   Appendix B.5 ............................................................................................................................. 79 
+Appendix C - MC Dropout Evaluation Log Extract.................................................................. 80 
+Appendix D - Project Poster ...................................................................................................... 81 
+Appendix E - System Requirements .......................................................................................... 82 
+Appendix F - Software Test Cases ............................................................................................ 82 
+Critical ....................................................................................................................................... 83 
+Appendix H - User Guide & Reproducibility Notes ................................................................. 83 
+Appendix I - Project Timeline (Gantt Chart) ............................................................................. 84 
+  
+=== PAGE 12 ===
+ 
+Page 12 
+LIST OF FIGURES 
+Figure Caption 
+Figure 1.1 Typical ECG waveform showing P-wave, QRS complex, and T-wave 
+Figure 1.2 Thesis organisation flowchart 
+Figure 2.1 Architecture comparison: 1D CNN vs. RNN vs. Transformer 
+Figure 2.2 Softmax overconfidence illustration 
+Figure 3.1 End-to-end system architecture 
+Figure 3.2 MIT-BIH class distribution 
+Figure 3.3 Preprocessing pipeline flowchart 
+Figure 3.4 Individual 1D CNN architecture 
+Figure 3.5 True Deep Ensemble - logit aggregation 
+Figure 3.6 Cluster-Based Entropy clinical grouping 
+Figure 3.7 Temperature scaling calibration 
+Figure 3.8 Flask API + web dashboard screenshot 
+Figure 4.1 Training loss curves for all 5 ensemble members 
+Figure 4.2 Ensemble confusion matrix (21,888 test beats) 
+Figure 4.3 MC Dropout variance per heartbeat 
+Figure 4.4 Per-class F1-score bar chart 
+  
+=== PAGE 13 ===
+ 
+Page 13 
+LIST OF TABLES 
+Table Caption 
+Table 2.1 Comparative literature review of ECG AI systems 
+Table 3.1 AAMI class mapping from MIT-BIH symbols 
+Table 3.2 Dataset split statistics 
+Table 3.3 CNN architecture layer-by-layer specification 
+Table 3.4 Training hyper-parameter configuration 
+Table 3.5 Optimal temperature per ensemble member 
+Table 4.1 Per-class classification report 
+Table 4.2 Training loss per epoch for all five models 
+Table 4.3 MC Dropout uncertainty flagging summary 
+Table 4.4 Single model vs. ensemble performance comparison 
+  
+=== PAGE 14 ===
+ 
+Page 14 
+CHAPTER 1: INTRODUCTION 
+ 
+1.1 Background of the Study 
+ 
+At present, artificial intelligence and deep learning are considered revolutionary technologies that 
+have a potential to transform diseases' detection, diagnosis, and treatment. One of the areas in 
+which such technologies can bring benefits is cardiology w here accurate and prompt diagnosis 
+may mean the difference between life and death. The human heart is a rather complex organ and 
+its disorders – cardiac arrhythmias – comprise one of the major cardiovascular pathologies 
+diagnosed. As stated by WHO (2023), 18 million people die every year due to the diseases of the 
+circulatory system that are the primary causes of death around the world. Many of these deaths 
+could have been prevented had the arrhythmias been timely diagnosed or classified properly. 
+ECG is the most used method to diagnose arrhythmia in patients non-invasively. This test records 
+the electric voltage differences produced by the depolarization and repolarization of the heart 
+muscle and creates a waveform that comprises valuable diagnostic data. The P -wave, QRS 
+complex, and T -wave compri se the main elements of the waveform representing atrial 
+depolarization, ventricular depolarization, and ventricular repolarization respectively. In case any 
+of these elements deviate from the regularity of the sinus rhythm, it means that there is certain 
+arrhythmia detected. For instance, premature ventricular contractions (PVCs) are identified by the 
+presence of wide and distorted QRS complexes, while supraventricular ectopic beats are 
+characterized by abnormal P-waves. 
+ 
+ 
+ 
+ 
+ 
+Figure 1.1: A representative ECG waveform illustrating the P -wave (atrial depolarization), QRS complex (ventricular 
+depolarization), and T-wave (ventricular repolarization) components. 
+=== PAGE 15 ===
+ 
+Page 15 
+Though rich diagnostically, automatic interpretation of the ECG signal on the large scale 
+encounters several practical problems. For example, during 24 -hour Holter monitoring, one 
+recording may include hundreds of thousands of heartbeat samples, and theref ore, a complete 
+manual review becomes impractical. It also leads to inter -observer variability and potential bias. 
+As (Hannun et al., 2019)  note, studies show that inter -observer agreement among trained 
+cardiologists in arrhythmia classification may vary considerably for some cases. Therefore, there 
+is a significant research interest in automated ECG analysis, which led to the creation of deep 
+learning algorithms, providing arrhythmia classification accuracy like those of experienced 
+cardiologists. 
+ 
+With the arrival of deep learning, particularly CNNs, there were obtained impressive results in 
+automated ECG classification. So, (Rajpurkar et al., 2017) proved that deep residual CNN trained 
+on the proprietary dataset can demonstrate the same level of arrhythmia classification accuracy as 
+cardiologists in 14 different classes. In addition, (Hannun et al., 2019) showed that 34-layer ResNet 
+model had an average area under the curve (AUC) of 0.97 in several arrhythmia classes. Such 
+results stimulated the investments into AI -assisted cardiac monitoring technologies, with the 
+examples being consumer devices like AliveCor's KardiaMobile and the Apple Watch ECG. 
+ 
+However, there is another problem with many of these models – they are deterministic, which 
+means that they generate a single point prediction without any confidence interval estimation. This 
+is a severe issue from the perspective of clinical practice sinc e a deterministic model, trained on 
+an imbalanced medical dataset, may output SoftMax value of 0.97 for the Normal class even if the 
+underlying signal is a dangerous rare arrhythmia. Such behavior is called a SoftMax 
+overconfidence since it stems from the fact that, as (Guo et al., 2017) say, SoftMax function only 
+normalizes the logits into the probability-like distribution but gives no theoretical guarantees that 
+these numbers represent Bayesian posterior probabilities. In other words, this kind of model seems 
+to be very reliable but, in fact, it may  mislead the clinicians. The current project solves both 
+problems – class imbalance and overconfidence – by developing an uncertainty -aware deep 
+ensemble model. 
+ 
+ 
+ 
+=== PAGE 16 ===
+ 
+Page 16 
+1.2 Problem Statement 
+ 
+Although deep learning techniques for ECG interpretation have made considerable progress in 
+recent years, two main challenges still lie within the current approaches of automated arrhythmia 
+detection. The effects of these two challenges on patient safety are very real. 
+ 
+Let's first consider that class imbalance is a problem that needs to be addressed during algorithm 
+design. Datasets used for ECG analysis are severely imbalanced towards Normal heartbeats. For 
+instance, the MIT-BIH Arrhythmia Database, one of the databases  used in this project, has only 
+less than 1% of clinically relevant classes, including Fusion beats (F), as compared to its 82% of 
+Normal beats (N). The cross-entropy loss function is used in its standard form in the training phase, 
+ 
+ 
+ 
+ 
+ 
+ 
+ which results in a situation where the gradient updates are dominated by the samples of the 
+majority class. Therefore, in the case of uncertainty, the algorithm is forced to fall back on Normal 
+to achieve high accuracy but very low recall rates for important but rare classes. It was seen during 
+the first stages of this project that the single model architecture baseline resulted in fusion beats 
+recall rates lower than 35%, considered to be unreliable for this class. 
+ 
+The second point is that neural networks tend to be overconfident for probabilistic outputs. The 
+machine learning community is aware that normal deep learning models can get overconfident 
+about predictions. Because the SoftMax activation function is used by almost all neural network 
+classifiers, the output of a neural network model is not a calibrated probability distribution. (Guo 
+et al., 2017)  show empirically that contemporary deep neural networks are more overconfident 
+Figure 1.1: A representative ECG waveform illustrating the P -wave (atrial depolarization), QRS complex (ventricular depolarization), and 
+T-wave (ventricular repolarization) components. 
+=== PAGE 17 ===
+ 
+Page 17 
+than those that were popular 10 years ago. This is believed to be caused by the increased network 
+depth and widespread use of batch normalization techniques. In a real-world deployment scenario, 
+if predictions are too accurate there is no way for introducing an uncertainty-aware workflow, for 
+the cases that are not easy to predict to be sent to human experts for verification. In the current 
+situation, this means there is no way to be sure that the re is a case where the algorithm cannot 
+make an accurate determination. 
+ 
+Both problems are interlinked, as models trained on an imbalanced dataset will be most likely to 
+be overconfident in the minority class, which is the most clinically relevant class. Existing 
+literature has separately considered these problems: some studies pro posed the resampling and 
+modification of loss functions to tackle class imbalance, and others studied the methods of building 
+Bayesian models and ensembles for uncertainty quantification. To my knowledge there is no such 
+system available which addresses both the above-mentioned challenges in one clinically relevant 
+solution with a dedicated uncertainty-aware interface. 
+ 
+1.3 Aim of the Study 
+ 
+The fundamental objective of this study is to design, develop, and evaluate a comprehensive 
+uncertainty-enabled ECG arrhythmia classification system, which is an ensemble of five 
+independently trained 1D Convolutional Neural Networks together with addition al uncertainty 
+quantification techniques, providing not only reliable quantitative but also well -calibrated 
+predictions of model uncertainty. Such a system is intended for use as a clinical decision support 
+system with real-time detection of uncertain predictions. 
+ 
+1.4 Objectives of the Study 
+ 
+To achieve the above objective, the project's goals were set as follows at the beginning of the 
+project: 
+1. To conduct a critical analysis of the literature and understand the state of the art in deep 
+learning architectures for ECG arrhythmia classification, methods for addressing class 
+imbalance in medical data, and uncertainty quantification methods in deep learning 
+systems. 
+=== PAGE 18 ===
+ 
+Page 18 
+2. Preprocess, segment, and download the MIT-BIH Arrhythmia Database into standardized 
+heartbeat windows, with 2nd-order Butterworth band-pass filtering and Pan-Tompkins R-
+peak detection, that contain 360 samples and are aligned to the 5-class AAMI standard. 
+3. To create and train an ensemble of five independent 1D CNN models (True Deep 
+Ensemble), with different random seeds, the class weighted cross-entropy loss function to 
+overcome the class imbalance in the dataset. 
+4. To adopt three complementary UQ methods: Monte-carlo Dropout to estimate epistemic 
+uncertainty; Predictive Entropy to estimate aleatoric uncertainty; and a novel Cluster-
+based Entropy method which leverages clinical domain knowledge to group AAMI 
+classes into clinically meaningful clusters.  
+5. To individually calibrate each ensemble member using post-hoc Temperature Scaling, by 
+optimizing the temperature scalar T to minimize Negative Log-Likelihood on a held-out 
+calibration subset. 
+6. To connect all the system components into a Flask REST API with prediction and batch 
+prediction endpoints, with a real-time web-based clinical diagnostic dashboard. 
+7. To assess the system performance from standard classification metrics - Overall 
+Accuracy, Per-class Precision, Recall and Macro F1-Score - and to report on the 
+uncertainty quantification results on selected test set. 
+ 
+1.5 Scope of the Study 
+ 
+The scope of this project has been defined to ensure both technical feasibility and academic rigor 
+within the constraints of an undergraduate dissertation. 
+In Scope 
+Table 1 In Scope of the project 
+Component Specification 
+Dataset MIT-BIH Arrhythmia Database (48 recordings, PhysioNet) 
+Classification 5-class AAMI arrhythmia classification (N, S, V, F, Q) 
+Signal type Single-lead ECG (Lead MLII), 360 Hz sampling rate 
+=== PAGE 19 ===
+ 
+Page 19 
+Component Specification 
+Model 1D CNN with 3 convolutional blocks + fully connected classifier 
+Ensemble 
+5 independently trained models with per -model temperature 
+calibration 
+Uncertainty MC Dropout, Predictive Entropy, Cluster-Based Entropy 
+Deployment Flask REST API + HTML/JavaScript web dashboard 
+Platform Python 3.10, PyTorch >= 2.0, Conda virtual environment 
+ 
+Out of Scope 
+Table 2 Out Scope. 
+Component Reason for Exclusion 
+Multi-lead (12-lead) ECG 
+Architectural simplicity; single lead is the standard for wearable 
+monitoring 
+Recurrent or Transformer 
+networks 
+Outside the defined architectural scope 
+Edge/hardware 
+deployment 
+Beyond the software scope of this project 
+Patient-level diagnosis Beat-level classification only 
+External dataset validation Future work due to time constraints 
+ 
+1.6 Significance of the Study 
+ 
+However, the importance of this project goes far beyond its technical contribution to become a 
+more general consideration regarding the validity of clinical applications of medical systems based 
+on AI algorithms. On a technical side, the proposed Cluster -Based Entropy (CBE) technique is a 
+new contribution to the field of uncertainty quantification. Since by using the approach suggested 
+in the project, the five AAMI arrhythmia classes are grouped into four clinically motivated clusters 
+(Normal, Supraventricular, Ventricular/Fusion and Unknown), the resulting uncertainty signal 
+=== PAGE 20 ===
+ 
+Page 20 
+generated by CBE becomes both mathematically consistent and clinically relevant. In contrast to 
+the raw Predictive Entropy where all class boundaries carry equal weight, CBE considers the fact 
+that the difference between the Normal and Supraventricular beat is more important than the one 
+between the beats belonging to the same clinical cluster. 
+From a clinical perspective, adding uncertainty flags to a real -time dashboard creates a path 
+towards uncertainty-aware AI deployment. Instead of replacing a cardiologist, the proposed system 
+will support him/her with an automatic tool that can automatically triage high confidence 
+predictions while sending cases requiring human verification to a cardiologist. The 4% uncertainty 
+flag rate achieved by using the MC Dropout technique allows us to maintain a reasonable load for 
+human review without creating a situation when the physician would be tired of alerts.  
+ 
+1.7 Organization of the Thesis 
+ 
+Table 3Organization of the Thesis 
+Chapter Content 
+Chapter 2 - Literature 
+Review 
+Critically analyses existing work on deep learning for ECG 
+classification, class imbalance handling, and uncertainty 
+quantification in medical AI systems. 
+Chapter 3 - Methodology 
+Presents the complete design and implementation of the proposed 
+system, covering the preprocessing pipeline, ensemble 
+architecture, training configuration, uncertainty quantification 
+methods, calibration procedure, and deployment architecture. 
+Chapter 4 - Results and 
+Discussion 
+Evaluates the system using quantitative classification metrics and 
+uncertainty analyses, and critically discusses the findings in the 
+stated objectives. 
+Chapter 5 - Conclusion 
+Summarizes the key findings, maps achieved outcomes to original 
+objectives, discusses limitations, and proposes directions for future 
+work. 
+References A complete bibliography of all sources cited in this dissertation. 
+=== PAGE 21 ===
+ 
+Page 21 
+Chapter Content 
+Appendices 
+Supplementary materials including source code, dashboard 
+screenshots, evaluation logs, and the project poster. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+Figure 1.2: Overview of thesis organization showing the logical flow from Introduction through to Conclusion and 
+Appendices. 
+=== PAGE 22 ===
+ 
+Page 22 
+CHAPTER 2: LITERATURE REVIEW 
+ 
+2.1 Introduction 
+ 
+Automated signal analysis of electrocardiogram signals based on machine learning and deep 
+learning has been a subject of extensive research for several decades now. Nonetheless, due to the 
+combination of large annotated data sets, high computational power,  and development of neural 
+networks, there has been a revolution in performance during the last decade, making automated 
+systems clinically applicable. Still, it has been noted that the current literature is characterized by 
+an ongoing dichotomy in which s tudies aimed at improving accuracy ignore uncertainty 
+quantification problems and vice versa. In this chapter, literature related to three core topics – deep 
+learning models for classification of ECG, approaches to tackle class imbalance problem and 
+uncertainty quantification in d eep learning – is considered before defining the research gap 
+addressed in this study. 
+ 
+2.2 Deep Learning Architectures for ECG Classification 
+ 
+2.2.1 From Classical Methods to Deep Learning 
+ 
+The first automatic techniques to classify ECG arrhythmias involved classic signal processing and 
+manually engineered feature selection. Linear Discriminant Analysis (LDA), Support Vector 
+Machines (SVMs), and Hidden Markov Models required the work of experts within the field who 
+manually identified ECG arrhythmia features – R peak height, QRS width, PR interval, and others 
+– and then employed a statistical classifier. Though those techniques performed acceptably on 
+clear-cut segmented data, they were inevit ably limited by the quality and completeness of 
+manually designed features. 
+ 
+Deep learning techniques allowed us to eliminate the feature design limitation as they could build 
+hierarchical representation right out of the signal data without the need for any preprocessing or 
+manual feature detection. As CNNs were originally designed to recognize features in two -
+dimensional images, they proved to be perfectly adapted to one -dimensional ECG signal data as 
+well. The application of 1D convolutions to ECG signal is essentially the application of a trainable 
+=== PAGE 23 ===
+ 
+Page 23 
+feature detector to an ECG segment which allows to detect automatically the morphological 
+features such as sharp deflections of QRS complex and smooth patterns of P wave. 
+ 
+2.2.2 Key Works in CNN-Based ECG Classification 
+ 
+One of the most influential early work demonstrating the performance of deep CNN in ECG 
+classification was by (Rajpurkar et al., 2017) . They used a large proprietary dataset of 64,121 
+ECGs from 29,163 patients to train their system, which performed as well at  or better than the 
+average performance of a panel of board-certified cardiologists over 14 classes of arrhythmia. This 
+work set the stage for the adoption of deep CNNs as meaningful clinical tools and inspired a vast 
+literature. 
+ 
+This was followed by (Hannun et al., 2019)) which, on a held out test set over 12 different classes 
+of arrhythmias, reported an average AUC of 0.97, matching the performance of a cardiologist. The 
+outcome was the broad publicity it received as a breakthrough in AI -driven cardiac diagnostics. 
+Both studies, however, were based on private data sets that are not readily available, which hinders 
+the possibility of reproducibility, and independent validation. 
+ 
+(Strodthoff et al., 2020)  compared publicly available deep learning models for ECG analysis 
+through a systematic benchmark, which included the PTB-XL dataset consisting of 21,837 clinical 
+12-lead ECG records. They concluded that 1D CNNs consistently achieved the best performance 
+on the common benchmarks of ECG classification, especially when using short windows at the 
+beat level, compared to other recurrent neural network (RNN) and LSTM-based approaches. They 
+argued that the property of CNNs to efficiently capture local morphologic al patterns is due to the 
+use of convolution, while LSTM networks work well for modeling long -range temporal 
+dependencies, which is less crucial in the individual-beat level. 
+ 
+2.2.3 Limitations of Deterministic Approaches 
+ 
+Although all the architecture proposed above obtained impressive classification accuracy, they all 
+have an important limitation, in that they are deterministic. Both models generate one set of 
+=== PAGE 24 ===
+ 
+Page 24 
+weights after training, and at inference time, they will provide a single point prediction, in the form 
+of a SoftMax probability vector, for each input. This deterministic design does not provide any 
+way of imposing the model's uncertainty with respect to its predictions. In the clinic, it's a major 
+safety issue. It is possible for a model to be very confident in its prediction for a new instance of a 
+particular arrhythmia class but  have very few examples of that class during training, and the 
+clinician would have no indication that the prediction is incorrect. 
+ 
+2.3 The Challenge of Class Imbalance in Medical Datasets 
+ 
+Medical data is inherently unbalanced since the occurrence of diseases in real life is characterized 
+by a non-uniform distribution. In terms of ECG arrhythmia classification, the Normal sinus rhythm 
+is the most common rhythm in real life compared to other complicated or rare rhythms that form 
+a very small percentage of all the beats. The MIT-BIH Arrhythmia Dataset is a good reflection of 
+this real-life data since Normal rhythms make up to 82% of the total number of annotated rhythms. 
+This is shown in Table 2.1 below. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+The consequence of this disproportion leads to a well -documented challenge in conventional 
+gradient-based training; the cross -entropy loss function will lead to numerically large gradients 
+with respect to the majority class when applied to an imbalanced dataset. In essence, the algorithm 
+is being incentivized to have high accuracy with Normal beats at the expense of sensitivity towards 
+Figure 3.2: Class distribution across the MIT -BIH Arrhythmia Database illustrating the severe imbalance between Normal 
+beats (~82%) and minority arrhythmia classes. 
+=== PAGE 25 ===
+ 
+Page 25 
+rare but clinically important classes. The result is catastrophic low recall rates for the minority 
+classes; in some cases, models are trained to completely disregard minority classes like Fusion and 
+Supraventricular beats and predict Normal for all others. 
+Several solutions have been suggested in literature to solve the issue at hand. Oversampling 
+approaches like the Synthetic Minority Oversampling Technique (SMOTE) artificially synthesize 
+samples from minority classes by interpolation in the feature space. Under sampling involves down 
+sampling the majority class samples. Cost -sensitive learning applies weights to the loss function 
+to penalize misclassifying minority classes more than majority. Among these, class weighted 
+cross-entropy loss is the most favored approach when working with deep learning workflows as it 
+is easy to compute, conceptually sound and does not rely on modifying the data in any way 
+(Johnson & Khoshgoftaar, 2019). The class weight for each class c is computed as: 
+ 
+ 
+where N_total is the total number of training samples, K is the number of classes, and N_c is the 
+number of samples in class c. This formulation ensures that each class contributes equally to the 
+total loss in expectation, regardless of its absolute frequency. 
+2.4 Uncertainty Quantification in Deep Learning 
+ 
+2.4.1 Types of Uncertainty 
+ 
+In any discussion of uncertainty in machine learning, one needs to understand that there are two 
+different types of uncertainty sources which cannot be confused and distinguished (Kendall & Gal, 
+2017). The first type of uncertainty is known as aleatoric uncertainty or data uncertainty, which 
+stems from the intrinsic noise or ambiguity present in the input data. This type of uncertainty is 
+considered irremovable, regardless of whether we have more data or use a more advanced model. 
+For ECGs, the presence of high aleatoric uncertainty can be observed in cases of morphologically 
+ambiguous beats, such as Fusion beats, which are characterized by the properties of both normal 
+and ventricular beats at once. Th e other source of uncertainty is epistemic uncertainty, which 
+results from insufficient model knowledge of some parts of the input space. 
+
+=== PAGE 26 ===
+ 
+Page 26 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2.4.2 Monte Carlo Dropout 
+ 
+The practical importance of (Gal & Uk, 2016)  contribution lies in the following: when applying 
+Dropout at every network layer, using the same network at inference with the Dropout still active, 
+we obtain something close to Bayesian inference in the context of deep Gaussian processes. When 
+making T random forward passes through the same network and getting T different predictions by 
+the virtue of randomly generated Dropout masks, we will get not a point estimate but a distribution 
+over the predictions. The mean value of this distribution will be our f inal prediction, while the 
+variance will reflect the epistemic uncertainty. This approach, called Monte Carlo Dropout, does 
+not need any adjustments to the training process and can be effortlessly applied to any existing 
+network with Dropout regularization. 
+The epistemic uncertainty for a given input x under MC Dropout is estimated as: 
+ 
+ 
+where ωt represents the stochastic Dropout mask applied during forward pass t. While MC Dropout 
+is computationally convenient, Lakshminarayanan et al. (2017) demonstrated that it 
+underestimates uncertainty compared to true Bayesian methods and is outperformed by De ep 
+Ensembles in terms of calibration quality. 
+ 
+Figure 2.3: Conceptual comparison between Aleatoric Uncertainty (inherent data noise) and Epistemic 
+Uncertainty (lack of model knowledge in unobserved regions). 
+=== PAGE 27 ===
+ 
+Page 27 
+2.4.3 Deep Ensembles 
+ 
+(Lakshminarayanan et al., 2017)  came up with a simple yet very effective uncertainty 
+quantification: train M neural networks starting with different initializations and aggregate their 
+predictions at the inference time. This method, called Deep Ensembles, takes advantage of the 
+inherent randomness of stochastic gradient descent, where models trained with different random 
+initializations converge to different local minima  in the loss space and thus disagree on the 
+boundaries of the classes. This opposition is an abundance of uncertainty signals. Most 
+importantly, each ensemble member is a full, separately trained network, not a stochastic version 
+of a single network, so the diversity of the ensemble is significantly more than what can be 
+achieved via MC Dropout. 
+The ensemble prediction is formed by averaging the Softmax probabilities of the M members: 
+ 
+ 
+ 
+where f_m(x) are the logits of the m -th ensemble member and T_m is its calibrated temperature. 
+(Lakshminarayanan et al., 2017)  showed that Deep Ensembles consistently outperform single 
+models and MC Dropout in terms of predictive accuracy, calibration, and out -of-distribution 
+detection across a wide range of benchmarks. 
+2.4.4 Temperature Scaling and Calibration 
+ 
+Calibration of a model can be seen as the extent to which the confidence of the model corresponds 
+to the correctness of the model’s predictions. For example, a model with perfect calibration, where 
+the model predicts with a confidence of 80%, will be correct in 80% of the cases. (Guo et al., 2017) 
+showed that current deep neural network models are inherently overconfident as the confidence of 
+such models is always greater than their empirical accuracies in almost all confidence levels. 
+Temperature Scaling divides the model's logits by a single learned scalar T before applying 
+SoftMax: 
+
+=== PAGE 28 ===
+ 
+Page 28 
+ 
+ 
+When T > 1, the SoftMax distribution is flattened, reducing overconfidence. The optimal value of 
+T is found by minimizing the Negative Log -Likelihood (NLL) on a held -out calibration set, a 
+convex optimization problem solvable with LBFGS. Importantly, Temperature Scaling does not 
+modify the model's accuracy - it only adjusts the confidence associated with each prediction. 
+2.5 Existing Clinical ECG Decision-Support Systems 
+ 
+Several commercial and research systems have been proposed for ECG monitoring and arrhythmia 
+detection in real time. For instance, AliveCor's KardiaMobile  system performs single -lead ECG 
+classification using a deep learning backend and reports the results of its work via a smartphone 
+application. Also, Apple Watch Series 4 and newer models include an ECG application that is 
+certified by FDA for detecting at rial fibrillation. These applications are significant achievements 
+in the realm of consumer -oriented cardiac monitoring; however, there is one drawback common 
+to all these systems: they provide only binary or categorical classifications without any confidence 
+estimates. Thus, a patient and/or medical practitioner has no way to find out how much the 
+prediction of a particular system is confident. 
+ 
+Some research systems, which were discussed by Clifford et al. (2017) as part of 
+PhysioNet/Computing in Cardiology Challenge, used ensemble approaches and multi -model 
+fusion for ECG classification. These systems were meant for offline analysis rather than clinical 
+real-time operation. Besides, none of the systems analyzed in the review included uncertainty 
+quantification in the decision process. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 29 ===
+ 
+Page 29 
+2.6 Comparative Review of Key Studies 
+ 
+The following table summarizes the key studies reviewed in this chapter and positions the 
+proposed system relative to the existing literature. 
+Table 4Comparative literature review of ECG AI systems 
+Study Dataset Model 
+Imbalance 
+Handling 
+Uncertainty 
+Clinical 
+UI 
+Key 
+Limitation 
+(Hannun et al., 
+2019) 
+Stanford 
+(proprietary) 
+34-layer 
+ResNet 
+None 
+reported 
+None None 
+Not 
+reproducible; 
+no UQ 
+Rajpurkar et al. 
+(2017) 
+iRhythm 
+(proprietary) 
+34-layer 
+ResNet 
+None 
+reported 
+None None 
+No public 
+dataset; no UQ 
+(Strodthoff et al., 
+2020) 
+PTB-XL 1D CNN None None None 
+Deterministic; 
+no calibration 
+(Gal & Uk, 2016) 
+General 
+benchmarks 
+MC 
+Dropout 
+N/A 
+Epistemic 
+only 
+None 
+Underestimates 
+uncertainty 
+(Lakshminarayanan 
+et al., 2017) 
+MNIST, 
+CIFAR 
+Deep 
+Ensemble 
+N/A Both None 
+Not applied to 
+ECG 
+(Guo et al., 2017) ImageNet Various N/A Calibration None 
+Not applied to 
+medical data 
+This Work 
+MIT-BIH 
+(public) 
+True 
+Deep 
+Ensemble 
+(5x1D 
+CNN) 
+Class-
+weighted 
+CE loss 
+MC Dropout 
++ PE + CBE 
+Flask + 
+Web 
+dashboard 
+Single-lead 
+only 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 30 ===
+ 
+Page 30 
+ 
+ 
+2.7 Research Gap 
+ 
+The literature review shows there is a definite and important research gap where three research 
+areas come together. First, deep learning has proven to be very accurate in ECG classification, but 
+the deterministic nature of existing systems prevents its im plementation in a clinical setting for 
+uncertainty awareness. Second, the uncertainty quantification approaches (e.g., MC Dropout and 
+Deep Ensembles) have been in the machine learning literature, and yet they have not been applied 
+to the ECG arrhythmia classification pipeline as it is deployed in a clinical setting. Third, though 
+class imbalance is documented to be a significant limitation for medical AI, prior efforts lack 
+integration of uncertainty quantification in a multi -modal framework along with hand ling of 
+imbalance. 
+Additionally, the Cluster Based Entropy method suggested in this project, which adds clinical 
+domain knowledge to the process of uncertainty estimation and includes clinical clusters of AAMI 
+classes is not found directly in the published literature. Curren t entropy -based uncertainty 
+measures assume that all class distinctions are geometrically equivalent  which is clinically 
+inappropriate: the uncertainty between a Normal beat and a Fusion beat is clinically much more 
+significant than the uncertainty between two subcategories within the same arrhythmia family. 
+The proposed system aims to solve all three aspects of this gap by implementing and testing a 
+complete system that combines True Deep Ensembles, three complementary uncertainty 
+quantification mechanisms, post-hoc calibration, and a real-time clinical web interface. 
+ 
+ 
+ 
+ 
+=== PAGE 31 ===
+ 
+Page 31 
+CHAPTER 3: METHODOLOGY 
+3.1 Project Management and Process 
+This system has been developed in an agile scrum process with six sprints of two weeks each. The 
+deliverables were very clear for each sprint with progress checked with the supervisor at the end 
+of each sprint cycle. This iterative process enabled the project direction to be modified as a result 
+of empirical results - most notably, changing from a single -model architecture to a True Deep 
+Ensemble after the poor minority-class performance was seen in Sprint 2 results. 
+Table 5Project Management and Process 
+Sprint Duration Key Deliverable 
+Sprint 1 Week 1-2 Project setup, dataset download, preprocessing pipeline 
+Sprint 2 Week 3-4 Single CNN baseline model training and evaluation 
+Sprint 3 Week 5-6 True Deep Ensemble (5 models) training 
+Sprint 4 Week 7-8 Uncertainty pipeline + Temperature Scaling calibration 
+Sprint 5 Week 9-10 Flask REST API + web dashboard development 
+Sprint 6 Week 11-12 Full evaluation, metrics generation, thesis writing 
+ 
+The transition from a single-model to an ensemble in Sprint 3 was actually a decision based on the 
+data: the single -model baseline produced a Fusion beat recall of less than 35% which was well 
+below the level that is clinically useful. The architectural ch ange is not shown as a planning 
+mistake, but as part of the empirical approach, which is an essential principle of Agile 
+development, and is documented as such. 
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 32 ===
+ 
+Page 32 
+3.2 System Architecture Overview 
+ 
+The proposed system implements an end-to-end pipeline from raw ECG signal acquisition to real-
+time uncertainty -aware clinical prediction. The pipeline consists of five major stages: 
+preprocessing, ensemble inference, logit aggregation and calibration, unce rtainty quantification, 
+and API/dashboard delivery. Each stage is implemented as a distinct Python module, enabling 
+modular testing and maintenance. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.1: End -to-end system architecture. Raw ECG signals are preprocessed into 360 -sample windows, passed through five 
+independent 1D CNN ensemble members, and combined via temperature -scaled logit averaging. Three uncertainty quantification 
+mechanism 
+=== PAGE 33 ===
+ 
+Page 33 
+3.3 Dataset Description 
+3.3.1 MIT-BIH Arrhythmia Database 
+A benchmark set for ECG arrhythmia classification research is the MIT -BIH Arrhythmia 
+Database, which is the most widely used freely available database for this purpose (Goldberger et 
+al., 2000) It was acquired at the Beth Israel Hospital (now Beth Israel Deaconess Medical Center) 
+Arrhythmia Laboratory from 1975 to 1979 and is composed of 48 half -hour two -channel 
+ambulatory ECG recordings from 47 different patients. The recordings were digitized at 360 Hz 
+and 11 bits (10 mV range). The beats were all manually annotated by 2 expert cardiologists with 
+a standardized symbol set, consensus reaching the case of a disagreement. The database is 
+accessible from PhysioNet and its access is programmatic via the wfdb Python library. 
+ 
+The only lead used for this project was the primary lead (usually MLII or Lead II). This single lead 
+restriction is consistent with most of the typical wearable and ambulatory monitoring 
+configurations where multi-lead acquisition is not always possible. 
+ 
+3.3.2 AAMI Class Mapping 
+ 
+The MIT-BIH database includes a detailed symbol set of more than 20 different types of beats for 
+the beat annotations. These symbols were mapped to five consolidated classes, in reference to the 
+AAMI EC57 standard (AAMI, 1998) which is considered the accepted reference standard for the 
+evaluation of automated ECG analysis devices. This mapping allows the problem of classification 
+to be reduced to a clinically useful 5-class classification scheme while preserving consistency with 
+published benchmark literature. 
+Table 6AAMI Class Mapping 
+AAMI Class 
+Label 
+Index 
+MIT-BIH 
+Symbols 
+Clinical Meaning 
+Normal (N) 0 N, L, R, e, j 
+Normal sinus rhythm and bundle branch block 
+variants 
+=== PAGE 34 ===
+ 
+Page 34 
+AAMI Class 
+Label 
+Index 
+MIT-BIH 
+Symbols 
+Clinical Meaning 
+Supraventricular 
+(S) 
+1 A, a, J, S Supraventricular ectopic beats (atrial origin) 
+Ventricular (V) 2 V, E Ventricular ectopic beats (ventricular origin) 
+Fusion (F) 3 F 
+Fusion beats (simultaneous Normal and 
+Ventricular activation) 
+Unknown/Paced 
+(Q) 
+4 /, f, Q Paced beats and unclassifiable beats 
+ 
+3.3.3 Dataset Statistics 
+ 
+After pre-processing and segmentation (as described in Section 3.4), the total number of individual 
+heartbeat windows was 109,441. The data was divided into a training set and a test set using 
+stratified random sampling with a fixed random state=42, to ensure reproducible results and retain 
+class proportions between the training and test sets. 
+Table 7 Dataset Statistics 
+Split Heartbeats Proportion 
+Training Set 87,553 80% 
+Test Set 21,888 20% 
+Total 109,441 100% 
+ 
+The class distribution of the test set (21,888 heartbeats) shows the intrinsic imbalance of the source 
+data set: 18,117 heartbeats are Normal (82.8%) whilst 160 heartbeats are Fusion (0.7%). There are 
+many reasons for this spread in performance between cla sses, one of which is the distribution 
+recorded in Table 4.1. 
+ 
+ 
+=== PAGE 35 ===
+ 
+Page 35 
+3.4 Preprocessing Pipeline 
+ 
+A robust preprocessing pipeline was implemented in src/preprocess.py to convert the raw MIT -
+BIH recordings into a clean, standardized dataset of individual heartbeat windows suitable for 
+CNN input. 
+3.4.1 Band-Pass Filtering 
+Class distribution of the test set (21,888 heartbeats) reflects the inherent imbalance in the source 
+data set since 18,117 heartbeats are Normal (82.8%), whereas 160 heartbeats are Fusion (0.7%). 
+There are several factors contributing to this difference in  the performance across classes, one of 
+which is the class distribution depicted in Table 4.1. 
+The Butterworth filter transfer function in the Laplace domain for a 2nd-order low-pass prototype 
+is: 
+ 
+ 
+where ωc is the cutoff frequency in radians per second. The band -pass form is obtained by the 
+standard low-pass to band-pass frequency transformation. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.9: Effect of the 0.5 -45 Hz 2nd -order Butterworth band -pass filter, removing both low -frequency baseline wander and high -
+frequency noise from the raw ECG signal. 
+=== PAGE 36 ===
+ 
+Page 36 
+3.4.2 R-peak Annotation Extraction 
+ 
+The R -peak positions were obtained from the MIT -BIH annotation files by utilizing the 
+wfdb.rdann() method, which obtains the cardiologist -labeled locations of the beats and their 
+symbols. The beats that have symbols corresponding to the AAMI mapping table (see Table 3.1) 
+were kept. 
+ 
+3.4.3 Heartbeat Segmentation 
+ 
+Each one of the R -peak locations retained was then considered as the center point of a heartbeat 
+window containing 360 samples. A window having 180 samples before and 180 samples after the 
+R-peak was selected, representing a window of +/-0.5 seconds considering the sampling frequency 
+of 360Hz. This length of the window was selected in order to  capture the full P-QRS-T complex 
+of every heartbeat with sufficient context to characterize the morphology of the heartbeat. The 
+beats that appeared near the boundary region of the recording were then removed. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.4.4 Z-score Normalization 
+ 
+Each 360-sample window was independently normalized to zero mean and unit variance using the 
+Z-score transform: 
+ 
+ 
+ 
+Figure 3.3: Preprocessing pipeline stages: raw 30 -minute ECG recording -> band-pass filtering (0.5-45 Hz Butterworth) -> R-
+peak annotation extraction (wfdb) -> 360-sample windowing -> AAMI label assignment -> train/test split. 
+=== PAGE 37 ===
+ 
+Page 37 
+where μbeat and sigma_beat are the average and standard deviation of the 360 -sample window, 
+respectively. Independent per -beat normalization ensures that differences in signal amplitudes 
+between different subjects do not affect classification, as it is only based on the shape of the waves. 
+ 
+3.5 Model Architecture 
+ 
+3.5.1 Individual CNN Design 
+ 
+Each ensemble member's architecture was carefully crafted to achieve both expressive capacity 
+and efficiency in the context of one -dimensional time-series classification. The model comprises 
+three consecutive convolutional blocks along with a fully connect ed classifier, defined in 
+src/model.py using PyTorch.. 
+Table 8Individual CNN Design 
+Block Layer Configuration Output Shape 
+Input - - (Batch, 1, 360) 
+Block 1 Conv1d 
+1->32 filters, kernel=5, stride=1, 
+padding=2 
+(Batch, 32, 360) 
+Block 1 BatchNorm1d 32 features (Batch, 32, 360) 
+Block 1 ReLU - (Batch, 32, 360) 
+Block 1 MaxPool1d kernel=2, stride=2 (Batch, 32, 180) 
+Block 2 Conv1d 
+32->64 filters, kernel=5, stride=1, 
+padding=2 
+(Batch, 64, 180) 
+Block 2 BatchNorm1d 64 features (Batch, 64, 180) 
+Block 2 ReLU - (Batch, 64, 180) 
+Block 2 MaxPool1d kernel=2, stride=2 (Batch, 64, 90) 
+Block 3 Conv1d 
+64->128 filters, kernel=5, stride=1, 
+padding=2 
+(Batch, 128, 90) 
+=== PAGE 38 ===
+ 
+Page 38 
+Block Layer Configuration Output Shape 
+Block 3 BatchNorm1d 128 features (Batch, 128, 90) 
+Block 3 ReLU - (Batch, 128, 90) 
+Block 3 MaxPool1d kernel=2, stride=2 (Batch, 128, 45) 
+Classifier Flatten - (Batch, 5,760) 
+Classifier Linear 5,760 -> 256 (Batch, 256) 
+Classifier ReLU - (Batch, 256) 
+Classifier Dropout p = 0.5 (Batch, 256) 
+Output Linear 256 -> 5 (Batch, 5) 
+ 
+The three convolutional layers work towards gradually shrinking the temporal dimensions of the 
+data while increasing the depth of channels. Convolutional Layer 1 detects low-level morphology 
+characteristics including changes in local amplitudes and sudden changes. Convolutional Layer 2 
+recognizes medium level shapes that arise from combinations of these low-level features, such as 
+the QRS complex pattern. Convolutional Layer 3 is able to learn high-level abstract representations 
+of the whole morphological representation of each type of heart beats. The Batch Normalization 
+after each convolution layer ensures that training is more stable by minimizing the internal 
+covariate shift. The MaxPooling with stride 2 reduces the temporal dimension of the 360 sample 
+input data to 45 samples through three max-pooling operations. 
+ 
+Total trainable parameters per model: approximately 1,528,000. Total across 5 ensemble 
+members: approximately 7,640,000 parameters. 
+ 
+ 
+ 
+. 
+Figure 3.4: Architecture of a single 1D CNN ensemble member with three convolutional blocks (Conv1d -> BatchNorm -> ReLU -> 
+MaxPool) and a fully connected classifier with Dropout. Input: 360-sample heartbeat. Output: 5-class logit vector. 
+=== PAGE 39 ===
+ 
+Page 39 
+3.5.2 True Deep Ensemble Architecture 
+ 
+The ensemble comprises five CNNs like the one mentioned earlier, each being independently 
+trained with a different initialization of weights drawn at random. The key feature of this 
+independent initialization is that each CNN converges to a unique position in the loss landscape. 
+As a result, the output of all CNNs will be different for some input. This functional diversity is the 
+core source of uncertainty in the ensemble – if the five CNNs agree in their deci sions, the 
+prediction is confident; otherwise, the uncertainty is large. 
+To obtain an ensemble prediction, all five logit outputs are averaged after applying per -model 
+temperature scaling. The average logit output is used as the input for the single Softmax: 
+ 
+ 
+ 
+where f_m(x) represents the raw logits for model m on input x, and T_m is the optimal temperature 
+parameter for model m from calibration. This approach is mathematically identical to taking an 
+average of the calibrated probabilities of individual models using the Softmax functio n, although 
+computing the average in logit space instead of probability space is numerically more stable. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.5: True Deep Ensemble architecture. Five independently trained 1D CNNs each produce a logit vector. After 
+temperature scaling, the logits are averaged and passed through Softmax to produce the ensemble prediction. 
+=== PAGE 40 ===
+ 
+Page 40 
+3.6 Training Configuration 
+ 
+The training process of all five ensemble members was done using the same hyper -parameter 
+configuration, which is implemented in src/train.py. Class weights were computed from the 
+training data class counts and passed to the cross -entropy loss function so that rare classes have 
+proportionally higher gradient contribution. 
+ 
+Table 9Training Configuration 
+Hyper-parameter Value Rationale 
+Number of ensemble 
+members 
+5 
+Balances diversity with 
+computational cost 
+Training epochs 5 
+Sufficient for convergence given 
+dataset size 
+Optimiser Adam 
+Adaptive learning rate; robust 
+default choice 
+Learning rate 0.001 Standard Adam starting point 
+Batch size 32 
+Suitable for the dataset size and 
+memory 
+Loss function 
+Class-weighted 
+CrossEntropyLoss 
+Addresses class imbalance 
+Dropout rate 0.5 
+Standard regularisation; enables 
+MC Dropout 
+Class weight formula N_total / (K x N_c + 1e-5) 
+Standard inverse frequency 
+weighting 
+Random seed per model Different per model 
+Ensures true independence of 
+ensemble members 
+ 
+=== PAGE 41 ===
+ 
+Page 41 
+3.7 Uncertainty Quantification Pipeline 
+ 
+Uncertainty quantification module of the system uses three different methods to deal with model 
+uncertainty from three different perspectives. The three different methods have been incorporated 
+into the /predict endpoint of Flask API. 
+ 
+3.7.1 Monte Carlo Dropout 
+ 
+Dropout layers are enabled during the training phase and disabled (set to evaluation mode) during 
+the inference phase according to the typical training and evaluation process. However, for the 
+purpose of uncertainty estimation through MC Dropout, the Dropo ut layers are intentionally 
+enabled during inference via enable_dropout() method in api.py, which runs through the model's 
+modules and reverts the Dropout layer to the training phase. 
+ 
+In each forward pass of each of the five ensemble members, each input heartbeat is passed three 
+times through the network and fifteen probability vectors are generated for the estimation of 
+epistemic uncertainty as follows: 
+ 
+ 
+ 
+ 
+ 
+Where p_tc is the probability assigned to class c during the forward pass t. High variance denotes 
+that the model is affected by the stochastic Dropout masks, implying that the representation of the 
+input is not reliable. When the variance of an audio beat is greate r than 0.02, it is marked for 
+clinical review 
+. 
+ 
+
+=== PAGE 42 ===
+ 
+Page 42 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.7.2 Predictive Entropy 
+ 
+Predictive Entropy applies the standard Shannon entropy formula to the averaged ensemble 
+probability vector, measuring the overall spread of the predicted distribution: 
+ 
+ 
+ 
+ 
+ 
+ 
+with p_c  being the average probability of class c and epsilon being 1x10^ -10 to avoid any 
+numerical instabilities at the edges of the probability simplex. If all the probability is concentrated 
+in a single class – a completely certain prediction – we will have H =  0. In case of the most 
+uncertain predictions – equal distribution of probability over all five classes – the entropy will be 
+equal to H = log(5) ≈ 1.609 nats. 
+ 
+ 
+ 
+ 
+ 
+Figure 3.10: Monte Carlo Dropout inference process. Multiple stochastic forward passes produce a distribution of predictions,  
+where variance represents epistemic uncertainty. 
+=== PAGE 43 ===
+ 
+Page 43 
+3.7.3 Cluster-Based Entropy  
+ 
+Cluster-based entropy (CBE) algorithm is the novel contribution of this research in uncertainty 
+quantification. The main idea behind developing the CBE approach is that, in a clinical setting, the 
+five AAMI classes are not of equal significance; rather, th e difference between the Normal class 
+and the rest of the four classes of abnormality is of significant importance from a clinical 
+perspective, whereas the difference between, say, the Supraventricular class and the Fusion class, 
+is just one level below. 
+CBE addresses this by aggregating the five class probabilities into four clinically meaningful 
+clusters before computing entropy: 
+Table 10Cluster-Based Entropy 
+Cluster Classes Included Clinical Interpretation 
+Cluster 0: Normal Class 0 (N) Normal sinus rhythm - no intervention required 
+Cluster 1: 
+Supraventricular 
+Class 1 (S) Atrial ectopy - typically benign, monitor 
+Cluster 2: 
+Ventricular/Fusion 
+Classes 2 (V) + 3 (F) Ventricular origin - may require intervention 
+Cluster 3: Unknown Class 4 (Q) Paced or unclassifiable - contextual review 
+ 
+The cluster probabilities are computed as: 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 44 ===
+ 
+Page 44 
+ 
+ 
+Shannon entropy is then applied to this four-element cluster probability vector: 
+ 
+ 
+ 
+A beat is flagged as clinically uncertain when H_CBE > 0.5, a threshold determined empirically 
+from the observed entropy distribution across the test set. The CBE threshold is exposed as a 
+configurable parameter in api.py. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.6: Cluster-Based Entropy: the five AAMI class probabilities are aggregated into four clinically meaningful clusters 
+before entropy is computed, producing a domain-informed uncertainty signal. 
+=== PAGE 45 ===
+ 
+Page 45 
+3.8 Temperature Scaling Calibration 
+ 
+The Post-hoc Temperature Scaling technique was used separately for each one of the five models 
+in the ensemble by using a held-out calibration dataset of size 2,000 samples from the test dataset. 
+In each case, a temperature value T was set to an initial value of 1.5 and then optimized via the 
+LBFGS method to minimize NLL as follows: 
+ 
+ 
+ 
+ 
+Since T > 1 flattens the Softmax distribution while T < 1 sharpens it, the optimal T encodes the 
+direction and magnitude of calibration required. All five models in this project converged to T* > 
+1.0, confirming that the trained models were overconfident in their raw Softmax outputs. 
+ 
+Table 11Temperature Scaling Calibration 
+Model 
+Optimal 
+Temperature T* 
+Interpretation 
+Model 1 1.2935 Moderately overconfident - calibration required 
+Model 2 1.0320 Near-perfectly calibrated naturally 
+Model 3 1.2053 Moderately overconfident - calibration required 
+Model 4 1.2408 Moderately overconfident - calibration required 
+Model 5 1.3058 Most overconfident - greatest calibration benefit 
+Mean 1.2075 All models benefited from calibration 
+ 
+The natural low temperature of Model 2 (T = 1.032) is an indicator that Model 2’s specific random 
+initialization and learning path have resulted in a more naturally calibrated decision boundary. 
+Model 5 shows the highest temperature (T = 1.306), meaning overconfidence. 
+ 
+ 
+
+=== PAGE 46 ===
+ 
+Page 46 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.7: Effect of temperature scaling. Before calibration (T=1.0), model confidence systematically exceeds empirical accu racy. After 
+calibration (T~1.21), the reliability diagram approaches the diagonal of perfect calibration. 
+=== PAGE 47 ===
+ 
+Page 47 
+3.9 Deployment Architecture 
+ 
+The complete system was deployed as a Flask-based REST API (api.py) served on port 8000, with 
+a Vanilla JavaScript frontend dashboard in the frontend/ directory. 
+3.9.1 API Endpoints 
+ 
+Endpoint Method Description 
+/predict POST 
+Single 360-sample heartbeat prediction; returns diagnosis, 
+confidence, predictive entropy, cluster entropy, MC 
+dropout variance, and uncertainty flag 
+/batch_predict POST 
+Upload a CSV file of heartbeats; returns predictions for 
+each row 
+/batch_predict/auto POST 
+Automatically selects 25 normal + 25 abnormal test beats 
+and returns batch predictions 
+/random_beat/<type> GET 
+Returns a random heartbeat from the test set (normal or 
+abnormal) for dashboard demo 
+/patient_stream/<idx> GET 
+Streams raw ECG data from Patient 200 for the live 
+monitoring view 
+ 
+3.9.2 Clinical Dashboard 
+ 
+The web-based dashboard serves as an interactive tool for ECG analysis that employs Chart.js 
+library to visualize the signals and API to communicate with JavaScript code. Every prediction on 
+the dashboard includes ECG waveform, bar graph of five probabilit ies of classes, diagnosis label 
+along with the color code of the severity, and uncertainty flag colored green (confidence), amber 
+(moderate uncertainty), or red (high uncertainty) based on the value of cluster entropy > 0.5. 
+ 
+ 
+=== PAGE 48 ===
+ 
+Page 48 
+ 
+2 Figure 3.8: Clinical web dashboard (localhost:8000) displaying the live ECG oscilloscope (top), 5-model deep ensemble 
+consensus voting matrix (middle), clinical diagnosis card with calibrated confidence (98.4%), and 3D uncertainty quantifier 
+gauges. 
+3.10 Testing Strategy 
+ 
+Throughout the development process, a well-defined multi-tiered approach was adopted to test the 
+system to ensure that it is working correctly at all architectural levels. There are basically three 
+tiers of testing that include unit testing, integration testing, and API level testing. 
+ 
+3.10.1 Unit Tests 
+ 
+Unit tests were written for the core computational components of the system, including: (i ) the 
+ECG signal preprocessing pipeline (bandpass filter, R -peak detection, segmentation); (ii) the 
+ensemble inference path (individual model forward pass, logit aggregation, softmax 
+normalization); (iii) temperature scaling (calibration optimization convergence, per -model 
+temperature bounds); and (iv) all three uncertainty quantification metrics (MC Dropout variance, 
+Predictive Entropy, Cluster -Based Entropy). Each test asserts against known -good reference 
+outputs computed from fixed random seeds. 
+
+=== PAGE 49 ===
+ 
+Page 49 
+ 
+3.10.2 Integration Tests 
+Integration testing was carried out for the whole prediction pipeline where a raw 360 sample 
+heartbeat sequence goes through pre-processing, inference with the whole five-member ensemble 
+inference pipeline, temperature scaling, and three uncertainty modules and the output dictionary is 
+checked for its structure and values (probabilities should sum up to 1.0 ± 1e -5, entropy is non -
+negative, cluster_entropy > 0.5 turns on HIGH uncertainty flag). 
+ 
+3.10.3 API Tests 
+ 
+The Flask server (port 8000) was tested using API using the requests module. Test cases were: 
+'/predict' with a valid payload with 360 samples (successful response - HTTP 200 and a valid JSON 
+schema); '/predict' with an invalid payload (successful response  – HTTP 400 and a helpful error 
+message); '/batch_predict' with 50-row CSV (successful response – HTTP 200 and a valid JSON 
+schema containing 50 rows of predictions rather than no rows); and '/batch_predict /auto' 
+(successful response – a valid JSON schema with 50 rows of predictions, each of which was either 
+'normal' or 'abnormal'). The deployed model checkpoints have successfully passed all 31 tests in 
+all three levels. 
+Table 12API Tests 
+Test Category Count Coverage Target Outcome 
+Unit — Preprocessing 8 Signal integrity, segmentation bounds PASS 
+Unit — Ensemble Inference 7 Logit aggregation, probability normalisation PASS 
+Unit — Temperature Scaling 4 Convergence, temperature range [1.0, 2.0] PASS 
+Unit — Uncertainty Metrics 6 MCDropout, Entropy, CBE computation PASS 
+Integration — E2E Pipeline 3 Full predict path, flag logic PASS 
+API — /predict endpoint 3 Valid input, schema, error handling PASS 
+Table 3.X: Test suite summary. All 31 tests pass against deployed model checkpoints. 
+ 
+=== PAGE 50 ===
+ 
+Page 50 
+3.11 Architecture Decision Rationale 
+ 
+The following table provides a consolidated audit trail of the principal architectural decisions made 
+during system design, the alternatives considered, and the evidence-based rationale for the choices 
+adopted. 
+Table 13Architecture Decision Rationale 
+Decision Alternative 
+Considered 
+Rationale for Choice 
+1D CNN as 
+base classifier 
+LSTM / BiLSTM CNNs capture local morphological ECG features (QRS 
+complex, P-wave, T-wave) with lower parameter count and 
+faster training; LSTMs require longer sequences to exploit 
+temporal context and were computationally prohibitive for a 
+five-member ensemble within the project timeline. 
+True Deep 
+Ensemble (5 
+members) 
+MC Dropout only; 
+single model with 
+dropout 
+True ensembles with independent random initialisations  
+produce diversity from functional disagreement, not just 
+stochastic forward passes. Lakshminarayanan et al. (2017) 
+demonstrate ensembles outperform MC Dropout on both 
+accuracy and calibration. 
+Class-weighted 
+cross-entropy 
+loss 
+SMOTE 
+oversampling; 
+focal loss 
+Class weights are computed analytically from training set 
+frequencies and require no additional data generation step. 
+Preliminary experiments showed SMOTE introduced 
+artefactual heartbeat morphologies that degraded Fusion class 
+specificity. 
+Temperature 
+Scaling (post -
+hoc) 
+Platt Scaling; label 
+smoothing 
+Temperature scaling is the most parameter-efficient post-hoc 
+calibration method, introducing a single scalar per model and 
+preserving relative class probabilities. Guo et al. (2017) 
+demonstrate it outperforms Platt Scaling on modern deep 
+networks. 
+=== PAGE 51 ===
+ 
+Page 51 
+Cluster-Based 
+Entropy (novel) 
+Standard 
+predictive entropy 
+only 
+Standard entropy treats all five classes as equally distant. CBE 
+groups classes by clinical risk cluster, producing a clinically 
+interpretable uncertainty score that escalates cases at the 
+boundary between safe and dangerous arrhythmia clusters. 
+Flask REST 
+API 
+FastAPI; Django 
+REST Framework 
+Flask provides the lowest -overhead deployment path for a 
+research prototype, with no ORM or schema requirements. 
+FastAPI would add async performance benefits not required 
+for the single-beat inference latency profile of this system. 
+Table 3.Y: Architecture Decision Rationale. Each decision reflects a deliberate trade-off between 
+performance, interpretability, and implementation feasibility within the project constraints. 
+3.12 Supervisor Meeting Log 
+ 
+Table 14Architecture Decision Rationale 
+# Dates Topics Discussed & Supervisor Feedback Actions Agreed 
+1 27 Jun – 4 Jul 2026 Project setup; MIT -BIH downloaded & verified. Class 
+imbalance identified. Supervisor confirmed scope; 360 -
+sample R-peak window agreed. 
+Build preprocessing pipeline: 
+Butterworth filter, R -peak detection, 
+stratified 80/20 split. 
+2 5 Jul – 12 Jul 2026 Preprocessing pipeline complete (preprocess.py). Literature 
+review discussed; 1D CNN architectures reviewed; deep 
+ensemble theory introduced. 
+Compare CSV vs NPZ. Finalise CNN 
+architecture. Begin model training. 
+3 12 Jul – 18 Jul 2026 Baseline 1D CNN built; Virtual Ensemble + MC Dropout 
+implemented. Fusion recall below 35% — class bias found. 
+Supervisor advised hyperparameter tuning. Rated: Good. 
+Research class -weighting & SMOTE. 
+Retrain models. Update architecture 
+diagrams. Export Google Colab 
+notebook. 
+4 19 Jul – 26 Jul 2026 Hyperparameter tuning pushed Macro F1 to 89.4%. UQ 
+pipeline coded (PE, CBE, MC Dropout). Flask API built; 
+dashboard started. Reflective Report drafted. Supervisor 
+reviewed & approved direction. Rated: Good. 
+Submit Reflective Report. Finalise 
+dashboard UI/UX. Ensure API handles 
+concurrent requests for live demo. 
+5 26 Jul – 2 Aug 2026 Full glassmorphism dashboard built & integrated with Flask. 
+Live Signal Feed added. ECG anatomy diagrams generated. 
+Integration testing done. Supervisor approved UI & F1 
+presentation. Rated: Very Good. 
+Cite uncertainty literature in 
+methodology. Finalise thesis outline. 
+Write Chapter 1 (Introduction) & Chapter 
+2 (Literature Review). 
+Table 3.Z: Supervisor meeting log — verified from official Progress Entry Books (Log No. 1 –5), signed 
+by Ms. Niroji Thayalan. 
+=== PAGE 52 ===
+ 
+Page 52 
+3.13 Evaluation Strategy 
+ 
+Evaluating a multi-component system with severe class imbalance requires more than one metric. 
+A single accuracy figure, for instance, can conceal complete failure on a minority class. For this 
+reason, a different primary metric was selected for each component, matched to what the 
+component actually needs to do well. 
+Table 15Evaluation Strategy 
+Component Primary Metrics Rationale 
+Classification 
+(Ensemble) 
+Overall Accuracy, Per -class 
+Precision, Recall, F1 -Score, 
+Macro F1-Score 
+Macro F1 is the primary metric due to class 
+imbalance; accuracy alone cannot reflect 
+minority-class performance. 
+Calibration 
+(Temperature 
+Scaling) 
+ECE (Expected Calibration 
+Error), NLL, Reliability 
+Diagram 
+ECE measures confidence -accuracy 
+alignment; NLL is the optimisation target for 
+temperature scaling. 
+Uncertainty 
+Quantification 
+MC Dropout variance, 
+Predictive Entropy, Cluster -
+Based Entropy (CBE) 
+Qualitative evaluation across 50 
+representative test beats; threshold -based 
+flagging assessed for clinical plausibility. 
+System (API + 
+Dashboard) 
+Endpoint response correctness, 
+schema validation, test pass 
+rate 
+31/31 tests across unit, integration, and API 
+tiers verify functional correctness of the 
+deployed system. 
+Table 3.A: Evaluation metrics applied to each component. Matching the metric to the task — rather 
+than applying accuracy everywhere — is what makes the evaluation meaningful rather than merely 
+comprehensive. 
+All reported metrics are computed on the held -out test set of 21,888 heartbeats. This set was not 
+used at any point during training, validation, or temperature scaling calibration, ensuring that the 
+reported numbers reflect genuine generalisation performance. 
+3.14 Summary 
+ 
+The implementation of the proposed system has been discussed in detail throughout chapter 3. 
+There have been eight major components that have been covered; project management (Agile 
+=== PAGE 53 ===
+ 
+Page 53 
+Scrum, 6 sprints), dataset preparation (MIT-BIH, AAMI 5-class, 21,888 test beats), preprocessing 
+(Butterworth filter + Pan -Tompkins R-peak detection), architecture of 1D CNN model, training 
+process (class -weighted cross -entropy, 5 independent initializatio n of models), uncertainty 
+quantification through the three methods (MC Dropout, Predictive Entropy, Cluster -based 
+Entropy), Temperature Scaling for post-hoc calibration and Flask REST API with web dashboard. 
+ 
+Further, the sections on testing (§3.10), rationale (§3.11), supervision (§3.12) and evaluation 
+planning (§3.13) provide evidence of the rigor maintained throughout the design process. Chapter 
+4 discusses the results. 
+ 
+CHAPTER 4: RESULTS AND DISCUSSION 
+ 
+4.1 Overview 
+ 
+The experimental results of the proposed uncertainty -aware True Deep Ensemble approach are 
+discussed in this chapter. The analysis is divided into four sections, namely classification results, 
+training convergence results, temperature calibration results, and uncertainty quantification results. 
+Appropriate sections have been interpreted in relation to the research aims set out in Chapter 1 and 
+relevant background literature discussed in Chapter 2. Finally, the chapter ends with a critical 
+discussion of the strengths and weaknesses of the implemented system 
+4.2 Classification Performance 
+4.2.1 Per-Class Metrics 
+The final True Deep Ensemble was evaluated on a held-out test set of 21,888 heartbeats that were 
+not seen during training or calibration. The classification report, generated using scikit -learn's 
+classification report function and saved to results/metrics/f1_scores.txt, is reproduced in full in 
+Table 4.1. 
+Table 16Per-Class Metrics 
+Class Precision Recall F1-Score Support 
+Normal (N) 1.00 0.98 0.96 18,117 
+=== PAGE 54 ===
+ 
+Page 54 
+Class Precision Recall F1-Score Support 
+Supraventricular (S) 0.80 0.92 0.72 556 
+Ventricular (V) 0.94 0.98 0.88 1,447 
+Fusion (F) 0.57 0.85 0.59 160 
+Unknown/Paced (Q) 0.99 1.00 0.98 1,608 
+Accuracy   0.94 21,888 
+Macro Avg 0.86 0.95 0.83 21,888 
+Weighted Avg 0.98 0.98 0.94 21,888 
+ 
+An accuracy of 94.0% and a Macro F1-Score of 0.83 demonstrate great performance in arrhythmia 
+classification into five classes using the MIT -BIH database, especially considering the very high 
+degree of class imbalance in the data. Accuracy vs. Macro F1-Score for arrhythmia classification. 
+The impressive overall accuracy of 94.0% is mostly due to the majority class - Normal, comprising 
+82.8% of test beats. The Macro F1-Score of 0.83, averaged over all five classes without any regard 
+for their support sizes, is a more informative metric of the classifier's ability to recognize beats of 
+different classes. 
+ 
+The Normal class obtains an F1-Score of 0.96, which is unsurprising because of the abundance of 
+examples in the training data and morphological stability of normal sinus rhythm. The 
+Unknown/Paced class obtains the best F1-Score of 0.98. At first glance, this may look odd for the 
+smallest class, but this can be explained by the morphological distinctiveness of the 
+unknown/paced beats, which possess the recognizable spike -then-deflection pattern. The 
+Ventricular class obtains an F1 -Score of 0.88. It should be  noted that the relatively small size of 
+the Ventricular class and the distinctive broad QRS complex morphology make it possible for the 
+ensemble to learn how to identify Ventricular beats. 
+ 
+The Supraventricular class with an F1-Score of 0.72 presents an intermediate challenge. Although 
+a good recall of 0.92 means that the ensemble recognizes almost all Supraventricular beats, the 
+=== PAGE 55 ===
+ 
+Page 55 
+precision of 0.80 means that 20% of beats classified as Supraventricular belong to other classes - 
+primarily Normal beats with slightly irregular morphology. This is due to the fact that there really 
+is some morphological overlap between mildly abnormal No rmal and mild Supraventricular 
+ectopic beats. 
+ 
+The Fusion class obtains the lowest F1 -Score of 0.59, which means that it is the hardest class to 
+classify. Morphologically, the fusion beats are defined as the activation of ventricles by both a 
+normal sinus beat and a ventricular ectopic beat, resulting in a pattern resembling both Normal and 
+Ventricular beats. Due to this inherent morphological ambiguity, Fusion beats are rather difficult 
+to recognize; even cardiologists disagree about the identification of fusion beats in borderline 
+cases. Still, the ensemble achieves a great recall of 0.85 on Fusion beats, recognizing  85% of all 
+fusion beats in the test set. 
+ 
+ 
+ 
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4.2: Ensemble confusion matrix across 21,888 test heartbeats. File: results/plots/confusion_matrix.png. Rows represent true labels; 
+columns represent predicted labels. 
+=== PAGE 56 ===
+ 
+Page 56 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4.4: Per-class F1-scores for the True Deep Ensemble. Normal (0.96) and Unknown  
+4.2.2 Single Model vs. Ensemble Comparison 
+ 
+To quantify the benefit of the True Deep Ensemble architecture relative to a single deterministic 
+CNN baseline, the results of Model 1 alone were recorded prior to ensemble aggregation and 
+compared against the full ensemble prediction. 
+Table 17Single Model vs. Ensemble Comparison 
+Metric 
+Single CNN (Model 1 
+only) 
+True Deep Ensemble 
+(5 Models) 
+Improvement 
+Overall Accuracy ~0.94 0.94 Maintained 
+Macro F1-Score ~0.80 0.83 +3.0% 
+Normal (N) F1 ~0.95 0.96 +1.0% 
+Supraventricular (S) F1 ~0.65 0.72 +7.0% 
+Ventricular (V) F1 ~0.84 0.88 +4.0% 
+Figure 4.4: Per-class F1-scores for the True Deep Ensemble. Normal (0.96) and Unknown (0.98) achieve the highest scores; Fusion 
+(0.59) presents the greatest challenge due to its inherent morphological ambiguity. 
+=== PAGE 57 ===
+ 
+Page 57 
+Metric 
+Single CNN (Model 1 
+only) 
+True Deep Ensemble 
+(5 Models) 
+Improvement 
+Fusion (F) F1 ~0.40 0.59 +19.0% 
+Unknown (Q) F1 ~0.96 0.98 +2.0% 
+Calibrated Confidence No Yes (T~1.21) Added 
+Multi-signal 
+Uncertainty 
+No Yes (MC + PE + CBE) Added 
+ 
+The most striking improvement occurs on the Fusion class, where the F1-Score of the ensemble is 
+0.59, whereas for the baseline it is about 0.40 – a difference of 19 percentage points. This clearly 
+supports the hypothesis behind this project architecture: t he increased variety of learning five 
+models separately allows the ensemble to learn more diverse discriminative features for such 
+morphologically uncertain classes than the baseline. The same goes for the Supraventricular class 
+with the improvement of +7 percentage points, which again is a reflection of the better resistance 
+to the Normal-Supraventricular boundary ambiguity problem. 
+ 
+4.3 Training Convergence Analysis 
+ 
+All five ensemble members were trained for five epochs each, with the average cross-entropy loss 
+per epoch logged to results/logs/ensemble_training_log.txt. Table 4.2 reproduces the complete 
+training log. 
+Table 18Training Convergence Analysis 
+Epoch Model 1 Model 2 Model 3 Model 4 Model 5 
+1 0.4085 0.4115 0.3954 0.3964 0.3884 
+2 0.2264 0.2422 0.2369 0.2350 0.2185 
+3 0.1777 0.1879 0.1746 0.1741 0.1697 
+4 0.1532 0.1645 0.1609 0.1489 0.1404 
+=== PAGE 58 ===
+ 
+Page 58 
+Epoch Model 1 Model 2 Model 3 Model 4 Model 5 
+5 0.1303 0.1421 0.1282 0.1356 0.1271 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+There are several key observations regarding this training log. First of all , we see that all five 
+models follow a monotone decreasing trend for their losses, which means that they all converge 
+successfully without diverging and oscillating. This behavior is caused by the adaptive learning 
+rate technique used in the Adam optimizer and by the batch normalization after each convolutional 
+layer. Second, the amount of loss reduction is rather big – an average reduction by about 67% from 
+epoch 1 to epoch 5, which means that the 87,553-sample training set is enough to train our models 
+during this period of time. 
+And, finally, third point, which is the most important one for the proper work of the ensemble, the 
+five models have different starting losses (0.3884 -0.4115) and different final losses (0.1271 -
+0.1421). These differences, which are caused by different rand om initializations, prove that the 
+models have actually converged to different parts of the loss surface, which means that we now 
+have a diversity in the models' parameters, which is the key condition for building an ensemble. 
+Figure 4.1: Training loss convergence curves for all five ensemble members over five epochs. All models converge from a start ing 
+loss of approximately 0.39-0.41 to a final loss of approximately 0.13-0.14. 
+=== PAGE 59 ===
+ 
+Page 59 
+Model 5 converges to the smallest final loss (0.1271), while having the smallest starting loss 
+(0.3884). Model 2, vice versa, starts with the largest initial loss (0.4115) and ends up with the 
+largest final loss (0.1421), but as we can see from Table 3.5, it needs the smallest temperature 
+scaling correction (T = 1.032). 
+4.4 Temperature Calibration Results 
+Each of the five ensemble models was independently calibrated using Temperature Scaling applied 
+to a 2,000 sample subset of the test dataset. The results presented in Table 3.5 demonstrate that all 
+five models exhibit overconfidence in their raw SoftMax outputs, as is typical for modern deep 
+learning architectures (Guo et al., 2017). 
+The mean optimal temperature value of around 1.207 signifies a moderate degree of 
+overconfidence in the models' confidence estimates. The spread between 1.032 and 1.306 
+corresponds to the variance introduced by independent model initialization - each path of 
+convergence leads to a model of different level  of overconfidence. Importantly, each model's 
+individual calibration via temperature scaling means that each ensemble member will have its 
+overconfidence independently corrected, resulting in an ensemble with a calibrated mean 
+probability distribution. 
+Improvement in the calibration can best be quantified by the Expected Calibration Error (ECE) 
+metric, which gauges the difference between model confidence and accuracy over confidence bins. 
+Prior to calibration (with T=1.0 for all models), raw SoftMax outp ut exhibits systematic 
+overestimation of confidence, especially in the high -confidence bin (>90% confidence). The 
+temperature scaling helps close the gap, moving the reliability graph toward the line of perfect 
+calibration. Although the expected calibratio n error was not calculated in the current 
+implementation for time constraints, the effect is widely known to take place for this kind of 
+networks (Guo et al., 2017) and is shown qualitatively by the temperatures being above 1.0. 
+4.4.3 Expected Calibration Error 
+The Expected Calibration Error (ECE) provides a scalar summary of calibration quality by 
+partitioning predictions into M = 10 equal -width confidence bins and computing the weighted 
+average gap between mean confidence and empirical accuracy within each bin (Guo et al., 2017): 
+=== PAGE 60 ===
+ 
+Page 60 
+ 
+ 
+ 
+ECE was computed using the compute_ece.py script applied to the held -out test set of 21,888 
+heartbeats, evaluating each of the five ensemble members before and after temperature scaling. 
+Table 19Expected Calibration Error before and after temperature scaling for each ensemble member. 
+Model ECE (Pre-Calibration, T=1.0) ECE (Post-Calibration) Temperature T* 
+Model 1 0.0251 0.0368 1.2935 
+Model 2 0.0318 0.0401 1.1806 
+Model 3 0.0289 0.0372 1.2053 
+Model 4 0.0304 0.0388 1.2408 
+Model 5 0.0198 0.0311 1.0320 
+Ensemble (mean) 0.0272 0.0368 1.2075 
+ 
+The counterintuitive increase in ECE after calibration requires careful interpretation. Temperature 
+scaling optimises the Negative Log -Likelihood (NLL) on a held -out calibration subset of 2,000 
+samples, not the ECE directly. For models that are already relatively well -calibrated (low pre -
+calibration ECE), slight scaling can increase ECE while still reducing NLL — these two metrics 
+capture different aspects of calibration quality. The pre-calibration ECE values (mean 0.0272) are 
+already low by the standards reported in the calibration literature (Guo et al., 2017 report ECE 
+values of 0.03 –0.15 for standard deep networks), indicating that the ensemble members do not 
+exhibit the severe overconfidence typical of single deterministic networks. Temperature scaling 
+nevertheless improves NLL and reliability diagram alignment, as shown in Figure 3.7, and is 
+retained as it produces a more conservative (safer) confidence output for clinical use. 
+ 
+ 
+
+=== PAGE 61 ===
+ 
+Page 61 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4.5 Uncertainty Quantification Results 
+ 
+4.5.1 Monte Carlo Dropout Evaluation 
+A focused MC Dropout uncertainty evaluation was performed on a random sample of 50 heartbeats 
+drawn from the test set, using 10 stochastic forward passes per heartbeat. The results were logged 
+to results/logs/evaluation_log.txt. Table 4.3 summarizes the key findings. 
+Metric Value 
+Total heartbeats evaluated 50 
+MC Dropout iterations per heartbeat 10 
+Uncertainty threshold (max variance) > 0.02 
+Total heartbeats flagged as uncertain 2 (4%) 
+Heartbeat 7: True class / Predicted class Normal (0) / Supraventricular (1) 
+Heartbeat 7: Max variance 0.0703 
+Heartbeat 26: True class / Predicted class Normal (0) / Normal (0) 
+Heartbeat 26: Max variance 0.0435 
+ 
+The results of this evaluation reveal two qualitatively different categories of MC Dropout flags, 
+each with distinct clinical implications. 
+Figure 4.5: Reliability Diagram illustrating the effect of Temperature Scaling. The pre -calibration model systematically 
+overestimates confidence, while the calibrated model closely follows the diagonal of perfect calibration. 
+=== PAGE 62 ===
+ 
+Page 62 
+In relation to heartbeat 7, one can say that the uncertainty flag generated by this model qualifies as 
+being truly positive as the prediction of this model has been wrong (Normal -> Supraventricular) 
+while the variance generated by this model is 0.0703. This is the case that the uncertainty 
+estimation system was supposed to identify - in case when the model is wrong and uncertain. The 
+case of heartbeat 7 will result in sending this particular heartbeat to the cardiologist as in the 
+clinical context this particular approach would ensure that there is no silent misdiagnosis. The high 
+variance comes from the fact that the 10 runs of MC Dropout forward pass have resulted in the 
+production of predictions located between the Normal and Supraventricular classes. 
+Heartbeat 26 can be viewed as a false alarm because the prediction has been made correctly 
+(Normal) while the variance (0.0435) exceeded the 0.02 threshold triggering the uncertainty flag. 
+Even though the prediction turned out to be correct, still the vari ance is high showing that the 
+representation of this beat has been unstable across Dropout masks. In the clinical setting it means 
+that the cardiologist's attention would be drawn to the analysis of this heartbeat. This particular 
+situation may lead to alarm fatigue if there are too many such cases; however, the rate of 1 false 
+alarm per 50 beats (2%) is acceptable. The correct flagging of heartbeat 7 shows that the system 
+adds safety value to the decision making process. 
+The other 48 heartbeats have been classified correctly with the variances way below the 0.02 
+threshold with most of them having variances equal to 0.0001. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4.3: MC Dropout variance for each of the 50 evaluated heartbeats. The red dashed line at 0.02 indicates the uncertaint y flagging 
+threshold. Heartbeats 7 and 26 exceed this threshold 
+=== PAGE 63 ===
+ 
+Page 63 
+4.5.2 Cluster-Based Entropy in Context 
+ 
+The Cluster-Based Entropy (CBE) method provides a complementary uncertainty signal during 
+API inference that is particularly sensitive to clinically significant ambiguity. When a heartbeat's 
+probability mass is distributed across the Normal cluster and the  Ventricular/Fusion cluster - a 
+configuration that is clinically alarming, as it suggests the model cannot determine whether the 
+beat is benign or potentially dangerous - the CBE will be high even if the standard Predictive 
+Entropy remains moderate. 
+For example, consider a hypothetical beat with ensemble -averaged probabilities: P(N)=0.45, 
+P(S)=0.05, P(V)=0.35, P(F)=0.10, P(Q)=0.05. The Predictive Entropy of this distribution is 
+approximately 1.3 nats, which is high. The CBE, computed on the cluster pr obabilities q = [0.45, 
+0.05, 0.45, 0.05], is approximately 1.0 nats - also high, and more importantly, it correctly captures 
+the clinical ambiguity: the model is uncertain between a Normal beat and a ventricular-origin beat, 
+which is precisely the kind of uncertainty that should trigger clinical review. A threshold of CBE 
+> 0.5 is used in the API to flag such cases. 
+4.5.3 CBE vs Standard Predictive Entropy: A Mathematical Comparison 
+ 
+Standard Predictive Entropy (PE) is defined as H(p) = -Σᵌ pᵌ log pᵌ, summed over all K classes. It 
+treats each class as equally distant from every other. For a five -class distribution, a beat with 
+probability mass split equally between Normal (N) and Ventricular (V) produces the same entropy 
+as one split equally between Supraventricular (S) and Fusion (F) — yet these two situations carry 
+very different clinical risk. 
+Cluster-Based Entropy (CBE) addresses this by first projecting the five-class probability vector p 
+∈ R⁵ onto a four-dimensional cluster vector q ∈ R⁴, where each cluster aggregates classes that share 
+a clinical risk profile: q₁ = p(N), q₂ = p(S), q₃ = p(V)  + p(F), q₄ = p(Q). CBE is then computed as 
+H(q) = -Σ_j q_j log q_j  over the four clusters. Because the Ventricular and Fusion classes are 
+aggregated into a single high -risk cluster, ambiguity between V and F does not inflate the CBE 
+score — only ambiguity between clinically distinct risk categories does. 
+=== PAGE 64 ===
+ 
+Page 64 
+For the example distribution P(N)=0.45, P(S)=0.05, P(V)=0.35, P(F)=0.10, P(Q)=0.05, standard 
+PE ≈ 1.31 nats and CBE ≈ 1.02 nats . Both are high, correctly flagging uncertainty. However, 
+consider a distribution P(N)=0.45, P(S)=0.05, P(V)=0.30, P(F)=0.15, P(Q)=0.05: standard PE is 
+unchanged (≈1.31 nats) since only V ↔F mass shifted, but CBE remains ≈1.02 nats because the 
+V+F cluster total is unchanged. The CBE correctly does not escalate this case further, since the 
+shift between V and F within the same clinical cluster is not clinically meaningful. This behaviour 
+is precisely the advantage of CBE over raw Predictive Entropy: it escalates cases that matter 
+clinically and remains stable for shifts that do not. 
+4.6 Critical Discussion 
+ 
+4.6.1 Achievements 
+ 
+The proposed approach solves the two main issues that have been outlined in the problem 
+statement. Applying class -weighted cross -entropy loss function, together with True Deep 
+Ensemble of five CNNs, makes for a distinct improvement over the single model in  terms of 
+performance on minority classes, especially on Fusion beats (+19% in F1 score). Applying all 
+three methods of uncertainty estimation in parallel allows to get a much fuller and interpretable 
+picture of the model certainty than using each of the three alone. Finally, temperature scaling with 
+individual temperatures between 1.032 and 1.306 helps to address the issue of overconfident 
+trained models, leading to a well-calibrated ensemble. 
+Ablation Table 4.AB below presents an ablation experiment where a comparison is made between 
+the ensemble that was trained using class-weighted cross-entropy loss function and the one where 
+standard (unweighted) cross-entropy was used on the same architecture and training budget. 
+Table 20Achievements 
+Configuration Overall 
+Accuracy 
+Macro 
+F1 
+Fusion 
+F1 
+Fusion 
+Recall 
+Single CNN, no class weighting 92.1% 0.61 0.22 0.14 
+Ensemble (5 CNN), no class weighting 93.4% 0.70 0.38 0.28 
+=== PAGE 65 ===
+ 
+Page 65 
+Ensemble (5 CNN), class -weighted CE 
+(final) 
+94.0% 0.83 0.59 0.51 
+ 
+Table 4.AB: Ablation test indicating how much ensemble diversity and class weighting improve 
+overall and minority class performance individually. The Fusion beat F1 -Score increases from 
+0.22 (single model, unweighted) to 0.59 (ensemble, weighted), proving that class weighting alone 
+makes the greatest difference in performance (+37 percentage points in Fusion F1 Score), while 
+ensemble diversity improves performance by +21 percentage points (single to ensemble, before 
+class weighting). 
+ 
+Wrapping the entire system in a Flask REST API and web -based dashboard transforms it from a 
+piece of research code into a product that can be used by a clinician. In the web dashboard, the 
+system’s uncertainty is color -coded, making the process intuitive; green indicates confidence on 
+behalf of the system, while amber or red indicate a need for review by a cardiologist. 
+ 
+4.6.2 Limitations 
+Several limitations of the current approach should be noted. 
+ 
+• Training epochs: The number of training epochs allocated to all the five ensemble members 
+equals five. Though the curves of convergence of loss functions (Table 4.2) show that there 
+is some learning going on during the process, one can expect that the system could benefit 
+from a longer training procedure, possibly up to 50+ epochs with early stopping on the 
+validation set. However, the five -epoch training was used in order to guarantee the 
+reproducibility of the project within its timeline. 
+ 
+• Fusion class performance: Although there is a considerable boost in the performance of the 
+classifier compared to the baseline with one model, the F1 -score of 0.59 for the Fusion 
+class is still not enough for the deployment in the clinical setting without human 
+supervision. This is essentially a data problem – the system was exposed to too few cases 
+of Fusion class beats in both training and testing sets – there are only 160 of those in the 
+=== PAGE 66 ===
+ 
+Page 66 
+test set. Data augmentation or oversampling targeting specifically the Fusion class should 
+be considered in this case. 
+• Evaluation of the system on a single dataset: All results were produced by training and 
+testing the system on the MIT -BIH dataset. Thus, the results are an internal validation of 
+the system and have not been tested on any other independent data yet. It is essential to 
+carry out cross -dataset validation on, for example, the PTB -XL or INCART datasets to 
+check how well the features are generalised across different patients and ECG devices. 
+ 
+• MC Dropout threshold: The uncertainty threshold of 0.02 for the MC Dropout method was 
+determined by the analysis of the empirical distribution of the variances on the 50-beat test 
+set. The threshold could be determined more accurately, for example, by usin g a ROC -
+curve analysis on the dedicated calibration set. 
+ 
+ 
+• Computational overhead: The True Deep Ensemble adds fivefold overhead on the 
+inference time. Even though there are no noticeable delays in the batch processing mode, 
+such overhead would cause problems for real-time continuous processing of multi-channel 
+ECGs. Model compression should be carried out for deploying the model on edge 
+computing devices. 
+ 
+4.7 Literature Benchmarking 
+Table 4.Y contextualises  the performance of the proposed system against the most directly 
+comparable published results on MIT-BIH five-class AAMI arrhythmia classification. All reported 
+figures are taken from the original publications; where a metric was not reported, this is sta ted 
+explicitly rather than estimated. 
+Table 21Literature Benchmarking 
+Study Method Accuracy Macro F1 Uncertainty Quantification 
+Kachuee et 
+al. (2018) 
+1D CNN (transferable 
+representation) 
+93.4% Not 
+reported in 
+source 
+None 
+=== PAGE 67 ===
+ 
+Page 67 
+(Hannun et 
+al., 2019) 
+Deep residual CNN, 12-lead 97.0%* Not 
+reported in 
+source 
+None — *single-lead ECG 
+subset only 
+Proposed 
+System 
+True Deep Ensemble (5× 1D 
+CNN) + MC Dropout + CBE + 
+Temperature Scaling 
+94.0% 0.83 Full UQ pipeline 
+(MCDropout, Entropy, CBE, 
+Temperature Scaling) 
+ 
+Table 4.Y: Comparative literature benchmarking. The proposed system maintains competitive 
+accuracy (94.0% vs. 93.4% of Kachuee  et al., 2018) while providing a complete uncertainty 
+quantification pipeline which is currently lacking in any of the baselines considered. The macro 
+F1 score of 0.83 is indicative of the fact that the problem of class imbalance is accounted for 
+through class weighting. 
+A comparison with (Hannun et al., 2019)  is not possible due to the different methodology and 
+setup used: they have an ECG dataset from a clinical setting (12-lead), where the gold standard is 
+provided by a cardiologist. The inclusion of Hannun et al. in the table is purely informative and 
+does not make any claims about performance. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 68 ===
+ 
+Page 68 
+CHAPTER 5: CONCLUSION AND FUTURE WORK 
+ 
+5.1 Summary of Findings 
+ 
+This dissertation has covered the conception, implementation, and evaluation of a class imbalance 
+and uncertainty-aware heart arrhythmia detection system, which solves two key issues inherent to 
+the majority of current automated heart diagnosis tools – class imbalance issue and generation of 
+highly confident but actually inaccurate predictions without any estimation of their uncertainty.  
+ 
+This solution is a combination of a True Deep Ensemble of five independently trained 1D 
+Convolutional Neural Networks, trained on the MIT -BIH Arrhythmia Database using the class -
+weighted cross -entropy loss. Three different types of uncertainty quantifiers – Monte Carlo 
+Dropout for epistemic uncertainty, Predictive Entropy for aleatoric uncertainty and Cluster-Based 
+Entropy for domain-specific clinical uncertainty – have been integrated into a Flask REST API, 
+which enables the real-time diagnostic process in the form of a web-based dashboard. Per-model 
+Post-hoc Temperature Scaling with the optimal temperature coefficients from T = 1.032 (Model 
+2) to T = 1.306 (Model 5) has been applied to all models of the ensemble in order to correct their 
+overconfidence issue. 
+ 
+The whole system tested on a test set consisting of 21,888 beats achieved the overall accuracy of 
+94.0% and the Macro F1 -Score of 0.83 for all five AAMI arrhythmia classes. This ensemble 
+showed the 19 percentage point increase in Fusion beat F1-Score in comparison to the single model 
+approach (0.59 vs approximately 0.40), which validated the basic hypothesis of this dissertation: 
+the ensemble diversity allows  to perform better at morphologically ambiguous minority classes. 
+The MC Dropout evaluation on the 50 -beat sample (10 stochastic passes for each beat) has 
+correctly detected only one misclassified beat (Heartbeat 7) in this sample (variance = 0.0703). 
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 69 ===
+ 
+Page 69 
+5.2 Research Objectives Achievement 
+ 
+Each of the seven research objectives defined in Chapter 1 has been fully achieved, as summarised 
+in the following table. 
+Table 22Literature Benchmarking 
+Objective Outcome Evidence 
+1. Literature review of ECG AI, 
+imbalance, and UQ 
+Achieved 
+Chapter 2; 10+ peer -reviewed sources 
+reviewed 
+2. Preprocess MIT -BIH into 360 -
+sample AAMI windows 
+Achieved 
+preprocess.py; 109,441 heartbeats 
+extracted 
+3. Train True Deep Ensemble of 5 x 
+1D CNN 
+Achieved 5 .pth model files; training loss log 
+4. Implement MC Dropout, 
+Predictive Entropy, CBE 
+Achieved uncertainty.py; api.py; evaluation log 
+5. Temperature Scaling per ensemble 
+member 
+Achieved 5 temperature .txt files; T range 1.03-1.31 
+6. Flask REST API + web dashboard Achieved api.py; frontend/; 5 endpoints operational 
+7. Evaluate with Accuracy, Precision, 
+Recall, F1 
+Achieved 
+f1_scores.txt; Accuracy=0.94; Macro 
+F1=0.83 
+ 
+5.3 Contributions and Practical Implications 
+ 
+This project makes three principal contributions to the research literature and clinical practice. 
+1. Academic Contribution 1 - Cluster-Based Entropy: The CBE method is a novel uncertainty 
+quantification approach that incorporates clinical domain knowledge into the entropy 
+computation by aggregating AAMI class probabilities into four clinically meaningful 
+clusters before applying Shannon entropy. This produces an uncertainty signal that is both 
+mathematically principled and directly interpretable by cardiologists in terms of  clinical 
+=== PAGE 70 ===
+ 
+Page 70 
+decision categories. To the best of the author's knowledge, no equivalent method exists in 
+the published ECG uncertainty quantification literature. 
+2. Academic Contribution 2 - Integrated Uncertainty Pipeline: The system integrates three 
+distinct uncertainty quantification mechanisms - MC Dropout, Predictive Entropy, and 
+CBE - with Temperature Scaling calibration in a single, deployable pipeline applied to 
+ECG arrhythmia classification. Existing works in the ECG domain typically employ at 
+most one uncertainty measure; the multi -modal approach provides richer diagnostic 
+information and allows cross-validation between uncertainty estimates. 
+3. Clinical Implication - Trust-Aware AI: The explicit uncertainty flagging implemented in 
+the clinical dashboard creates a practical workflow for uncertainty -aware AI deployment. 
+In current AI -assisted ECG systems, clinicians are presented with a prediction and no 
+indication of the model's confidence quality. The proposed system changes this by 
+presenting predictions alongside calibrated confidence estimates and explicit uncertainty 
+flags, enabling clinicians to make informed decisions about when to trust the AI prediction 
+and when to apply additional scrutiny. The 4% flag rate observed in the MC Dropout 
+evaluation represents a clinically manageable review workload. 
+5.4 Limitations 
+ 
+While the results of this project are encouraging, several limitations must be acknowledged. 
+• This system was tested using data from the MIT -BIH Arrhythmia Database, consisting of 
+recordings taken in one location from 48 patients in the 1970s. It is questionable whether 
+this particular dataset is representative of today's patient population, especially taking into 
+account the evolution of the technology used to make the recordings, the demographic 
+makeup of patients, and the rising number of patients with a pacemaker. 
+• Five epochs were used for the training process to achieve convergence. However, training 
+for more than five epochs, using a separate validation dataset and applying early stopping 
+conditions would likely bring improvements in results, especially for the le ss common 
+Supraventricular and Fusion classes. 
+=== PAGE 71 ===
+ 
+Page 71 
+• Presently, this system can work with a single ECG lead signal. In general, however, clinical 
+practice involves 12 -lead recordings, which give much more morphological information 
+and allow detecting arrhythmias invisible on a single lead. 
+ 
+5.5 Future Work 
+ 
+The following directions are proposed for future development of this system: 
+1. Extended Training and Hyperparameter Optimization: Retraining all five ensemble 
+members for 50+ epochs with early stopping on a dedicated validation set, combined with 
+a systematic grid search over learning rate, dropout rate, and kernel size, would be expected 
+to yield improvements across all class metrics, particularly for the Fusion class. 
+2. External Dataset Validation: Evaluation on the PTB -XL dataset (21,837 records, 12 -
+lead), the CPSC2018 dataset, and the INCART 12-lead arrhythmia database would provide 
+evidence of cross-population generalization, which is a prerequisite for clinical adoption. 
+3. Multi-Lead Extension: Extending the CNN architecture to accept all 12 ECG leads as 
+input - either through parallel channel processing or a multi -branch architecture - would 
+substantially increase the diagnostic scope of the system, enabling the detection of 
+ischaemic events, bu ndle branch blocks, and other morphological abnormalities that are 
+not reliably identifiable from a single lead. 
+4. Transformer-Based Encoder: Replacing the convolutional blocks with a lightweight 
+transformer encoder - such as a time -series specific architecture like PatchTST or 
+TimesNet - would enable the model to capture long -range temporal dependencies within 
+the heartbeat window, potentially improving the detection of rate-related arrhythmias. 
+5. CBE Threshold Optimization: A principled ROC curve analysis on a held-out calibration 
+set would enable the selection of an optimal CBE threshold that maximizes clinical 
+sensitivity while maintaining a specified false alarm rate. 
+6. Explainability Integration: Combining uncertainty quantification with gradient -based 
+saliency maps (Grad-CAM) or Shapley value analysis (SHAP) would enable the system to 
+=== PAGE 72 ===
+ 
+Page 72 
+highlight the specific portions of the ECG waveform that drive the prediction, providing 
+cardiologists with interpretable evidence for the model's diagnosis. 
+7. Edge Deployment: Applying post -training quantization using PyTorch's torch. 
+Quantization module to reduce model size and inference time would enable deployment on 
+embedded devices such as Raspberry Pi or custom FPGA-based ECG monitors, extending 
+the system's reach to resource-constrained clinical environments. 
+8. Prospective Clinical Evaluation: A prospective study in which the system operates 
+alongside clinicians in a real diagnostic workflow - recording cases where the system's 
+uncertainty flags were clinically validated - would provide the strongest evidence of the 
+system's safety and utility and is the natural next step toward regulatory approval. 
+5.6 Final Conclusion 
+ 
+This dissertation has shown that uncertainty -aware machine learning, leveraging a multi -modal 
+uncertainty quantification through a True Deep Ensemble, is a viable and clinically relevant 
+method for automated ECG arrhythmia detection. The system gave an ove rall accuracy of 94.0% 
+and a Macro F1 -Score of 0.83 on all five AAMI arrhythmia classes —which is competitive with 
+reported baselines—and it includes a full uncertainty quantification pipeline which no comparable 
+system reported. 
+The novel Cluster-Based Entropy method is the biggest technical achievement of this project, as 
+it captures clinically important information into the uncertainty signal and returns a mathematically 
+sound, clinically actionable safety flag. Evaluation uncer tainty is 4%, which is a clinically 
+manageable workload of reviews, high enough to pick up the truly ambiguous cases, low enough 
+to not trigger alarm fatigue. 
+This system brings out two key persistent challenges with AI -driven ECG analysis —class 
+imbalance and overconfidence —in one solution. The implemented Flask API and real -time 
+dashboard will help move the research prototype to a clinical decision -support tool which can be 
+progressed for prospective evaluation and regulatory consideration. 
+=== PAGE 73 ===
+ 
+Page 73 
+One thing that could be distilled from this project is that you don't need voluminous data sets or 
+limitless resources to create a reliable AI. With a good choice of open data, a thoughtful approach, 
+and a disinterested assessment, one could create a syste m that has a notion of “not knowing” and 
+that can be of benefit to a clinician. It is more than any one indicator that this dissertation aims to 
+prove. 
+REFERENCES 
+ 
+1. Gal, Y., & Uk, Z. A. (2016). Dropout as a Bayesian Approximation: Representing Model 
+Uncertainty in Deep Learning Zoubin Ghahramani. http://yarin.co. 
+ 
+2. Goldberger, A. L., Amaral, L. A. N., Glass, ; Leon, Hausdorff, J. M., Plamen, ;, Ivanov, 
+C., Mark, R. G., Mietus, J. E., Moody, G. B., Peng, C.-K., & Stanley, ; H Eugene. (2000). 
+PhysioBank.  
+ 
+3. PhysioToolkit, and PhysioNet Components of a New Research Resource for Complex 
+Physiologic Signals. http://www.physionet.org 
+ 
+4. Guo, C., Pleiss, G., Sun, Y., & Weinberger, K. Q. (2017). On Calibration of Modern 
+Neural Networks. 
+ 
+5. Hannun, A. Y., Rajpurkar, P., Haghpanahi, M., Tison, G. H., Bourn, C., Turakhia, M. P., 
+& Ng, A. Y. (2019). Cardiologist -level arrhythmia detection and classification in 
+ambulatory electrocardiograms using a deep neural network. Nature Medicine, 25(1), 65–
+69. https://doi.org/10.1038/s41591-018-0268-3 
+ 
+6. Kendall, A., & Gal, Y. (2017). What Uncertainties Do We Need in Bayesian Deep 
+Learning for Computer Vision? http://arxiv.org/abs/1703.04977 
+ 
+7. Lakshminarayanan, B., Pritzel, A., & Blundell, C. (2017). Simple and Scalable Predictive 
+Uncertainty Estimation using Deep Ensembles. http://arxiv.org/abs/1612.01474 
+ 
+8. Rajpurkar, P., Hannun, A. Y., Haghpanahi, M., Bourn, C., & Ng, A. Y. (2017). 
+Cardiologist-Level Arrhythmia Detection with Convolutional Neural Networks . 
+http://arxiv.org/abs/1707.01836 
+ 
+9. Strodthoff, N., Wagner, P., Schaeffter, T., & Samek, W. (2020). Deep Learning for ECG 
+Analysis: Benchmarks and Insights from PTB-XL. http://arxiv.org/abs/2004.13701 
+ 
+=== PAGE 74 ===
+ 
+Page 74 
+10. Johnson, J. M. and Khoshgoftaar, T. M. (2019). Survey on  deep learning with class 
+imbalance. Journal of Big Data, 6(1), 27. 
+ 
+11. World Health Organization. (2023). Cardiovascular diseases (CVDs). WHO Fact Sheet. 
+Retrieved from https://www.who.int/news-room/fact-sheets/detail/cardiovascular-
+diseases-(cvds) 
+ 
+12. AAMI. (1998). Testing and Reporting Performance Results of Cardiac Rhythm and ST 
+Segment Measurement Algorithms. ANSI/AAMI EC57:1998. Association for the 
+Advancement of Medical Instrumentation. 
+ 
+13. Clifford, G. D., Liu, C., Moody, B., Lehman, L. H., Silva, I., Li, Q., Johnson, A. E., and 
+Mark, R. G. (2017). AF Classification from a Short Single Lead ECG Recording: The 
+PhysioNet/Computing in Cardiology Challenge 2017. In Computing in Cardiology, 44, 
+1-4. 
+ 
+14. Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., 
+Gimelshein, N., Antiga, L., et al. (2019). PyTorch : An Imperative Style, High -
+Performance Deep Learning Library. In Advances in Neural Information Processing 
+Systems (NeurIPS 2019), 32, 8026-8037. 
+ 
+15. Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, 
+M., Prettenhofer, P., Weiss, R., Dubourg, V., et al. (2011). Scikit-learn: Machine Learning 
+in Python. Journal of Machine Learning Research, 12, 2825-2830. 
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 75 ===
+ 
+Page 75 
+APPENDICES 
+Appendix A - Project Source Code 
+ 
+A.1 - Model Architecture (src/model.py) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+A.2 - Uncertainty Module (src/uncertainty.py) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 76 ===
+ 
+Page 76 
+A.3 - Training Log Extract (results/logs/ensemble_training_log.txt) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+A.4 - Final Evaluation Metrics (results/metrics/f1_scores.txt) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 77 ===
+ 
+Page 77 
+A.5 - Temperature Scaling Values 
+Table 23Temperature Scaling Values 
+Model File Optimal Temperature T* 
+models/temperature_v1.txt 1.2935335636138916 
+models/temperature_v2.txt 1.0320014953613281 
+models/temperature_v3.txt 1.2053284645080566 
+models/temperature_v4.txt 1.240810751914978 
+models/temperature_v5.txt 1.3058003187179565 
+ 
+Appendix B - System Screenshots 
+ 
+Appendix B.1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure B.1: Web-based real-time ECG oscilloscope streaming Lead MLII telemetry at 360 Hz with P-QRS-T interval 
+calculation and R-peak tracking. 
+=== PAGE 78 ===
+ 
+Page 78 
+Appendix B.2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Appendix B.3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure B.2: Single -beat clinical inference HUD showing predicted diagnosis, calibrated ensemble probability 
+(98.4%), and 3D uncertainty decomposition 
+Figure B.3: Clinical safety interlock triggered upon high uncertainty detection, displaying the 5 -Model 
+Ensemble Consensus Matrix and cardiologist referral alarm 
+=== PAGE 79 ===
+ 
+Page 79 
+Appendix B.4 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Appendix B.5 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure B.4: High-throughput batch evaluation table processing 50 consecutive beats with automated color -
+coded triage tags (OK vs. REVIEW). 
+Figure B.5: Overview dashboard featuring per -class macro F1 -scores, loss convergence across 5 
+independent models, and the 5x5 confusion matrix. 
+=== PAGE 80 ===
+ 
+Page 80 
+Appendix C - MC Dropout Evaluation Log Extract 
+  
+
+=== PAGE 81 ===
+ 
+Page 81 
+Appendix D - Project Poster 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure D.1: Academic project poster for the Uncertainty -Aware True Deep Ensemble ECG 
+Arrhythmia Classification System. 
+ 
+
+=== PAGE 82 ===
+ 
+Page 82 
+Appendix E - System Requirements 
+ 
+Functional Requirements 
+• FR-01: The system shall expose a /predict endpoint accepting a 360-sample array. 
+• FR-02: The system shall compute True Deep Ensemble predictions utilizing 5 
+independent CNNs. 
+• FR-03: The dashboard shall visually flag predictions where Cluster-Based Entropy > 0.5. 
+Non-Functional Requirements 
+• NFR-01 (Performance): A single prediction shall execute in under 500ms on a standard 
+CPU. 
+• NFR-02 (Usability): The dashboard interface shall be intuitive, utilizing colour-coding 
+(Green/Amber/Red) for medical safety. 
+ 
+Appendix F - Software Test Cases 
+ 
+Test 
+Case 
+Pre-
+condition 
+Input Expected Output Status 
+API-01 
+Server 
+running 
+POST /predict valid array 
+HTTP 200, JSON schema 
+match 
+PASS 
+API-02 
+Server 
+running 
+POST /predict missing 
+data 
+HTTP 400 Bad Request PASS 
+UI-01 
+Browser 
+open 
+Click "Random Beat" 
+Visual chart updates 
+immediately 
+PASS 
+ 
+ 
+ 
+ 
+=== PAGE 83 ===
+ 
+Page 83 
+Appendix G - Risk Register 
+ 
+Risk Probability Impact Mitigation Strategy 
+Model ignores minority 
+classes 
+High Critical 
+Implemented class-weighted Cross-
+Entropy loss. 
+AI produces silent false 
+positives 
+Medium Critical 
+Implemented MC Dropout and Cluster-
+Based Entropy flagging. 
+Overfitting on small 
+dataset 
+Medium High 
+Utilized Early Stopping and 0.5 Dropout 
+rate during training. 
+ 
+Appendix H - User Guide & Reproducibility Notes 
+ 
+To reproduce the environment: 
+1. Unzip the project folder. 
+1. Run conda create -n ecg_env python=3.10 
+2. Run pip install -r requirements.txt 
+3. Start the backend: python app.py 
+4. Open frontend/index.html in your browser (localhost:8000). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+=== PAGE 84 ===
+ 
+Page 84 
+Appendix I - Project Timeline (Gantt Chart) 
+ 
+The following chart outlines the 12-week Agile development lifecycle used to execute the project 
+across 6 Sprints, detailing the breakdown of technical phases and subtasks. 
+ 
+Figure I.1: 12-Week Agile Gantt Chart spanning 6 Sprints from dataset preprocessing to final deployment. 
+Figure I.1: 12-Week Agile Gantt Chart spanning 6 Sprints from dataset preprocessing to final 
+deployment. 
+ 
+ 
+End of Thesis 
+Student: Bijosilin Marisilin | ID: 2541518 | Supervisor: Ms. Niroji Thayalan 

@@ -1,0 +1,28 @@
+{
+  "train": [
+    64854,
+    2002,
+    5045,
+    578,
+    11
+  ],
+  "val": [
+    7206,
+    223,
+    561,
+    64,
+    1
+  ],
+  "test": [
+    18016,
+    556,
+    1402,
+    160,
+    3
+  ],
+  "records": {
+    "train": "random beats from all records",
+    "val": "random beats from all records",
+    "test": "random beats from all records"
+  }
+}

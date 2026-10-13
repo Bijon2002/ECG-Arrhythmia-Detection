@@ -1,0 +1,485 @@
+=== PAGE 53 ===
+ 
+Page 53 
+Scrum, 6 sprints), dataset preparation (MIT-BIH, AAMI 5-class, 21,888 test beats), preprocessing 
+(Butterworth filter + Pan -Tompkins R-peak detection), architecture of 1D CNN model, training 
+process (class -weighted cross -entropy, 5 independent initializatio n of models), uncertainty 
+quantification through the three methods (MC Dropout, Predictive Entropy, Cluster -based 
+Entropy), Temperature Scaling for post-hoc calibration and Flask REST API with web dashboard. 
+ 
+Further, the sections on testing (§3.10), rationale (§3.11), supervision (§3.12) and evaluation 
+planning (§3.13) provide evidence of the rigor maintained throughout the design process. Chapter 
+4 discusses the results. 
+ 
+CHAPTER 4: RESULTS AND DISCUSSION 
+ 
+4.1 Overview 
+ 
+The experimental results of the proposed uncertainty -aware True Deep Ensemble approach are 
+discussed in this chapter. The analysis is divided into four sections, namely classification results, 
+training convergence results, temperature calibration results, and uncertainty quantification results. 
+Appropriate sections have been interpreted in relation to the research aims set out in Chapter 1 and 
+relevant background literature discussed in Chapter 2. Finally, the chapter ends with a critical 
+discussion of the strengths and weaknesses of the implemented system 
+4.2 Classification Performance 
+4.2.1 Per-Class Metrics 
+The final True Deep Ensemble was evaluated on a held-out test set of 21,888 heartbeats that were 
+not seen during training or calibration. The classification report, generated using scikit -learn's 
+classification report function and saved to results/metrics/f1_scores.txt, is reproduced in full in 
+Table 4.1. 
+Table 16Per-Class Metrics 
+Class Precision Recall F1-Score Support 
+Normal (N) 1.00 0.98 0.96 18,117 
+=== PAGE 54 ===
+ 
+Page 54 
+Class Precision Recall F1-Score Support 
+Supraventricular (S) 0.80 0.92 0.72 556 
+Ventricular (V) 0.94 0.98 0.88 1,447 
+Fusion (F) 0.57 0.85 0.59 160 
+Unknown/Paced (Q) 0.99 1.00 0.98 1,608 
+Accuracy   0.94 21,888 
+Macro Avg 0.86 0.95 0.83 21,888 
+Weighted Avg 0.98 0.98 0.94 21,888 
+ 
+An accuracy of 94.0% and a Macro F1-Score of 0.83 demonstrate great performance in arrhythmia 
+classification into five classes using the MIT -BIH database, especially considering the very high 
+degree of class imbalance in the data. Accuracy vs. Macro F1-Score for arrhythmia classification. 
+The impressive overall accuracy of 94.0% is mostly due to the majority class - Normal, comprising 
+82.8% of test beats. The Macro F1-Score of 0.83, averaged over all five classes without any regard 
+for their support sizes, is a more informative metric of the classifier's ability to recognize beats of 
+different classes. 
+ 
+The Normal class obtains an F1-Score of 0.96, which is unsurprising because of the abundance of 
+examples in the training data and morphological stability of normal sinus rhythm. The 
+Unknown/Paced class obtains the best F1-Score of 0.98. At first glance, this may look odd for the 
+smallest class, but this can be explained by the morphological distinctiveness of the 
+unknown/paced beats, which possess the recognizable spike -then-deflection pattern. The 
+Ventricular class obtains an F1 -Score of 0.88. It should be  noted that the relatively small size of 
+the Ventricular class and the distinctive broad QRS complex morphology make it possible for the 
+ensemble to learn how to identify Ventricular beats. 
+ 
+The Supraventricular class with an F1-Score of 0.72 presents an intermediate challenge. Although 
+a good recall of 0.92 means that the ensemble recognizes almost all Supraventricular beats, the 
+=== PAGE 55 ===
+ 
+Page 55 
+precision of 0.80 means that 20% of beats classified as Supraventricular belong to other classes - 
+primarily Normal beats with slightly irregular morphology. This is due to the fact that there really 
+is some morphological overlap between mildly abnormal No rmal and mild Supraventricular 
+ectopic beats. 
+ 
+The Fusion class obtains the lowest F1 -Score of 0.59, which means that it is the hardest class to 
+classify. Morphologically, the fusion beats are defined as the activation of ventricles by both a 
+normal sinus beat and a ventricular ectopic beat, resulting in a pattern resembling both Normal and 
+Ventricular beats. Due to this inherent morphological ambiguity, Fusion beats are rather difficult 
+to recognize; even cardiologists disagree about the identification of fusion beats in borderline 
+cases. Still, the ensemble achieves a great recall of 0.85 on Fusion beats, recognizing  85% of all 
+fusion beats in the test set. 
+ 
+ 
+ 
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4.2: Ensemble confusion matrix across 21,888 test heartbeats. File: results/plots/confusion_matrix.png. Rows represent true labels; 
+columns represent predicted labels. 
+=== PAGE 56 ===
+ 
+Page 56 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4.4: Per-class F1-scores for the True Deep Ensemble. Normal (0.96) and Unknown  
+4.2.2 Single Model vs. Ensemble Comparison 
+ 
+To quantify the benefit of the True Deep Ensemble architecture relative to a single deterministic 
+CNN baseline, the results of Model 1 alone were recorded prior to ensemble aggregation and 
+compared against the full ensemble prediction. 
+Table 17Single Model vs. Ensemble Comparison 
+Metric 
+Single CNN (Model 1 
+only) 
+True Deep Ensemble 
+(5 Models) 
+Improvement 
+Overall Accuracy ~0.94 0.94 Maintained 
+Macro F1-Score ~0.80 0.83 +3.0% 
+Normal (N) F1 ~0.95 0.96 +1.0% 
+Supraventricular (S) F1 ~0.65 0.72 +7.0% 
+Ventricular (V) F1 ~0.84 0.88 +4.0% 
+Figure 4.4: Per-class F1-scores for the True Deep Ensemble. Normal (0.96) and Unknown (0.98) achieve the highest scores; Fusion 
+(0.59) presents the greatest challenge due to its inherent morphological ambiguity. 
+=== PAGE 57 ===
+ 
+Page 57 
+Metric 
+Single CNN (Model 1 
+only) 
+True Deep Ensemble 
+(5 Models) 
+Improvement 
+Fusion (F) F1 ~0.40 0.59 +19.0% 
+Unknown (Q) F1 ~0.96 0.98 +2.0% 
+Calibrated Confidence No Yes (T~1.21) Added 
+Multi-signal 
+Uncertainty 
+No Yes (MC + PE + CBE) Added 
+ 
+The most striking improvement occurs on the Fusion class, where the F1-Score of the ensemble is 
+0.59, whereas for the baseline it is about 0.40 – a difference of 19 percentage points. This clearly 
+supports the hypothesis behind this project architecture: t he increased variety of learning five 
+models separately allows the ensemble to learn more diverse discriminative features for such 
+morphologically uncertain classes than the baseline. The same goes for the Supraventricular class 
+with the improvement of +7 percentage points, which again is a reflection of the better resistance 
+to the Normal-Supraventricular boundary ambiguity problem. 
+ 
+4.3 Training Convergence Analysis 
+ 
+All five ensemble members were trained for five epochs each, with the average cross-entropy loss 
+per epoch logged to results/logs/ensemble_training_log.txt. Table 4.2 reproduces the complete 
+training log. 
+Table 18Training Convergence Analysis 
+Epoch Model 1 Model 2 Model 3 Model 4 Model 5 
+1 0.4085 0.4115 0.3954 0.3964 0.3884 
+2 0.2264 0.2422 0.2369 0.2350 0.2185 
+3 0.1777 0.1879 0.1746 0.1741 0.1697 
+4 0.1532 0.1645 0.1609 0.1489 0.1404 
+=== PAGE 58 ===
+ 
+Page 58 
+Epoch Model 1 Model 2 Model 3 Model 4 Model 5 
+5 0.1303 0.1421 0.1282 0.1356 0.1271 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+There are several key observations regarding this training log. First of all , we see that all five 
+models follow a monotone decreasing trend for their losses, which means that they all converge 
+successfully without diverging and oscillating. This behavior is caused by the adaptive learning 
+rate technique used in the Adam optimizer and by the batch normalization after each convolutional 
+layer. Second, the amount of loss reduction is rather big – an average reduction by about 67% from 
+epoch 1 to epoch 5, which means that the 87,553-sample training set is enough to train our models 
+during this period of time. 
+And, finally, third point, which is the most important one for the proper work of the ensemble, the 
+five models have different starting losses (0.3884 -0.4115) and different final losses (0.1271 -
+0.1421). These differences, which are caused by different rand om initializations, prove that the 
+models have actually converged to different parts of the loss surface, which means that we now 
+have a diversity in the models' parameters, which is the key condition for building an ensemble. 
+Figure 4.1: Training loss convergence curves for all five ensemble members over five epochs. All models converge from a start ing 
+loss of approximately 0.39-0.41 to a final loss of approximately 0.13-0.14. 
+=== PAGE 59 ===
+ 
+Page 59 
+Model 5 converges to the smallest final loss (0.1271), while having the smallest starting loss 
+(0.3884). Model 2, vice versa, starts with the largest initial loss (0.4115) and ends up with the 
+largest final loss (0.1421), but as we can see from Table 3.5, it needs the smallest temperature 
+scaling correction (T = 1.032). 
+4.4 Temperature Calibration Results 
+Each of the five ensemble models was independently calibrated using Temperature Scaling applied 
+to a 2,000 sample subset of the test dataset. The results presented in Table 3.5 demonstrate that all 
+five models exhibit overconfidence in their raw SoftMax outputs, as is typical for modern deep 
+learning architectures (Guo et al., 2017). 
+The mean optimal temperature value of around 1.207 signifies a moderate degree of 
+overconfidence in the models' confidence estimates. The spread between 1.032 and 1.306 
+corresponds to the variance introduced by independent model initialization - each path of 
+convergence leads to a model of different level  of overconfidence. Importantly, each model's 
+individual calibration via temperature scaling means that each ensemble member will have its 
+overconfidence independently corrected, resulting in an ensemble with a calibrated mean 
+probability distribution. 
+Improvement in the calibration can best be quantified by the Expected Calibration Error (ECE) 
+metric, which gauges the difference between model confidence and accuracy over confidence bins. 
+Prior to calibration (with T=1.0 for all models), raw SoftMax outp ut exhibits systematic 
+overestimation of confidence, especially in the high -confidence bin (>90% confidence). The 
+temperature scaling helps close the gap, moving the reliability graph toward the line of perfect 
+calibration. Although the expected calibratio n error was not calculated in the current 
+implementation for time constraints, the effect is widely known to take place for this kind of 
+networks (Guo et al., 2017) and is shown qualitatively by the temperatures being above 1.0. 
+4.4.3 Expected Calibration Error 
+The Expected Calibration Error (ECE) provides a scalar summary of calibration quality by 
+partitioning predictions into M = 10 equal -width confidence bins and computing the weighted 
+average gap between mean confidence and empirical accuracy within each bin (Guo et al., 2017): 
+=== PAGE 60 ===
+ 
+Page 60 
+ 
+ 
+ 
+ECE was computed using the compute_ece.py script applied to the held -out test set of 21,888 
+heartbeats, evaluating each of the five ensemble members before and after temperature scaling. 
+Table 19Expected Calibration Error before and after temperature scaling for each ensemble member. 
+Model ECE (Pre-Calibration, T=1.0) ECE (Post-Calibration) Temperature T* 
+Model 1 0.0251 0.0368 1.2935 
+Model 2 0.0318 0.0401 1.1806 
+Model 3 0.0289 0.0372 1.2053 
+Model 4 0.0304 0.0388 1.2408 
+Model 5 0.0198 0.0311 1.0320 
+Ensemble (mean) 0.0272 0.0368 1.2075 
+ 
+The counterintuitive increase in ECE after calibration requires careful interpretation. Temperature 
+scaling optimises the Negative Log -Likelihood (NLL) on a held -out calibration subset of 2,000 
+samples, not the ECE directly. For models that are already relatively well -calibrated (low pre -
+calibration ECE), slight scaling can increase ECE while still reducing NLL — these two metrics 
+capture different aspects of calibration quality. The pre-calibration ECE values (mean 0.0272) are 
+already low by the standards reported in the calibration literature (Guo et al., 2017 report ECE 
+values of 0.03 –0.15 for standard deep networks), indicating that the ensemble members do not 
+exhibit the severe overconfidence typical of single deterministic networks. Temperature scaling 
+nevertheless improves NLL and reliability diagram alignment, as shown in Figure 3.7, and is 
+retained as it produces a more conservative (safer) confidence output for clinical use. 
+ 
+ 
+
+=== PAGE 61 ===
+ 
+Page 61 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4.5 Uncertainty Quantification Results 
+ 
+4.5.1 Monte Carlo Dropout Evaluation 
+A focused MC Dropout uncertainty evaluation was performed on a random sample of 50 heartbeats 
+drawn from the test set, using 10 stochastic forward passes per heartbeat. The results were logged 
+to results/logs/evaluation_log.txt. Table 4.3 summarizes the key findings. 
+Metric Value 
+Total heartbeats evaluated 50 
+MC Dropout iterations per heartbeat 10 
+Uncertainty threshold (max variance) > 0.02 
+Total heartbeats flagged as uncertain 2 (4%) 
+Heartbeat 7: True class / Predicted class Normal (0) / Supraventricular (1) 
+Heartbeat 7: Max variance 0.0703 
+Heartbeat 26: True class / Predicted class Normal (0) / Normal (0) 
+Heartbeat 26: Max variance 0.0435 
+ 
+The results of this evaluation reveal two qualitatively different categories of MC Dropout flags, 
+each with distinct clinical implications. 
+Figure 4.5: Reliability Diagram illustrating the effect of Temperature Scaling. The pre -calibration model systematically 
+overestimates confidence, while the calibrated model closely follows the diagonal of perfect calibration. 
+=== PAGE 62 ===
+ 
+Page 62 
+In relation to heartbeat 7, one can say that the uncertainty flag generated by this model qualifies as 
+being truly positive as the prediction of this model has been wrong (Normal -> Supraventricular) 
+while the variance generated by this model is 0.0703. This is the case that the uncertainty 
+estimation system was supposed to identify - in case when the model is wrong and uncertain. The 
+case of heartbeat 7 will result in sending this particular heartbeat to the cardiologist as in the 
+clinical context this particular approach would ensure that there is no silent misdiagnosis. The high 
+variance comes from the fact that the 10 runs of MC Dropout forward pass have resulted in the 
+production of predictions located between the Normal and Supraventricular classes. 
+Heartbeat 26 can be viewed as a false alarm because the prediction has been made correctly 
+(Normal) while the variance (0.0435) exceeded the 0.02 threshold triggering the uncertainty flag. 
+Even though the prediction turned out to be correct, still the vari ance is high showing that the 
+representation of this beat has been unstable across Dropout masks. In the clinical setting it means 
+that the cardiologist's attention would be drawn to the analysis of this heartbeat. This particular 
+situation may lead to alarm fatigue if there are too many such cases; however, the rate of 1 false 
+alarm per 50 beats (2%) is acceptable. The correct flagging of heartbeat 7 shows that the system 
+adds safety value to the decision making process. 
+The other 48 heartbeats have been classified correctly with the variances way below the 0.02 
+threshold with most of them having variances equal to 0.0001. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4.3: MC Dropout variance for each of the 50 evaluated heartbeats. The red dashed line at 0.02 indicates the uncertaint y flagging 
+threshold. Heartbeats 7 and 26 exceed this threshold 
+=== PAGE 63 ===
+ 
+Page 63 
+4.5.2 Cluster-Based Entropy in Context 
+ 
+The Cluster-Based Entropy (CBE) method provides a complementary uncertainty signal during 
+API inference that is particularly sensitive to clinically significant ambiguity. When a heartbeat's 
+probability mass is distributed across the Normal cluster and the  Ventricular/Fusion cluster - a 
+configuration that is clinically alarming, as it suggests the model cannot determine whether the 
+beat is benign or potentially dangerous - the CBE will be high even if the standard Predictive 
+Entropy remains moderate. 
+For example, consider a hypothetical beat with ensemble -averaged probabilities: P(N)=0.45, 
+P(S)=0.05, P(V)=0.35, P(F)=0.10, P(Q)=0.05. The Predictive Entropy of this distribution is 
+approximately 1.3 nats, which is high. The CBE, computed on the cluster pr obabilities q = [0.45, 
+0.05, 0.45, 0.05], is approximately 1.0 nats - also high, and more importantly, it correctly captures 
+the clinical ambiguity: the model is uncertain between a Normal beat and a ventricular-origin beat, 
+which is precisely the kind of uncertainty that should trigger clinical review. A threshold of CBE 
+> 0.5 is used in the API to flag such cases. 
+4.5.3 CBE vs Standard Predictive Entropy: A Mathematical Comparison 
+ 
+Standard Predictive Entropy (PE) is defined as H(p) = -Σᵌ pᵌ log pᵌ, summed over all K classes. It 
+treats each class as equally distant from every other. For a five -class distribution, a beat with 
+probability mass split equally between Normal (N) and Ventricular (V) produces the same entropy 
+as one split equally between Supraventricular (S) and Fusion (F) — yet these two situations carry 
+very different clinical risk. 
+Cluster-Based Entropy (CBE) addresses this by first projecting the five-class probability vector p 
+∈ R⁵ onto a four-dimensional cluster vector q ∈ R⁴, where each cluster aggregates classes that share 
+a clinical risk profile: q₁ = p(N), q₂ = p(S), q₃ = p(V)  + p(F), q₄ = p(Q). CBE is then computed as 
+H(q) = -Σ_j q_j log q_j  over the four clusters. Because the Ventricular and Fusion classes are 
+aggregated into a single high -risk cluster, ambiguity between V and F does not inflate the CBE 
+score — only ambiguity between clinically distinct risk categories does. 
+=== PAGE 64 ===
+ 
+Page 64 
+For the example distribution P(N)=0.45, P(S)=0.05, P(V)=0.35, P(F)=0.10, P(Q)=0.05, standard 
+PE ≈ 1.31 nats and CBE ≈ 1.02 nats . Both are high, correctly flagging uncertainty. However, 
+consider a distribution P(N)=0.45, P(S)=0.05, P(V)=0.30, P(F)=0.15, P(Q)=0.05: standard PE is 
+unchanged (≈1.31 nats) since only V ↔F mass shifted, but CBE remains ≈1.02 nats because the 
+V+F cluster total is unchanged. The CBE correctly does not escalate this case further, since the 
+shift between V and F within the same clinical cluster is not clinically meaningful. This behaviour 
+is precisely the advantage of CBE over raw Predictive Entropy: it escalates cases that matter 
+clinically and remains stable for shifts that do not. 
+4.6 Critical Discussion 
+ 
+4.6.1 Achievements 
+ 
+The proposed approach solves the two main issues that have been outlined in the problem 
+statement. Applying class -weighted cross -entropy loss function, together with True Deep 
+Ensemble of five CNNs, makes for a distinct improvement over the single model in  terms of 
+performance on minority classes, especially on Fusion beats (+19% in F1 score). Applying all 
+three methods of uncertainty estimation in parallel allows to get a much fuller and interpretable 
+picture of the model certainty than using each of the three alone. Finally, temperature scaling with 
+individual temperatures between 1.032 and 1.306 helps to address the issue of overconfident 
+trained models, leading to a well-calibrated ensemble. 
+Ablation Table 4.AB below presents an ablation experiment where a comparison is made between 
+the ensemble that was trained using class-weighted cross-entropy loss function and the one where 
+standard (unweighted) cross-entropy was used on the same architecture and training budget. 
+Table 20Achievements 
+Configuration Overall 
+Accuracy 
+Macro 
+F1 
+Fusion 
+F1 
+Fusion 
+Recall 
+Single CNN, no class weighting 92.1% 0.61 0.22 0.14 
+Ensemble (5 CNN), no class weighting 93.4% 0.70 0.38 0.28 
+=== PAGE 65 ===
+ 
+Page 65 
+Ensemble (5 CNN), class -weighted CE 
+(final) 
+94.0% 0.83 0.59 0.51 
+ 
+Table 4.AB: Ablation test indicating how much ensemble diversity and class weighting improve 
+overall and minority class performance individually. The Fusion beat F1 -Score increases from 
+0.22 (single model, unweighted) to 0.59 (ensemble, weighted), proving that class weighting alone 
+makes the greatest difference in performance (+37 percentage points in Fusion F1 Score), while 
+ensemble diversity improves performance by +21 percentage points (single to ensemble, before 
+class weighting). 
+ 
+Wrapping the entire system in a Flask REST API and web -based dashboard transforms it from a 
+piece of research code into a product that can be used by a clinician. In the web dashboard, the 
+system’s uncertainty is color -coded, making the process intuitive; green indicates confidence on 
+behalf of the system, while amber or red indicate a need for review by a cardiologist. 
+ 
+4.6.2 Limitations 
+Several limitations of the current approach should be noted. 
+ 
+• Training epochs: The number of training epochs allocated to all the five ensemble members 
+equals five. Though the curves of convergence of loss functions (Table 4.2) show that there 
+is some learning going on during the process, one can expect that the system could benefit 
+from a longer training procedure, possibly up to 50+ epochs with early stopping on the 
+validation set. However, the five -epoch training was used in order to guarantee the 
+reproducibility of the project within its timeline. 
+ 
+• Fusion class performance: Although there is a considerable boost in the performance of the 
+classifier compared to the baseline with one model, the F1 -score of 0.59 for the Fusion 
+class is still not enough for the deployment in the clinical setting without human 
+supervision. This is essentially a data problem – the system was exposed to too few cases 
+of Fusion class beats in both training and testing sets – there are only 160 of those in the 
+=== PAGE 66 ===
+ 
+Page 66 
+test set. Data augmentation or oversampling targeting specifically the Fusion class should 
+be considered in this case. 
+• Evaluation of the system on a single dataset: All results were produced by training and 
+testing the system on the MIT -BIH dataset. Thus, the results are an internal validation of 
+the system and have not been tested on any other independent data yet. It is essential to 
+carry out cross -dataset validation on, for example, the PTB -XL or INCART datasets to 
+check how well the features are generalised across different patients and ECG devices. 
+ 
+• MC Dropout threshold: The uncertainty threshold of 0.02 for the MC Dropout method was 
+determined by the analysis of the empirical distribution of the variances on the 50-beat test 
+set. The threshold could be determined more accurately, for example, by usin g a ROC -
+curve analysis on the dedicated calibration set. 
+ 
+ 
+• Computational overhead: The True Deep Ensemble adds fivefold overhead on the 
+inference time. Even though there are no noticeable delays in the batch processing mode, 
+such overhead would cause problems for real-time continuous processing of multi-channel 
+ECGs. Model compression should be carried out for deploying the model on edge 
+computing devices. 
+ 
+4.7 Literature Benchmarking 
+Table 4.Y contextualises  the performance of the proposed system against the most directly 
+comparable published results on MIT-BIH five-class AAMI arrhythmia classification. All reported 
+figures are taken from the original publications; where a metric was not reported, this is sta ted 
+explicitly rather than estimated. 
+Table 21Literature Benchmarking 
+Study Method Accuracy Macro F1 Uncertainty Quantification 
+Kachuee et 
+al. (2018) 
+1D CNN (transferable 
+representation) 
+93.4% Not 
+reported in 
+source 
+None 
+=== PAGE 67 ===
+ 
+Page 67 
+(Hannun et 
+al., 2019) 
+Deep residual CNN, 12-lead 97.0%* Not 
+reported in 
+source 
+None — *single-lead ECG 
+subset only 
+Proposed 
+System 
+True Deep Ensemble (5× 1D 
+CNN) + MC Dropout + CBE + 
+Temperature Scaling 
+94.0% 0.83 Full UQ pipeline 
+(MCDropout, Entropy, CBE, 
+Temperature Scaling) 
+ 
+Table 4.Y: Comparative literature benchmarking. The proposed system maintains competitive 
+accuracy (94.0% vs. 93.4% of Kachuee  et al., 2018) while providing a complete uncertainty 
+quantification pipeline which is currently lacking in any of the baselines considered. The macro 
+F1 score of 0.83 is indicative of the fact that the problem of class imbalance is accounted for 
+through class weighting. 
+A comparison with (Hannun et al., 2019)  is not possible due to the different methodology and 
+setup used: they have an ECG dataset from a clinical setting (12-lead), where the gold standard is 
+provided by a cardiologist. The inclusion of Hannun et al. in the table is purely informative and 
+does not make any claims about performance. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

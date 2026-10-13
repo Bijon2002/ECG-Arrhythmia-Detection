@@ -1,0 +1,496 @@
+=== PAGE 33 ===
+ 
+Page 33 
+3.3 Dataset Description 
+3.3.1 MIT-BIH Arrhythmia Database 
+A benchmark set for ECG arrhythmia classification research is the MIT -BIH Arrhythmia 
+Database, which is the most widely used freely available database for this purpose (Goldberger et 
+al., 2000) It was acquired at the Beth Israel Hospital (now Beth Israel Deaconess Medical Center) 
+Arrhythmia Laboratory from 1975 to 1979 and is composed of 48 half -hour two -channel 
+ambulatory ECG recordings from 47 different patients. The recordings were digitized at 360 Hz 
+and 11 bits (10 mV range). The beats were all manually annotated by 2 expert cardiologists with 
+a standardized symbol set, consensus reaching the case of a disagreement. The database is 
+accessible from PhysioNet and its access is programmatic via the wfdb Python library. 
+ 
+The only lead used for this project was the primary lead (usually MLII or Lead II). This single lead 
+restriction is consistent with most of the typical wearable and ambulatory monitoring 
+configurations where multi-lead acquisition is not always possible. 
+ 
+3.3.2 AAMI Class Mapping 
+ 
+The MIT-BIH database includes a detailed symbol set of more than 20 different types of beats for 
+the beat annotations. These symbols were mapped to five consolidated classes, in reference to the 
+AAMI EC57 standard (AAMI, 1998) which is considered the accepted reference standard for the 
+evaluation of automated ECG analysis devices. This mapping allows the problem of classification 
+to be reduced to a clinically useful 5-class classification scheme while preserving consistency with 
+published benchmark literature. 
+Table 6AAMI Class Mapping 
+AAMI Class 
+Label 
+Index 
+MIT-BIH 
+Symbols 
+Clinical Meaning 
+Normal (N) 0 N, L, R, e, j 
+Normal sinus rhythm and bundle branch block 
+variants 
+=== PAGE 34 ===
+ 
+Page 34 
+AAMI Class 
+Label 
+Index 
+MIT-BIH 
+Symbols 
+Clinical Meaning 
+Supraventricular 
+(S) 
+1 A, a, J, S Supraventricular ectopic beats (atrial origin) 
+Ventricular (V) 2 V, E Ventricular ectopic beats (ventricular origin) 
+Fusion (F) 3 F 
+Fusion beats (simultaneous Normal and 
+Ventricular activation) 
+Unknown/Paced 
+(Q) 
+4 /, f, Q Paced beats and unclassifiable beats 
+ 
+3.3.3 Dataset Statistics 
+ 
+After pre-processing and segmentation (as described in Section 3.4), the total number of individual 
+heartbeat windows was 109,441. The data was divided into a training set and a test set using 
+stratified random sampling with a fixed random state=42, to ensure reproducible results and retain 
+class proportions between the training and test sets. 
+Table 7 Dataset Statistics 
+Split Heartbeats Proportion 
+Training Set 87,553 80% 
+Test Set 21,888 20% 
+Total 109,441 100% 
+ 
+The class distribution of the test set (21,888 heartbeats) shows the intrinsic imbalance of the source 
+data set: 18,117 heartbeats are Normal (82.8%) whilst 160 heartbeats are Fusion (0.7%). There are 
+many reasons for this spread in performance between cla sses, one of which is the distribution 
+recorded in Table 4.1. 
+ 
+ 
+=== PAGE 35 ===
+ 
+Page 35 
+3.4 Preprocessing Pipeline 
+ 
+A robust preprocessing pipeline was implemented in src/preprocess.py to convert the raw MIT -
+BIH recordings into a clean, standardized dataset of individual heartbeat windows suitable for 
+CNN input. 
+3.4.1 Band-Pass Filtering 
+Class distribution of the test set (21,888 heartbeats) reflects the inherent imbalance in the source 
+data set since 18,117 heartbeats are Normal (82.8%), whereas 160 heartbeats are Fusion (0.7%). 
+There are several factors contributing to this difference in  the performance across classes, one of 
+which is the class distribution depicted in Table 4.1. 
+The Butterworth filter transfer function in the Laplace domain for a 2nd-order low-pass prototype 
+is: 
+ 
+ 
+where ωc is the cutoff frequency in radians per second. The band -pass form is obtained by the 
+standard low-pass to band-pass frequency transformation. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.9: Effect of the 0.5 -45 Hz 2nd -order Butterworth band -pass filter, removing both low -frequency baseline wander and high -
+frequency noise from the raw ECG signal. 
+=== PAGE 36 ===
+ 
+Page 36 
+3.4.2 R-peak Annotation Extraction 
+ 
+The R -peak positions were obtained from the MIT -BIH annotation files by utilizing the 
+wfdb.rdann() method, which obtains the cardiologist -labeled locations of the beats and their 
+symbols. The beats that have symbols corresponding to the AAMI mapping table (see Table 3.1) 
+were kept. 
+ 
+3.4.3 Heartbeat Segmentation 
+ 
+Each one of the R -peak locations retained was then considered as the center point of a heartbeat 
+window containing 360 samples. A window having 180 samples before and 180 samples after the 
+R-peak was selected, representing a window of +/-0.5 seconds considering the sampling frequency 
+of 360Hz. This length of the window was selected in order to  capture the full P-QRS-T complex 
+of every heartbeat with sufficient context to characterize the morphology of the heartbeat. The 
+beats that appeared near the boundary region of the recording were then removed. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.4.4 Z-score Normalization 
+ 
+Each 360-sample window was independently normalized to zero mean and unit variance using the 
+Z-score transform: 
+ 
+ 
+ 
+Figure 3.3: Preprocessing pipeline stages: raw 30 -minute ECG recording -> band-pass filtering (0.5-45 Hz Butterworth) -> R-
+peak annotation extraction (wfdb) -> 360-sample windowing -> AAMI label assignment -> train/test split. 
+=== PAGE 37 ===
+ 
+Page 37 
+where μbeat and sigma_beat are the average and standard deviation of the 360 -sample window, 
+respectively. Independent per -beat normalization ensures that differences in signal amplitudes 
+between different subjects do not affect classification, as it is only based on the shape of the waves. 
+ 
+3.5 Model Architecture 
+ 
+3.5.1 Individual CNN Design 
+ 
+Each ensemble member's architecture was carefully crafted to achieve both expressive capacity 
+and efficiency in the context of one -dimensional time-series classification. The model comprises 
+three consecutive convolutional blocks along with a fully connect ed classifier, defined in 
+src/model.py using PyTorch.. 
+Table 8Individual CNN Design 
+Block Layer Configuration Output Shape 
+Input - - (Batch, 1, 360) 
+Block 1 Conv1d 
+1->32 filters, kernel=5, stride=1, 
+padding=2 
+(Batch, 32, 360) 
+Block 1 BatchNorm1d 32 features (Batch, 32, 360) 
+Block 1 ReLU - (Batch, 32, 360) 
+Block 1 MaxPool1d kernel=2, stride=2 (Batch, 32, 180) 
+Block 2 Conv1d 
+32->64 filters, kernel=5, stride=1, 
+padding=2 
+(Batch, 64, 180) 
+Block 2 BatchNorm1d 64 features (Batch, 64, 180) 
+Block 2 ReLU - (Batch, 64, 180) 
+Block 2 MaxPool1d kernel=2, stride=2 (Batch, 64, 90) 
+Block 3 Conv1d 
+64->128 filters, kernel=5, stride=1, 
+padding=2 
+(Batch, 128, 90) 
+=== PAGE 38 ===
+ 
+Page 38 
+Block Layer Configuration Output Shape 
+Block 3 BatchNorm1d 128 features (Batch, 128, 90) 
+Block 3 ReLU - (Batch, 128, 90) 
+Block 3 MaxPool1d kernel=2, stride=2 (Batch, 128, 45) 
+Classifier Flatten - (Batch, 5,760) 
+Classifier Linear 5,760 -> 256 (Batch, 256) 
+Classifier ReLU - (Batch, 256) 
+Classifier Dropout p = 0.5 (Batch, 256) 
+Output Linear 256 -> 5 (Batch, 5) 
+ 
+The three convolutional layers work towards gradually shrinking the temporal dimensions of the 
+data while increasing the depth of channels. Convolutional Layer 1 detects low-level morphology 
+characteristics including changes in local amplitudes and sudden changes. Convolutional Layer 2 
+recognizes medium level shapes that arise from combinations of these low-level features, such as 
+the QRS complex pattern. Convolutional Layer 3 is able to learn high-level abstract representations 
+of the whole morphological representation of each type of heart beats. The Batch Normalization 
+after each convolution layer ensures that training is more stable by minimizing the internal 
+covariate shift. The MaxPooling with stride 2 reduces the temporal dimension of the 360 sample 
+input data to 45 samples through three max-pooling operations. 
+ 
+Total trainable parameters per model: approximately 1,528,000. Total across 5 ensemble 
+members: approximately 7,640,000 parameters. 
+ 
+ 
+ 
+. 
+Figure 3.4: Architecture of a single 1D CNN ensemble member with three convolutional blocks (Conv1d -> BatchNorm -> ReLU -> 
+MaxPool) and a fully connected classifier with Dropout. Input: 360-sample heartbeat. Output: 5-class logit vector. 
+=== PAGE 39 ===
+ 
+Page 39 
+3.5.2 True Deep Ensemble Architecture 
+ 
+The ensemble comprises five CNNs like the one mentioned earlier, each being independently 
+trained with a different initialization of weights drawn at random. The key feature of this 
+independent initialization is that each CNN converges to a unique position in the loss landscape. 
+As a result, the output of all CNNs will be different for some input. This functional diversity is the 
+core source of uncertainty in the ensemble – if the five CNNs agree in their deci sions, the 
+prediction is confident; otherwise, the uncertainty is large. 
+To obtain an ensemble prediction, all five logit outputs are averaged after applying per -model 
+temperature scaling. The average logit output is used as the input for the single Softmax: 
+ 
+ 
+ 
+where f_m(x) represents the raw logits for model m on input x, and T_m is the optimal temperature 
+parameter for model m from calibration. This approach is mathematically identical to taking an 
+average of the calibrated probabilities of individual models using the Softmax functio n, although 
+computing the average in logit space instead of probability space is numerically more stable. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.5: True Deep Ensemble architecture. Five independently trained 1D CNNs each produce a logit vector. After 
+temperature scaling, the logits are averaged and passed through Softmax to produce the ensemble prediction. 
+=== PAGE 40 ===
+ 
+Page 40 
+3.6 Training Configuration 
+ 
+The training process of all five ensemble members was done using the same hyper -parameter 
+configuration, which is implemented in src/train.py. Class weights were computed from the 
+training data class counts and passed to the cross -entropy loss function so that rare classes have 
+proportionally higher gradient contribution. 
+ 
+Table 9Training Configuration 
+Hyper-parameter Value Rationale 
+Number of ensemble 
+members 
+5 
+Balances diversity with 
+computational cost 
+Training epochs 5 
+Sufficient for convergence given 
+dataset size 
+Optimiser Adam 
+Adaptive learning rate; robust 
+default choice 
+Learning rate 0.001 Standard Adam starting point 
+Batch size 32 
+Suitable for the dataset size and 
+memory 
+Loss function 
+Class-weighted 
+CrossEntropyLoss 
+Addresses class imbalance 
+Dropout rate 0.5 
+Standard regularisation; enables 
+MC Dropout 
+Class weight formula N_total / (K x N_c + 1e-5) 
+Standard inverse frequency 
+weighting 
+Random seed per model Different per model 
+Ensures true independence of 
+ensemble members 
+ 
+=== PAGE 41 ===
+ 
+Page 41 
+3.7 Uncertainty Quantification Pipeline 
+ 
+Uncertainty quantification module of the system uses three different methods to deal with model 
+uncertainty from three different perspectives. The three different methods have been incorporated 
+into the /predict endpoint of Flask API. 
+ 
+3.7.1 Monte Carlo Dropout 
+ 
+Dropout layers are enabled during the training phase and disabled (set to evaluation mode) during 
+the inference phase according to the typical training and evaluation process. However, for the 
+purpose of uncertainty estimation through MC Dropout, the Dropo ut layers are intentionally 
+enabled during inference via enable_dropout() method in api.py, which runs through the model's 
+modules and reverts the Dropout layer to the training phase. 
+ 
+In each forward pass of each of the five ensemble members, each input heartbeat is passed three 
+times through the network and fifteen probability vectors are generated for the estimation of 
+epistemic uncertainty as follows: 
+ 
+ 
+ 
+ 
+ 
+Where p_tc is the probability assigned to class c during the forward pass t. High variance denotes 
+that the model is affected by the stochastic Dropout masks, implying that the representation of the 
+input is not reliable. When the variance of an audio beat is greate r than 0.02, it is marked for 
+clinical review 
+. 
+ 
+
+=== PAGE 42 ===
+ 
+Page 42 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3.7.2 Predictive Entropy 
+ 
+Predictive Entropy applies the standard Shannon entropy formula to the averaged ensemble 
+probability vector, measuring the overall spread of the predicted distribution: 
+ 
+ 
+ 
+ 
+ 
+ 
+with p_c  being the average probability of class c and epsilon being 1x10^ -10 to avoid any 
+numerical instabilities at the edges of the probability simplex. If all the probability is concentrated 
+in a single class – a completely certain prediction – we will have H =  0. In case of the most 
+uncertain predictions – equal distribution of probability over all five classes – the entropy will be 
+equal to H = log(5) ≈ 1.609 nats. 
+ 
+ 
+ 
+ 
+ 
+Figure 3.10: Monte Carlo Dropout inference process. Multiple stochastic forward passes produce a distribution of predictions,  
+where variance represents epistemic uncertainty. 
+=== PAGE 43 ===
+ 
+Page 43 
+3.7.3 Cluster-Based Entropy  
+ 
+Cluster-based entropy (CBE) algorithm is the novel contribution of this research in uncertainty 
+quantification. The main idea behind developing the CBE approach is that, in a clinical setting, the 
+five AAMI classes are not of equal significance; rather, th e difference between the Normal class 
+and the rest of the four classes of abnormality is of significant importance from a clinical 
+perspective, whereas the difference between, say, the Supraventricular class and the Fusion class, 
+is just one level below. 
+CBE addresses this by aggregating the five class probabilities into four clinically meaningful 
+clusters before computing entropy: 
+Table 10Cluster-Based Entropy 
+Cluster Classes Included Clinical Interpretation 
+Cluster 0: Normal Class 0 (N) Normal sinus rhythm - no intervention required 
+Cluster 1: 
+Supraventricular 
+Class 1 (S) Atrial ectopy - typically benign, monitor 
+Cluster 2: 
+Ventricular/Fusion 
+Classes 2 (V) + 3 (F) Ventricular origin - may require intervention 
+Cluster 3: Unknown Class 4 (Q) Paced or unclassifiable - contextual review 
+ 
+The cluster probabilities are computed as: 
+ 
+ 
+ 
+ 
+ 
+
+=== PAGE 44 ===
+ 
+Page 44 
+ 
+ 
+Shannon entropy is then applied to this four-element cluster probability vector: 
+ 
+ 
+ 
+A beat is flagged as clinically uncertain when H_CBE > 0.5, a threshold determined empirically 
+from the observed entropy distribution across the test set. The CBE threshold is exposed as a 
+configurable parameter in api.py. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.6: Cluster-Based Entropy: the five AAMI class probabilities are aggregated into four clinically meaningful clusters 
+before entropy is computed, producing a domain-informed uncertainty signal. 
+=== PAGE 45 ===
+ 
+Page 45 
+3.8 Temperature Scaling Calibration 
+ 
+The Post-hoc Temperature Scaling technique was used separately for each one of the five models 
+in the ensemble by using a held-out calibration dataset of size 2,000 samples from the test dataset. 
+In each case, a temperature value T was set to an initial value of 1.5 and then optimized via the 
+LBFGS method to minimize NLL as follows: 
+ 
+ 
+ 
+ 
+Since T > 1 flattens the Softmax distribution while T < 1 sharpens it, the optimal T encodes the 
+direction and magnitude of calibration required. All five models in this project converged to T* > 
+1.0, confirming that the trained models were overconfident in their raw Softmax outputs. 
+ 
+Table 11Temperature Scaling Calibration 
+Model 
+Optimal 
+Temperature T* 
+Interpretation 
+Model 1 1.2935 Moderately overconfident - calibration required 
+Model 2 1.0320 Near-perfectly calibrated naturally 
+Model 3 1.2053 Moderately overconfident - calibration required 
+Model 4 1.2408 Moderately overconfident - calibration required 
+Model 5 1.3058 Most overconfident - greatest calibration benefit 
+Mean 1.2075 All models benefited from calibration 
+ 
+The natural low temperature of Model 2 (T = 1.032) is an indicator that Model 2’s specific random 
+initialization and learning path have resulted in a more naturally calibrated decision boundary. 
+Model 5 shows the highest temperature (T = 1.306), meaning overconfidence. 
+ 
+ 
+
+=== PAGE 46 ===
+ 
+Page 46 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 3.7: Effect of temperature scaling. Before calibration (T=1.0), model confidence systematically exceeds empirical accu racy. After 
+calibration (T~1.21), the reliability diagram approaches the diagonal of perfect calibration. 
+=== PAGE 47 ===
+ 
+Page 47 
+3.9 Deployment Architecture 
+ 
+The complete system was deployed as a Flask-based REST API (api.py) served on port 8000, with 
+a Vanilla JavaScript frontend dashboard in the frontend/ directory. 
+3.9.1 API Endpoints 
+ 
+Endpoint Method Description 
+/predict POST 
+Single 360-sample heartbeat prediction; returns diagnosis, 
+confidence, predictive entropy, cluster entropy, MC 
+dropout variance, and uncertainty flag 
+/batch_predict POST 
+Upload a CSV file of heartbeats; returns predictions for 
+each row 
+/batch_predict/auto POST 
+Automatically selects 25 normal + 25 abnormal test beats 
+and returns batch predictions 
+/random_beat/<type> GET 
+Returns a random heartbeat from the test set (normal or 
+abnormal) for dashboard demo 
+/patient_stream/<idx> GET 
+Streams raw ECG data from Patient 200 for the live 
+monitoring view 
+ 
+3.9.2 Clinical Dashboard 
+ 
+The web-based dashboard serves as an interactive tool for ECG analysis that employs Chart.js 
+library to visualize the signals and API to communicate with JavaScript code. Every prediction on 
+the dashboard includes ECG waveform, bar graph of five probabilit ies of classes, diagnosis label 
+along with the color code of the severity, and uncertainty flag colored green (confidence), amber 
+(moderate uncertainty), or red (high uncertainty) based on the value of cluster entropy > 0.5. 
+ 
+ 
