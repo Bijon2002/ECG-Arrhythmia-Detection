@@ -11,267 +11,262 @@ pinned: false
 
 <div align="center">
 
-# 🫀 High-Confidence ECG Arrhythmia Classification & Uncertainty Quantification System
+# 🫀 ECG Arrhythmia Detection — Uncertainty-Aware Deep Ensemble
 
-### *A Clinically-Calibrated True Deep Ensemble with Latent Topology & 3D Uncertainty Gauges*
+### *Calibrated 5-Member Ensemble with Inter-Patient Evaluation & Selective Classification*
 
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Flask](https://img.shields.io/badge/Flask-Backend-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![PhysioNet](https://img.shields.io/badge/Dataset-MIT--BIH%20PhysioNet-0284c7?style=for-the-badge)](https://physionet.org/content/mitdb/1.0.0/)
-[![Accuracy](https://img.shields.io/badge/Accuracy-98.4%25-10b981?style=for-the-badge)](#-empirical-benchmarks--results)
-[![Macro F1](https://img.shields.io/badge/Macro%20F1-96.0%25-6366f1?style=for-the-badge)](#-empirical-benchmarks--results)
+[![Accuracy](https://img.shields.io/badge/Ensemble%20Accuracy-85.86%25-10b981?style=for-the-badge)](#-results)
+[![Macro F1](https://img.shields.io/badge/Macro%20F1-0.371-6366f1?style=for-the-badge)](#-results)
 
 <br/>
 
-**Author:** [Bijosilin Marisilin](https://github.com/Bijon2002) (Student ID: `2541518`)  
-**Supervisor:** Ms. Niroji Thayalan  
-**Course:** BSc (Hons) Computer Science & Software Engineering  
-**Institution:** Sri Lanka Institute of Information Technology (SLIIT) Northern Uni / University of Bedfordshire (UK)
+**Author:** [Bijosilin Marisilin](https://github.com/Bijon2002) (Student ID: `2541518`)
+**Supervisor:** Ms. Niroji Thayalan
+**Course:** BSc (Hons) Computer Science & Technology
+**Institution:** University of Bedfordshire (UK)
 
 ---
 
 </div>
 
-## 📌 Executive Summary & Clinical Motivation
+## 📌 Project Overview
 
-Standard Deep Learning classifiers for automated Electrocardiogram (ECG) interpretation achieve high benchmark accuracy but suffer from a fatal clinical defect: **deterministic overconfidence**. When presented with ambiguous heartbeats, rare morphologies (e.g., Fusion beats), or Out-of-Distribution (OOD) sensor noise, standard neural networks output dangerously high confidence probabilities on erroneous predictions.
+This project implements an **uncertainty-aware deep ensemble** for automated ECG arrhythmia classification, evaluated under the rigorous **AAMI EC57 inter-patient (DS1/DS2) protocol** on the MIT-BIH Arrhythmia Database. Unlike most published systems that use beat-wise random splits (which leak patient morphology into the test set), this system is tested on **entirely unseen patients**, providing realistic clinical performance estimates.
 
-This project delivers an end-to-end, safety-critical medical telemetry system that solves this black-box limitation. By pairing a **5-Model True Deep Ensemble** with **Post-hoc Temperature Scaling** and a novel **3D Uncertainty Framework** (Epistemic MC Dropout, Aleatoric Shannon Entropy, and Latent **Cluster-Based Entropy**), the platform accurately classifies cardiac rhythms while autonomously refusing low-confidence predictions to protect patient safety.
+The system combines:
+- A **5-member 1D-CNN deep ensemble** with class-weighted loss and RR-interval features
+- **Post-hoc temperature scaling** for probability calibration
+- **Four uncertainty metrics** (Softmax Confidence, Predictive Entropy, MC-Dropout Variance, Cluster-Based Entropy) for selective classification and clinician referral
 
 ---
 
-## 🌟 Key Features & Innovations
+## 📊 Results
 
-* 🧠 **5-Member True Deep Ensemble:** Five independently initialized 1D-CNN architectures trained with diverse stochastic seeds (Seeds `42, 101, 202, 303, 404`) to capture epistemic model variance.
-* 🎯 **Post-hoc Temperature Scaling:** Minimizes Expected Calibration Error (ECE from **0.041 $\to$ 0.012**, a **70.7% reduction**) ensuring output probabilities represent true clinical likelihoods.
-* 🔬 **Novel Cluster-Based Entropy (CBE):** Formulates clinical risk clusters ($\{N\}, \{S\}, \{V, F\}, \{Q\}$) to suppress benign intra-cluster confusion while selectively flagging high-risk patient ambiguities.
-* 🛡️ **OOD & Noise Safety Alarm:** Dynamic uncertainty thresholds trigger automated cardiologist referral protocols whenever signal corruption or out-of-distribution patterns are detected.
-* ⚡ **Real-Time Clinical Telemetry HUD:** High-framerate single-lead ECG oscilloscope (360 Hz), live audio tone generation, dynamic BPM tracker, and 50-beat concurrent Holter batch processor.
+Evaluated on **49,687 unseen test beats** (DS2 — patients never seen during training):
+
+### Overall Performance
+
+| Metric | Single Model | Ensemble (5 models) |
+|--------|-------------|-------------------|
+| **Overall Accuracy** | 79.29% | **85.86%** |
+| **Macro F1-Score** | 0.329 | **0.371** |
+
+### Per-Class Performance (Ensemble on DS2)
+
+| Class | Description | Precision | Recall | F1-Score | Support |
+|-------|-------------|-----------|--------|----------|---------|
+| **N** | Normal | 0.956 | 0.895 | **0.924** | 44,235 |
+| **S** | Supraventricular | 0.079 | 0.130 | **0.098** | 1,837 |
+| **V** | Ventricular | 0.751 | 0.877 | **0.809** | 3,220 |
+| **F** | Fusion | 0.014 | 0.054 | **0.022** | 388 |
+| **Q** | Paced/Unknown | 0.000 | 0.000 | **0.000** | 7 |
+| **Macro Avg** | | — | — | **0.371** | 49,687 |
+
+> ⚠️ **Note on Accuracy:** Overall accuracy (85.86%) is dominated by the Normal class (~89% of test data). Macro-F1 (0.371) is the primary clinical metric as it treats all classes equally.
+
+### Calibration (Temperature Scaling)
+
+| Metric | Before Calibration | After Calibration |
+|--------|--------------------|------------------|
+| NLL | 0.411 | **0.402** |
+| ECE | 4.28% | **3.04%** |
+| Brier Score | 0.207 | 0.209 |
+
+### Uncertainty & Selective Classification
+
+| Uncertainty Metric | AUROC | AUPRC | Retained Acc @10% Referral |
+|-------------------|-------|-------|---------------------------|
+| **Softmax Confidence** | **0.819** | **0.405** | **89.6%** |
+| Predictive Entropy | 0.810 | 0.361 | 88.8% |
+| Cluster-Based Entropy | 0.798 | 0.350 | 88.8% |
+| MC-Dropout Variance | 0.754 | 0.276 | 87.6% |
+
+Referring the **10% most uncertain** predictions to a clinician raises retained accuracy from **85.86% → 89.6%**.
 
 ---
 
 ## 🏛️ System Architecture
 
 ```
-                                  MIT-BIH Arrhythmia Dataset (109,441 Beats)
-                                                     │
-                          ┌──────────────────────────┴──────────────────────────┐
-                          ▼                                                     ▼
-              [Butterworth 0.5-45 Hz]                              [Pan-Tompkins QRS Detection]
-              (Removes Drift & Noise)                              (360-Sample Beat Windowing)
-                          └──────────────────────────┬──────────────────────────┘
-                                                     ▼
-                                        [Z-Score Per-Beat Normalization]
-                                                     │
-                ┌────────────────────────────────────┼────────────────────────────────────┐
-                ▼                                    ▼                                    ▼
-       ┌───────────────────┐                ┌───────────────────┐                ┌───────────────────┐
-       │ 1D-CNN (Seed 42)  │                │ 1D-CNN (Seed 101) │                │ 1D-CNN (Seed 404) │
-       │ [3x Conv + Linear]│                │ [3x Conv + Linear]│                │ [3x Conv + Linear]│
-       └─────────┬─────────┘                └─────────┬─────────┘                └─────────┬─────────┘
-                 │                                    │                                    │
-                 └────────────────────────────────────┼────────────────────────────────────┘
-                                                      ▼
-                                       [Temperature Scaling Calibration]
-                                                      │
-                                                      ▼
-                                    [Ensemble Aggregation & 3D UQ Engine]
-                                      ├── Epistemic Variance (MC Dropout)
-                                      ├── Aleatoric Predictive Entropy
-                                      └── Latent Cluster-Based Entropy (CBE)
-                                                      │
-                                                      ▼
-                                ┌───────────────────────────────────────────┐
-                                │      Clinical Telemetry Web Dashboard     │
-                                │   (Safe 🟢  |  Moderate 🟠  |  High-Risk 🔴)   │
-                                └───────────────────────────────────────────┘
+MIT-BIH Arrhythmia Database (100,682 beats)
+           │
+           ├── DS1 (Training Patients)     ── Train: 42,239 | Val: 8,756 beats
+           └── DS2 (Unseen Test Patients)  ── Test:  49,687 beats
+                          │
+              [Pre-processing Pipeline]
+              • High-pass filter 0.5 Hz (baseline wander removal)
+              • Pan-Tompkins QRS detection
+              • 187-sample beat segmentation
+              • RR-interval feature extraction (pre-RR, post-RR)
+                          │
+        ┌─────────────────┼─────────────────┐
+        ▼                 ▼                 ▼
+  [1D-CNN seed0]   [1D-CNN seed1]  ... [1D-CNN seed4]
+  (5.84 MB each)
+        └─────────────────┼─────────────────┘
+                          ▼
+              [Temperature Scaling Calibration]
+              Temperatures: [0.836, 1.183, 1.487, 0.979, 1.325]
+                          │
+                          ▼
+              [Ensemble Aggregation + UQ Engine]
+              ├── Softmax Confidence
+              ├── Predictive Entropy (PE)
+              ├── MC-Dropout Variance
+              └── Cluster-Based Entropy (CBE) [Novel]
+                          │
+                          ▼
+              [Selective Classification]
+              Flag uncertain beats → clinician referral
 ```
 
 ---
 
-## 📊 Empirical Benchmarks & Results
-
-Evaluated across the official test split of the **MIT-BIH Arrhythmia Database** (AAMI EC57 standard):
-
-| Metric | Single Baseline 1D-CNN | 5-Member Deep Ensemble (Ours) | Relative Improvement |
-| :--- | :---: | :---: | :---: |
-| **Overall Accuracy** | 94.20% | **98.40%** | **+4.20%** |
-| **Macro F1-Score** | 87.60% | **96.00%** | **+8.40%** |
-| **Normal (N) F1** | 97.50% | **99.20%** | +1.70% |
-| **Supraventricular (S) F1** | 82.10% | **91.50%** | **+9.40%** |
-| **Ventricular Ectopic (V) F1**| 90.10% | **97.40%** | **+7.30%** |
-| **Fusion (F) F1** | 68.40% | **88.60%** | **+20.20%** |
-| **Unknown / Paced (Q) F1** | 91.00% | **98.10%** | +7.10% |
-| **Expected Calibration Error (ECE)** | 0.0410 | **0.0120** | **-70.7% (High Calibration)** |
-| **Inference Latency** | 6 ms | **<25 ms** | Real-Time Telemetry Capable |
-
----
-
-## 🗂️ Project Directory Structure
+## 🗂️ Project Structure
 
 ```text
 ECG-Arrhythmia-Detection/
-├── api.py                          # Production Flask REST API backend
-├── app.py                          # Interactive terminal inference & testing engine
-├── config/
-│   └── config.py                   # Central hyperparameters, signal constants & paths
-├── data/
-│   ├── raw/                        # Raw PhysioNet MIT-BIH records (.dat, .hea, .atr)
-│   └── processed/                  # Segmented 360-sample heartbeat tensors & labels
-├── frontend/
-│   ├── index.html                  # Clinical Cardiologist HUD & Telemetry Dashboard
-│   ├── app.js                      # WebSocket / REST polling & Chart.js engine
-│   ├── style.css                   # Responsive dark/light medical design system
-│   ├── poster.html                 # 4K Ultra-HD Academic Research Poster
-│   └── hints.html                  # Clinical triage guide & uncertainty manual
+├── pipeline_v2/
+│   ├── prepare_data.py         # Inter-patient DS1/DS2 data partitioning
+│   ├── train.py                # 5-member ensemble training (class-weighted)
+│   ├── evaluate.py             # Full evaluation: metrics, calibration, UQ
+│   ├── common.py               # Shared model architecture & utilities
+│   └── metrics.py              # F1, ECE, AUROC, AURC computation
 ├── models/
-│   ├── ensemble_model_1.pth        # Ensemble Member 1 (Seed 42)
-│   ├── ensemble_model_2.pth        # Ensemble Member 2 (Seed 101)
-│   ├── ensemble_model_3.pth        # Ensemble Member 3 (Seed 202)
-│   ├── ensemble_model_4.pth        # Ensemble Member 4 (Seed 303)
-│   ├── ensemble_model_5.pth        # Ensemble Member 5 (Seed 404)
-│   └── ecg_model_v1.pth            # Single baseline checkpoint
+│   ├── run0_m0.pt              # Ensemble member 1 (seed 0) — 5.84 MB
+│   ├── run0_m1.pt              # Ensemble member 2 (seed 1) — 5.84 MB
+│   ├── run0_m2.pt              # Ensemble member 3 (seed 2) — 5.84 MB
+│   ├── run0_m3.pt              # Ensemble member 4 (seed 3) — 5.84 MB
+│   └── run0_m4.pt              # Ensemble member 5 (seed 4) — 5.84 MB
 ├── results/
-│   ├── logs/                       # Training histories, calibration & MC Dropout logs
-│   ├── metrics/                    # Confusion matrices, classification reports, ECE scores
-│   └── plots/                      # High-resolution thesis figures & reliability plots
-├── src/
-│   ├── download_data.py            # Automated MIT-BIH dataset ingestion
-│   ├── preprocess.py               # Butterworth filtering, Pan-Tompkins, Z-score scaling
-│   ├── model.py                    # PyTorch 1D-CNN neural network architecture
-│   ├── train_ensemble.py           # Multi-seed Deep Ensemble training pipeline
-│   ├── calibrate.py                # Post-hoc Temperature Scaling optimizer
-│   ├── cbe_engine.py               # Latent space Cluster-Based Entropy algorithm
-│   └── evaluate.py                 # Multi-beat uncertainty testing suite
-├── UG_Project_Setup_Guidance.md    # Formal undergraduate project setup manual
-├── requirements.txt                # Python package dependency manifest
-└── README.md                       # Main project documentation
+│   ├── weighted_rr_run0.json   # Full evaluation metrics (real numbers)
+│   ├── tables.tex              # LaTeX tables for IEEE paper
+│   ├── figs/                   # Figures (confusion matrix, calibration plots)
+│   └── plots/                  # Additional visualisation outputs
+├── data/                       # Data directory (large .npz files not tracked)
+├── frontend/
+│   ├── index.html              # Clinical telemetry dashboard
+│   ├── app.js                  # Real-time ECG visualisation
+│   └── style.css               # Medical UI design system
+├── api.py                      # Flask REST API backend
+├── app.py                      # Terminal inference engine
+├── ieee_conference_paper.md    # IEEE paper content (this submission)
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## 🚀 Quickstart & Installation
+## 🚀 Quickstart
 
-### 1. Clone the Repository & Setup Environment
+### 1. Setup Environment
 ```bash
-# Clone repository
 git clone https://github.com/Bijon2002/ECG-Arrhythmia-Detection.git
 cd ECG-Arrhythmia-Detection
 
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment (Windows PowerShell)
-.\venv\Scripts\Activate.ps1
-
-# (Linux / macOS)
-source venv/bin/activate
-
-# Install required dependencies
-pip install --upgrade pip
+conda create -n ecg_env python=3.10
+conda activate ecg_env
 pip install -r requirements.txt
 ```
 
----
+### 2. Prepare Data (Inter-Patient DS1/DS2 Split)
+```bash
+python pipeline_v2/prepare_data.py
+```
 
-### 2. Start the Backend REST API Server
+### 3. Train All 5 Ensemble Members
+```bash
+python pipeline_v2/train.py
+```
+
+### 4. Run Full Evaluation
+```bash
+python pipeline_v2/evaluate.py
+```
+This produces `results/weighted_rr_run0.json` with all metrics.
+
+### 5. Launch Clinical Dashboard
 ```bash
 python api.py
-```
-*The server boots the 5 ensemble models, initializes calibrated temperature parameters, and listens on `http://127.0.0.1:5000`.*
-
----
-
-### 3. Launch the Clinical Dashboard (HUD)
-* **Direct Launch:** Double-click `frontend/index.html` or open it with Google Chrome.
-* **Or via Local Server:**
-```bash
-cd frontend
-python -m http.server 5500
-```
-Navigate to: `http://127.0.0.1:5500`
-
----
-
-## 🧪 Reproducing Experiments & Pipelines
-
-```bash
-# 1. Download full MIT-BIH dataset (48 records, ~72 MB)
-python src/download_data.py
-
-# 2. Run signal filtering, QRS beat extraction & train/test partitioning
-python src/preprocess.py
-
-# 3. Train all 5 True Deep Ensemble members
-python src/train_ensemble.py
-
-# 4. Compute optimal Temperature Scaling parameter (T) for calibration
-python src/calibrate.py
-
-# 5. Run Monte Carlo Dropout & generate uncertainty validation logs
-python src/evaluate.py
+# Open frontend/index.html in browser
 ```
 
 ---
 
-## 📡 REST API Documentation
+## 📡 API Reference
 
 ### `POST /predict`
-Submits a 360-sample normalized single-beat array for multi-model ensemble classification and 3D uncertainty estimation.
+```json
+// Request
+{ "signal": [0.012, 0.045, -0.018, "...187 floats..."] }
 
-* **Request Body:**
-  ```json
-  {
-    "signal": [0.012, 0.045, -0.018, "... (360 float values) ..."]
-  }
-  ```
-* **Response (HTTP 200):**
-  ```json
-  {
-    "predicted_class": "V",
-    "class_name": "Ventricular Ectopic Beat (VEB)",
-    "confidence": 0.9842,
-    "calibrated_probabilities": {
-      "N": 0.0051,
-      "S": 0.0042,
-      "V": 0.9842,
-      "F": 0.0045,
-      "Q": 0.0020
-    },
-    "uncertainty_metrics": {
-      "epistemic_variance": 0.0004,
-      "predictive_entropy": 0.0821,
-      "cluster_based_entropy": 0.0112
-    },
-    "clinical_safety": {
-      "flag": "SAFE",
-      "action": "AUTOMATED_TRIAGE_APPROVED"
-    }
-  }
-  ```
+// Response
+{
+  "predicted_class": "V",
+  "confidence": 0.875,
+  "calibrated_probabilities": { "N": 0.05, "S": 0.02, "V": 0.875, "F": 0.04, "Q": 0.015 },
+  "uncertainty": {
+    "softmax_confidence": 0.125,
+    "predictive_entropy": 0.312,
+    "mc_dropout_variance": 0.008,
+    "cluster_based_entropy": 0.251
+  },
+  "referral_flag": false
+}
+```
 
 ### `GET /random_beat`
-Returns an annotated test heartbeat from the MIT-BIH dataset with its ground truth label for interactive evaluation.
+Returns a random annotated beat from the MIT-BIH test set.
 
 ---
 
-## 🎓 Academic Citations & Project Credits
+## 🔬 Dataset
 
-This project was developed as a final year undergraduate research project at the **University of Bedfordshire (UK)** in partnership with **SLIIT Northern Uni**.
+**MIT-BIH Arrhythmia Database** (PhysioNet)
+- 48 half-hour two-lead ECG recordings
+- 100,682 annotated beats across 5 AAMI classes
+- Inter-patient split: DS1 (training, records 101-124) / DS2 (test, records 200-234)
+
+| Class | Description | Total Beats | % |
+|-------|-------------|-------------|---|
+| N | Normal | 90,076 | 89.5% |
+| S | Supraventricular | 2,781 | 2.8% |
+| V | Ventricular | 7,008 | 7.0% |
+| F | Fusion | 802 | 0.8% |
+| Q | Paced/Unknown | 15 | <0.1% |
+
+---
+
+## 📄 IEEE Conference Paper
+
+The full paper content (ready for LaTeX typesetting) is in [`ieee_conference_paper.md`](ieee_conference_paper.md).
 
 ```bibtex
-@bachelorsthesis{marisilin2026ecg,
-  author       = {Bijosilin Marisilin},
-  title        = {Uncertainty-Aware True Deep Ensemble for ECG Arrhythmia Classification and Clinical Decision Support},
-  school       = {University of Bedfordshire / SLIIT Northern Uni},
-  year         = {2026},
-  month        = {August},
-  note         = {Unit: CIS017-3 Undergraduate Project}
+@inproceedings{marisilin2026ecg,
+  author    = {Bijosilin Marisilin},
+  title     = {ECG Arrhythmia Detection via Uncertainty-Aware Deep Ensemble
+               with Inter-Patient Evaluation},
+  booktitle = {IEEE International Conference on Biomedical Engineering},
+  year      = {2026},
+  note      = {Supervisor: Ms. Niroji Thayalan, University of Bedfordshire}
 }
 ```
 
 ---
 
+## 🎓 Academic Context
+
+This project was developed as a **Final Year Undergraduate Research Project (CIS017-3)** at the **University of Bedfordshire (UK)**.
+
+**Supervisor:** Ms. Niroji Thayalan
+**Student:** Bijosilin Marisilin (ID: 2541518)
+
+---
+
 ## 📄 License
-This project is released under the [MIT License](LICENSE). Built for academic, research, and non-commercial clinical validation purposes.
+
+Released under the [MIT License](LICENSE). For academic, research, and non-commercial use only.
