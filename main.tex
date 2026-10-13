@@ -91,7 +91,7 @@ In high-stakes medicine, neural networks must provide calibrated confidence scor
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{results/plots/ensemble_architecture_fig3_5.png}
+\includegraphics[width=0.92\textwidth]{fig1_architecture.png}
 \caption{Overall architecture of the proposed Uncertainty-Aware Deep Ensemble system: Raw lead-II ECG signals are bandpass-filtered, segmented into 1.0-second windows (360 samples), and combined with four auxiliary RR-interval timing features. Five independently seeded 1D-CNNs are trained with class-frequency weighting, calibrated via post-hoc temperature scaling, and integrated into an uncertainty-driven selective classification triage engine.}
 \label{fig:architecture}
 \end{figure*}
@@ -179,7 +179,7 @@ Under rejection threshold $\tau$, beats with uncertainty $u(\mathbf{x}) > \tau$ 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{results/figs/weighted_rr_run0_confusion_matrix.png}
+\includegraphics[width=\columnwidth]{fig2_confusion_matrix.png}
 \caption{Normalized confusion matrix of the 5-member calibrated deep ensemble on 49,687 test beats (DS2). Normal ($N$, 89.5\%) and Ventricular ($V$, 87.7\%) beats achieve high diagnostic sensitivity, while minority classes ($S$ and $F$) exhibit expected inter-patient ambiguity.}
 \label{fig:cm}
 \end{figure}
@@ -242,7 +242,7 @@ Brier Score & \multicolumn{2}{c}{0.2071} & \multicolumn{2}{c}{0.2091} \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{results/figs/weighted_rr_run0_f1_vs_referral.png}
+\includegraphics[width=\columnwidth]{fig3_referral_curve.png}
 \caption{Diagnostic performance on retained beats across clinical referral rates ($0\%$ to $30\%$). Deferring ambiguous predictions to cardiologists systematically eliminates misclassifications, raising accuracy from 85.86\% to 94.7\%.}
 \label{fig:referral}
 \end{figure}
