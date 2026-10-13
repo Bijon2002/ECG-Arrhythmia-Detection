@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+<w:body>
+    <w:p><w:pPr><w:pStyle w:val="FirstParagraph" /></w:pPr></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">ASSIGNMENT TOP SHEET</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Faculty of Creative Arts, Technologies &amp; Science</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Department of Computer Science &amp; Technology</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Student Ref. No: 2541518 Unit Code: CIS017-3</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Unit Name: Deadline for Submission(s)</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Undergraduate Project</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Student’s Surname Student’s Forename</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Bijosilin Marisilin</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Unit Leader’s Name: Supervisor: Ms. Niroji Thayalan</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Enjie Liu</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Assignment Details:</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Assessment 2: Final Report</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve"> </w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Instructions to Student:</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Please note: Work presented in an assessment must be the student’s own. Plagiarism is where a student copies work from another source, published or unpublished (including the work of a fellow student) and fails to acknowledge the influence of another’s work or to attribute quotes to the author. Plagiarism is an academic offence.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Work presented in an assessment must be your own. Plagiarism is where a student copies work from another source, published or unpublished (including the work of another student) and fails to acknowledge the influence of another’s work or to attribute quotes to the author. Plagiarism is an academic offence and the penalty can be serious. The University’s policies relating to Plagiarism can be found in the regulations at http://www.beds.ac.uk/aboutus/quality/regulations. To detect possible plagiarism we may submit your work to the national plagiarism detection facility. This searches the Internet and an extensive database of reference material including other students’ work to identify. Once your work has been submitted to the detection service it will be stored electronically in a database and compared against work submitted from this and other universities. It will therefore be necessary to take electronic copies of your materials for transmission, storage and comparison purposes and for the operational back-up process. This material will be stored in this manner indefinitely.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">I have read the above information and I confirm that this work is my own and that it may be processed and stored in the manner described.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Signature (P</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">&lt;truncated 110879 bytes&gt;</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">rd interface shall be intuitive, utilizing colour-coding (Green/Amber/Red) for medical safety.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Appendix F - Software Test Cases</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Test Case Pre-condition Input Expected Output Status</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">API-01 Server running POST /predict valid array HTTP 200, JSON schema match PASS</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">API-02 Server running POST /predict missing data HTTP 400 Bad Request PASS</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">UI-01 Browser open Click</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">“Random Beat”</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">Visual chart updates immediately PASS</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Appendix G - Risk Register</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Risk Probability Impact Mitigation Strategy</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Model ignores minority classes High Critical Implemented class-weighted Cross-Entropy loss.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">AI produces silent false positives Medium Critical Implemented MC Dropout and Cluster-Based Entropy flagging.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Overfitting on small dataset Medium High Utilized Early Stopping and 0.5 Dropout rate during training.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Appendix H - User Guide &amp; Reproducibility Notes</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">To reproduce the environment:</w:t></w:r></w:p>
+    <w:p><w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1001" /></w:numPr></w:pPr><w:r><w:t xml:space="preserve">Unzip the project folder.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1001" /></w:numPr></w:pPr><w:r><w:t xml:space="preserve">Run conda create -n ecg_env python=3.10</w:t></w:r></w:p>
+    <w:p><w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1001" /></w:numPr></w:pPr><w:r><w:t xml:space="preserve">Run pip install -r requirements.txt</w:t></w:r></w:p>
+    <w:p><w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1001" /></w:numPr></w:pPr><w:r><w:t xml:space="preserve">Start the backend: python app.py</w:t></w:r></w:p>
+    <w:p><w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1001" /></w:numPr></w:pPr><w:r><w:t xml:space="preserve">Open frontend/index.html in your browser (localhost:8000).</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="FirstParagraph" /></w:pPr><w:r><w:t xml:space="preserve">Appendix I - Project Timeline (Gantt Chart)</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">The following chart outlines the 12-week Agile development lifecycle used to execute the project across 6 Sprints, detailing the breakdown of technical phases and subtasks.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve"> </w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">End of Thesis</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Word count (Chapters 1-5): approximately 10,000 words</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">Student: Bijosilin Marisilin | ID: 2541518 | Supervisor: Ms. Niroji Thayalan prepare a final word file thesi s you can se eteh word file F:</w:t></w:r><w:r><w:t xml:space="preserve">-Arrhythmia-Detection</w:t></w:r><w:r><w:t xml:space="preserve">_Thesis_Final_Submitted.docx and us eteh sam e ui alyout</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">The current local time is: 2026-08-27T19:49:15+05:30.</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="BodyText" /></w:pPr><w:r><w:t xml:space="preserve">The user’s current state is as follows:</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">Active Document: f:</w:t></w:r><w:r><w:t xml:space="preserve">-Arrhythmia-Detection</w:t></w:r><w:r><w:t xml:space="preserve">_GUIDE.md (LANGUAGE_MARKDOWN)</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">Cursor is on line: 53</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">Other open documents:</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">- f:</w:t></w:r><w:r><w:t xml:space="preserve">-Arrhythmia-Detection</w:t></w:r><w:r><w:t xml:space="preserve">_GUIDE.md (LANGUAGE_MARKDOWN)</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t xml:space="preserve">- f:</w:t></w:r><w:r><w:t xml:space="preserve">-Arrhythmia-Detection</w:t></w:r><w:r><w:t xml:space="preserve">_images_thesis.py (LANGUAGE_PYTHON)</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r></w:p>
+    <w:sectPr w:rsidR="000508F2" w:rsidRPr="009833C5">
+      <w:headerReference r:id="rId41" w:type="even" />
+      <w:headerReference r:id="rId42" w:type="default" />
+      <w:footerReference r:id="rId43" w:type="even" />
+      <w:footerReference r:id="rId44" w:type="default" />
+      <w:headerReference r:id="rId45" w:type="first" />
+      <w:footerReference r:id="rId46" w:type="first" />
+      <w:pgSz w:h="15840" w:w="12240" />
+      <w:pgMar w:bottom="1440" w:footer="708" w:gutter="0" w:header="708" w:left="1440" w:right="1440" w:top="1440" />
+      <w:cols w:space="720" />
+      <w:docGrid w:linePitch="360" />
+    </w:sectPr>
+  </w:body>
+</w:document>
