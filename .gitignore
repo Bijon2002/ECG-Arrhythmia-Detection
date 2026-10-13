@@ -1,6 +1,15 @@
 # Data
 data/raw/
 data/processed/
+data/split.npz
+data/split_beatwise.npz
+data/inter_patient/
+
+# Temporary extraction artifacts
+thesis_unzipped/
+thesis.zip
+texput.log
+write_paper.py
 
 # Models (Trained weights are tracked for deployment)
 # models/*.pt
