@@ -17,7 +17,7 @@
 **Author:** [Bijosilin Marisilin](https://github.com/Bijon2002) (Student ID: `2541518`)  
 **Supervisor:** Ms. Niroji Thayalan  
 **Course:** BSc (Hons) Computer Science & Technology  
-**Institution:** University of Bedfordshire (UK) / SLIIT Northern Uni 
+**Institution:** University of Bedfordshire (UK) / SLIIT Northern Uni,Jaffna
 
 ---
 
@@ -188,7 +188,7 @@ The paper source code is available in [`main.tex`](main.tex).
 
 ## 🎓 Academic Context
 
-Developed as an Undergraduate Research Project at the **University of Bedfordshire (UK)** in collaboration with **SLIIT Northern University**.
+Developed as an Undergraduate Research Project at the **University of Bedfordshire (UK)** in collaboration with **SLIIT Northern Uni, Jaffna**.
 
 * **Author:** Bijosilin Marisilin (Student ID: `2541518`)
 * **Supervisor:** Ms. Niroji Thayalan
