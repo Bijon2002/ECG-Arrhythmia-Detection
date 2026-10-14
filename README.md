@@ -17,7 +17,7 @@
 **Author:** [Bijosilin Marisilin](https://github.com/Bijon2002) (Student ID: `2541518`)  
 **Supervisor:** Ms. Niroji Thayalan  
 **Course:** BSc (Hons) Computer Science & Technology  
-**Institution:** University of Bedfordshire (UK) / SLIIT Northern University  
+**Institution:** University of Bedfordshire (UK) / SLIIT Northern Uni 
 
 ---
 
