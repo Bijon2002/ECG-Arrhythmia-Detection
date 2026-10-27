@@ -105,7 +105,7 @@ Selective classification (classification with a reject or abstention option) for
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.92\textwidth]{fig1_architecture.png}
-\caption{System architecture and conceptual triage framework. (Top) Dual-branch 1D-CNN backbone combining bandpass-filtered lead-II ECG windows (360 samples) with four RR-interval timing features across a five-member calibrated deep ensemble. Scaled member logits are averaged to produce the ensemble posterior. (Middle/Bottom) Uncertainty quantification and simulated selective classification, where uncertain beats are flagged for expert clinician review. Downstream clinical EMR logging and patient adaptation depict the target clinical workflow, whereas the experimental evaluation in this study evaluates offline classification, calibration, and simulated referral across 49,687 test beats.}
+\caption{System architecture and conceptual triage framework. (Top) Dual-branch 1D-CNN backbone combining bandpass-filtered lead-II ECG windows (360 samples) with four RR-interval timing features across a five-member calibrated deep ensemble. Scaled member logits are averaged to produce the ensemble posterior. (Middle/Bottom) Uncertainty quantification and simulated selective classification, where uncertain beats are flagged for expert clinician review. The clinical triage, EMR integration, patient-specific adaptation, and deployment components represent a conceptual future workflow and were not implemented or clinically validated in this study. Experimental evaluation is restricted to offline ECG classification, uncertainty quantification, calibration, and simulated selective referral across 49,687 test beats.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -168,13 +168,15 @@ For each trained member $m$, an individual post-hoc temperature parameter $T_m >
 
 The ensemble posterior probability is computed via temperature-scaled logit averaging:
 \begin{equation}
+\label{eq:logit_avg}
 p_{\text{ens}}(y = c \mid \mathbf{x}, \mathbf{r}) = \mathrm{softmax}_c\!\left(\frac{1}{M}\sum_{m=1}^M \frac{\mathbf{z}_{m}}{T_m}\right).
 \end{equation}
-\textit{Ensemble Formulation Nuance:} Equation (5) averages the temperature-scaled logits across ensemble members before applying the softmax operator. This differs mathematically from conventional predictive probability averaging, which averages the individual softmax posteriors:
+\textit{Ensemble Formulation Nuance:} Equation~\eqref{eq:logit_avg} averages the temperature-scaled logits across ensemble members before applying the softmax operator. This differs mathematically from conventional predictive probability averaging, which averages the individual softmax posteriors:
 \begin{equation}
+\label{eq:prob_avg}
 p_{\text{prob}}(y = c \mid \mathbf{x}, \mathbf{r}) = \frac{1}{M}\sum_{m=1}^M \mathrm{softmax}_c\!\left(\frac{\mathbf{z}_{m}}{T_m}\right).
 \end{equation}
-In our implementation, logit averaging functions as an unweighted consensual fusion in the pre-activation space, preventing a single highly confident member from dominating the predictive distribution. Equation (5) reflects the exact mathematical operation executed in our experiments.
+In our implementation, the ensemble combines temperature-scaled logits through arithmetic averaging before applying softmax. This aggregation strategy differs from conventional probability averaging and is retained to remain consistent with the implemented experimental pipeline. Equation~\eqref{eq:logit_avg} reflects the exact mathematical operation executed in our experiments.
 
 \subsection{Uncertainty Quantification Formulations}
 We benchmark four uncertainty scores $u(\mathbf{x})$, where higher values indicate greater predictive ambiguity:
@@ -247,20 +249,20 @@ Earlier beat-wise pipeline$^{\dagger}$ & \multicolumn{4}{c}{98.4\% accuracy} \\
 \subsection{Diagnostic Performance Under Inter-Patient Evaluation}
 Table~\ref{tab:diagnostic} and Fig.~\ref{fig:cm} present diagnostic performance across 49,687 DS2 test beats. The calibrated ensemble achieves an overall accuracy of 85.86\% and a five-class macro F1-score of 0.371. Evaluating across the four classes with adequate test support ($N, S, V, F$) yields a macro F1 of 0.463. Normal ($N$) beats achieve an F1-score of 0.924 (recall 0.895), and ventricular ectopic ($V$) beats attain an F1-score of 0.809 (recall 0.877).
 
-However, minority-class recognition is severely compromised. Supraventricular ectopic ($S$) beats yield a recall of only 0.130 with an F1-score of 0.098, with the vast majority (1,562 of 1,837 beats, 85.0\%) erroneously labeled as normal. Fusion ($F$) beats exhibit a recall of 0.054 and an F1-score of 0.022, with 347 of 388 beats (89.4\%) misclassified as ventricular ectopics. Class $Q$ contains only 7 test examples and is never detected, reducing the overall five-class macro F1.
+However, minority-class recognition is severely compromised. Supraventricular ectopic ($S$) beats yield a recall of only 0.130 with an F1-score of 0.098, with the majority (1,531 of 1,837 beats, 83.3\%) erroneously labeled as normal, consistent with the 0.83 normal misclassification proportion in Fig.~\ref{fig:cm}. Fusion ($F$) beats exhibit a recall of 0.054 (21 of 388 beats) and an F1-score of 0.022, with misclassifications dispersed across classes: 143 beats classified as normal (36.9\%), 124 as supraventricular (32.0\%), and 100 as ventricular ectopics (25.8\%, corresponding to the 0.26 rate in Fig.~\ref{fig:cm}). Class $Q$ contains only 7 test examples and is never detected, reducing the overall five-class macro F1.
 
 \textit{Analysis of the Accuracy--Macro F1 Discrepancy:} The divergence between high overall accuracy (85.86\%) and poor macro F1 (0.371) illustrates why global accuracy is an inadequate metric in arrhythmia analysis. Because normal beats represent 89.0\% of the test cohort (44,235 beats), high aggregate accuracy is overwhelmingly governed by correctly classified normal rhythm. Detection failure on the clinically critical $S$ and $F$ ectopic categories has negligible impact on accuracy. 
 
-Two primary factors account for this failure:
+Two plausible factors may contribute to these classification difficulties:
 \begin{enumerate}
-    \item \emph{Morphological Mimicry:} $S$ beats originate above the ventricles, producing QRS complexes that are morphologically indistinguishable from normal beats on single-lead MLII. Although auxiliary RR features provide timing cues, inter-individual baseline heart-rate variability across independent patients obscures subtle rhythm anomalies.
-    \item \emph{Conduction Hybridization:} Fusion ($F$) beats reflect variable, simultaneous activation from both supraventricular and ventricular foci, generating heterogeneous morphology that overlaps heavily with ventricular ectopics.
+    \item \emph{Morphological Mimicry:} $S$ beats originate above the ventricles, producing QRS complexes that are morphologically indistinguishable from normal beats on single-lead MLII. Although auxiliary RR features provide timing cues, inter-individual baseline heart-rate variability across independent patients may obscure subtle rhythm anomalies.
+    \item \emph{Conduction Hybridization:} Fusion ($F$) beats reflect variable, simultaneous activation from both supraventricular and ventricular foci, generating heterogeneous morphology that overlaps with both normal and ventricular rhythms.
 \end{enumerate}
 
 \textit{Comparison with Beat-Wise Partitioning:} An earlier implementation of this classifier evaluated under random beat-wise shuffling on a separate pipeline reported 98.4\% accuracy. Although this 12.5-point gap is consistent with published observations regarding intra-patient data leakage \cite{b3,b12,b13}, the two experiments differed in preprocessing filters, included records, and input representations. Consequently, this difference illustrates the difficulty of inter-patient generalization but cannot be attributed exclusively to data leakage.
 
 \subsection{Ensemble Contributions and Calibration Behavior}
-Table~\ref{tab:ablation_calib} compares a single 1D-CNN against the five-member ensemble. Averaging five independently seeded models increases overall accuracy from 79.3\% to 85.9\% (+6.6 percentage points) and improves macro F1 from 0.329 to 0.371. The single-model baseline represents a single seed (seed 0); hence, individual seed variance is not captured. While ensembling reliably smooths non-convex optimization landscapes and improves $V$-beat detection (F1 from 0.771 to 0.809), its impact on supraventricular detection is negligible (F1 shifting from 0.080 to 0.098), confirming that variance reduction alone cannot rectify severe representation deficits.
+Table~\ref{tab:ablation_calib} compares a single 1D-CNN against the five-member ensemble. Averaging five independently seeded models increases overall accuracy from 79.3\% to 85.9\% (+6.6 percentage points) and improves macro F1 from 0.329 to 0.371. The single-model baseline represents a single seed (seed 0); hence, individual seed variance is not captured. While ensembling may contribute to smoothing non-convex optimization landscapes and improves $V$-beat detection (F1 from 0.771 to 0.809), its impact on supraventricular detection is negligible (F1 shifting from 0.080 to 0.098), suggesting that variance reduction alone cannot rectify severe representation deficits.
 
 \begin{table}[t]
 \centering
@@ -309,7 +311,7 @@ MC Dropout variance          & 0.754          & 0.276          & 0.0576         
 }
 \end{table}
 
-Post-hoc temperature scaling yields mixed calibration outcomes (Table~\ref{tab:ablation_calib}). Expected Calibration Error (ECE) decreases from 4.28\% to 3.04\% (a 29\% relative improvement), and NLL improves from 0.4113 to 0.4020. However, the Brier score deteriorates slightly from 0.2071 to 0.2091. Because temperature scaling applies a monotonic transformation to logits without altering prediction argmax, it cannot fix misclassifications; it merely rescales probability magnitudes. Furthermore, two of the five member temperatures ($T_1=0.836, T_4=0.979$) were below 1.0, indicating that individual models exhibited underconfidence rather than overconfidence on the validation split. Fitting temperatures on only four validation records limits generalization when applied across 22 test records.
+Post-hoc temperature scaling yields mixed calibration outcomes (Table~\ref{tab:ablation_calib}). Expected Calibration Error (ECE) decreases from 4.28\% to 3.04\% (a 29\% relative improvement), and NLL improves from 0.4113 to 0.4020. However, the Brier score deteriorates slightly from 0.2071 to 0.2091. While scalar temperature scaling preserves each individual member's class ranking ($\mathrm{argmax}$), combining members with different learned temperatures can potentially alter the aggregated ensemble prediction. In practice, temperature scaling functions predominantly as a probability rescaler rather than an error corrector. Furthermore, two of the five member temperatures ($T_1=0.836, T_4=0.979$) were below 1.0; these represent fitted confidence-sharpening parameters rather than definitive evidence of underlying model underconfidence. In addition, fitting temperatures on only four validation records limits generalization when evaluated across 22 test records.
 
 \subsection{Uncertainty Quantification and Selective Referral}
 Table~\ref{tab:uncertainty} benchmarks the four uncertainty scores for error detection. Softmax confidence achieves the highest discrimination across all evaluation criteria (AUROC 0.819, AUPRC 0.405, and lowest AURC 0.0465). Predictive entropy follows closely with an AUROC of 0.810. The proposed cluster-based entropy (CBE) achieves an AUROC of 0.798, equaling predictive entropy at 10\% referral (88.8\% accuracy) but underperforming at 30\% referral (94.0\% vs.\ 94.7\%). MC Dropout variance demonstrates the weakest error detection capability (AUROC 0.754).
@@ -318,7 +320,7 @@ Table~\ref{tab:uncertainty} benchmarks the four uncertainty scores for error det
 
 \textit{Selective Classification Trade-Offs:} As shown in Fig.~\ref{fig:referral} and Table~\ref{tab:uncertainty}, simulated referral of the most uncertain beats produces substantial improvements in retained beat accuracy: from 85.86\% at baseline ($r=0.0$) to 89.6\% at $r=0.10$ and 94.7\% at $r=0.30$. However, macro F1 improves only marginally, rising from 0.371 to approximately 0.390 at 10\% referral and 0.420 at 30\% referral.
 
-This divergence reveals an important clinical finding: selective classification primarily intercepts misclassified normal and ventricular beats, which constitute the vast numerical majority of errors. In contrast, false negatives on rare $S$ and $F$ beats are often assigned moderately high confidence by the model and are not sufficiently concentrated in the upper uncertainty deciles. Moreover, achieving 94.7\% accuracy requires referring 30\% of all heartbeats, reducing autonomous diagnostic coverage to 70\% and imposing a heavy manual review workload on clinical staff.
+This divergence highlights an important practical characteristic: selective classification primarily intercepts misclassified normal and ventricular beats, which constitute the vast numerical majority of errors. A plausible explanation is that false negatives on rare $S$ and $F$ beats may carry relatively confident predictions and might not be sufficiently concentrated in the highest uncertainty deciles, meaning uncertainty thresholding fails to prioritize them. Moreover, achieving 94.7\% accuracy requires referring 30\% of all heartbeats, reducing autonomous diagnostic coverage to 70\% and imposing a heavy manual review workload on clinical staff.
 
 \subsection{Limitations}
 We explicitly identify the following limitations:
